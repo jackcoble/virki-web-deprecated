@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-center">
-        <div class="flex items-center justify-between w-full h-24 text-white bg-[#214974] rounded-md shadow-md">
+        <div class="flex items-center justify-between w-full h-24 text-white bg-[#214974] rounded-md shadow-md" @click="showTOTP">
             <div class="flex flex-col p-4">
                 <span class="text-xl text-white">{{ issuer }} </span>
                 <p class="text-sm text-gray-200 font-semibold">{{ account }}</p>
@@ -39,8 +39,14 @@ export default defineComponent({
             console.log(totp.validate({ token: totp.generate() }))
         }, 1000);
 
+        // Alert user of TOTP
+        const showTOTP = () => {
+            alert("OTP: " + generatedCode.value)
+        }
+
         return {
-            generatedCode
+            generatedCode,
+            showTOTP
         }
     }
 })

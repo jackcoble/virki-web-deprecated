@@ -29,15 +29,12 @@
         <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret"></Entry>
       </div>
     </div>
-
-    <Tabs />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import Entry from "../components/Entry.vue";
-import Tabs from "../components/Tabs.vue"
 
 export default defineComponent({
   name: "HomeView",
@@ -54,6 +51,6 @@ export default defineComponent({
       entries
     };
   },
-  components: { Entry, Tabs }
+  components: { Entry }
 })
 </script>
