@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Urbanist fonts */
+@layer base {
+  @font-face {
+    font-family: "Urbanist";
+    src: url("./fonts/Urbanist-VariableFont_wght.ttf");
+    font-weight: 1 999;
+  }
+
+  @font-face {
+    font-family: "Urbanist";
+    src: url("./fonts/Urbanist-Italic-VariableFont_wght.ttf");
+    font-style: italic;
+    font-weight: 1 999;
+  }
+}
