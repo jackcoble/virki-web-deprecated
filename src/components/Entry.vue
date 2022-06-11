@@ -7,6 +7,8 @@
                 <p class="text-sm text-gray-200 font-semibold">{{ account }}</p>
                 
                 <h2 class="text-xl font-bold">{{ generatedCode }}</h2>
+
+                <p class="text-xs">{{ countdownLeft }} seconds</p>
             </div>
             <img class="h-full py-2 pr-4 ml-8 h-16"
                 :src="icon" />
@@ -45,15 +47,15 @@ export default defineComponent({
             // Do a check to see how long the token has left.
             // We can do this by adding 1 millisecond to the current timestamp until we get
             // a different token to the one currently stored.
-            for (let i = 0; i < timestamp.value; i++) {
+            for (let milliseconds = 0; milliseconds < timestamp.value; milliseconds++) {
                 // Generate a new token with a different timestamp (incremented by 1ms)
-                const newTimestamp = timestamp.value + i;
+                const newTimestamp = timestamp.value + milliseconds;
                 const newToken = totp.generate({ timestamp: newTimestamp });
 
                 // If the newToken is different to the current token, then
                 // we can set the countdown value to whatever the value of 'i / 1000' is.
                 if (newToken !== generatedCode.value) {
-                    const secondsLeft = Math.floor(i / 1000);
+                    const secondsLeft = Math.floor(milliseconds / 1000);
                     countdownLeft.value = secondsLeft 
                     break;
                 }
@@ -85,8 +87,6 @@ export default defineComponent({
                 }
             }, 1000);
         })
-
-
 
         // Alert user of TOTP
         const showTOTP = () => {
