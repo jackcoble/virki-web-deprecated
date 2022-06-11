@@ -5,8 +5,8 @@
             <div class="flex flex-col p-4">
                 <span class="text-xl text-white">{{ issuer }} </span>
                 <p class="text-sm text-gray-200 font-semibold">{{ account }}</p>
-                <p>{{ countdownLeft }}s left</p>
-                <p>{{ generatedCode }}</p>
+                
+                <h2 class="text-xl font-bold">{{ generatedCode }}</h2>
             </div>
             <img class="h-full py-2 pr-4 ml-8 h-16"
                 :src="icon" />
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import * as OTPAuth from 'otpauth';
 
 export default defineComponent({
@@ -38,7 +38,7 @@ export default defineComponent({
             digits: 6
         })
 
-        onMounted(() => {
+        onBeforeMount(() => {
             // Set the current token based on the timestamp
             generatedCode.value = totp.generate({ timestamp: timestamp.value })
 
@@ -58,7 +58,9 @@ export default defineComponent({
                     break;
                 }
             }
+        })
 
+        onMounted(() => {
             // Now that we've worked out the different, we can kick off the normal
             // interval that handles the countdown
             // Every second, get the device timestamp and generate the TOTP code
