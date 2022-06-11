@@ -33,12 +33,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import useEmitter from "@/composables/useEmitter";
+import { defineComponent, onMounted } from "vue";
 import Entry from "../components/Entry.vue";
 
 export default defineComponent({
   name: "HomeView",
   setup() {
+    const emitter = useEmitter();
+
+    onMounted(() => {
+      setInterval(() => {
+        // Emit the 'countdown' event every second
+        emitter.emit("countdown");
+      }, 1000)
+    })
+
     const entries = [
       {
         issuer: "Instagram",
