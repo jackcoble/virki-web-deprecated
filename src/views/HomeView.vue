@@ -1,7 +1,10 @@
 <template>
-  <div class="h-screen w-full bg-gray-700">
+  <div class="h-screen w-full bg-[#262727]">
 
     <div class="container p-4 space-y-3">
+      <!-- Vault selection dropdown -->
+      <h2 class="text-2xl font-semibold text-white">Personal ▼</h2>
+
       <!-- Search bar -->
       <form>
         <label for="default-search"
@@ -15,21 +18,26 @@
             </svg>
           </div>
           <input type="search" id="default-search"
-            class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block p-2 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Search entries..." required>
         </div>
       </form>
+
+      <p class="text-sm text-white text-center">{{ entries.length }} entries</p>
 
       <div v-for="entry in entries" :key="entry.issuer">
         <Entry :issuer="entry.issuer" :secret="entry.secret"></Entry>
       </div>
     </div>
+
+    <Tabs />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import Entry from "../components/Entry.vue";
+import Tabs from "../components/Tabs.vue"
 
 export default defineComponent({
   name: "HomeView",
@@ -46,6 +54,6 @@ export default defineComponent({
       entries
     };
   },
-  components: { Entry }
+  components: { Entry, Tabs }
 })
 </script>

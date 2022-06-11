@@ -1,7 +1,12 @@
 <template>
-    <div class="container p-2">
-        {{ issuer }}
-        {{ generatedCode }}
+    <div class="flex items-center justify-center">
+        <div class="flex items-center justify-between w-full h-24 text-white bg-gray-600 rounded-md shadow-md">
+            <div class="flex flex-col p-4">
+                <span class="text-xs text-blue-300">{{ issuer }} </span>
+                <p class="text-2xl font-semibold uppercase">{{ generatedCode }}</p>
+            </div>
+            <img class="h-full py-2 pr-4 ml-8 h-16" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png" />
+        </div>
     </div>
 </template>
 
@@ -20,7 +25,7 @@ export default defineComponent({
     setup(props) {
         // The entry component should handle the rendering and countdown of TOTP codes
         const generatedCode = ref();
-        
+
         // Create and return TOTP code from the "secret" prop
         const totp = new OTPAuth.TOTP({
             secret: props.secret,
@@ -29,9 +34,9 @@ export default defineComponent({
 
         // Every second, get the device timestamp and generate the TOTP code
         setInterval(() => {
-            const time = Math.floor(Date.now() / 1000);
-            console.log(time);
             generatedCode.value = totp.generate();
+
+            console.log(totp.validate({ token: totp.generate() }))
         }, 1000);
 
         return {

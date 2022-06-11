@@ -1,8 +1,8 @@
 <template>
-<nav class="fixed lg:hidden bottom-0 p-2 w-full border bg-gray-100 flex">
+<nav class="fixed lg:hidden bottom-0 p-2 w-full bg-[#283444] flex">
     <div v-for="button in buttons" :key="button.label" class="flex flex-col flex-grow w-full justify-center items-center text-center truncate">
         <router-link :to="button.route">
-            <component class="h-6 text-gray-600 mx-auto" :class="button.classes" :is="button.icon" />
+            <component class="h-6 text-[#a3aab0] mx-auto" :class="button.classes" :is="button.icon" />
         </router-link>
     </div>
 </nav>
@@ -22,7 +22,7 @@ const buttons = ref([
         label: "New",
         route: "/new",
         icon: PlusCircleIcon,
-        classes: "h-12 text-green-600"
+        classes: "h-12 text-[#0471eb]"
     },
     {
         label: "Settings",
