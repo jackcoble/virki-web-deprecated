@@ -9,7 +9,7 @@
                 <p>{{ generatedCode }}</p>
             </div>
             <img class="h-full py-2 pr-4 ml-8 h-16"
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png" />
+                :src="icon" />
         </div>
     </div>
 </template>
