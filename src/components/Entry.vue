@@ -19,6 +19,7 @@
 <script lang="ts">
 import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import * as OTPAuth from 'otpauth';
+import useEmitter from "@/composables/useEmitter";
 
 export default defineComponent({
     name: "Entry",
@@ -29,6 +30,8 @@ export default defineComponent({
         icon: String // Base64 encoded image
     },
     setup(props) {
+        const emitter = useEmitter();
+
         // The entry component should handle the rendering and countdown of TOTP codes
         const timestamp = ref(Math.floor(Date.now()));
         const generatedCode = ref();
@@ -62,31 +65,28 @@ export default defineComponent({
             }
         })
 
-        onMounted(() => {
-            // Now that we've worked out the different, we can kick off the normal
-            // interval that handles the countdown
-            // Every second, get the device timestamp and generate the TOTP code
-            setInterval(() => {
-                const timestamp = Math.floor(Date.now());
-                const token = totp.generate({ timestamp });
+        // Listen for an event emitted to us and handle the countdown.
+        const handleCountdown = () => {
+            const token = totp.generate({ timestamp: timestamp.value });
 
-                // If the token is different to what we've got currently stored
-                // then reset the timer
-                if (token !== generatedCode.value) {
-                    countdownLeft.value = 30;
-                    generatedCode.value = token;
-                    return;
-                }
+            // If the token is different to what we've got currently stored
+            // then reset the timer
+            if (token !== generatedCode.value) {
+                countdownLeft.value = 30;
+                generatedCode.value = token;
+                return;
+            }
 
-                // More of a thing for user experience, just don't let the countdown get to zero,
-                // just skip this interval.
-                if (countdownLeft.value -1 == 0) {
-                    return;
-                } else {
-                    countdownLeft.value -= 1;
-                }
-            }, 1000);
-        })
+            // More of a thing for user experience, just don't let the countdown get to zero,
+            // just skip this interval.
+            if (countdownLeft.value -1 == 0) {
+                return;
+            } else {
+                countdownLeft.value -= 1;
+            }
+        }
+
+        emitter.on('countdown', handleCountdown);
 
         // Alert user of TOTP
         const showTOTP = () => {
