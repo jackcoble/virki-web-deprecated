@@ -67,6 +67,7 @@ export default defineComponent({
 
         // Listen for an event emitted to us and handle the countdown.
         const handleCountdown = () => {
+            timestamp.value = Math.floor(Date.now());
             const token = totp.generate({ timestamp: timestamp.value });
 
             // If the token is different to what we've got currently stored
