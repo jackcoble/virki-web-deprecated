@@ -1,9 +1,9 @@
 <template>
     <div class="flex items-center justify-center">
-        <div class="flex items-center justify-between w-full h-24 text-white bg-gray-600 rounded-md shadow-md">
+        <div class="flex items-center justify-between w-full h-24 text-white bg-[#214974] rounded-md shadow-md">
             <div class="flex flex-col p-4">
-                <span class="text-xs text-blue-300">{{ issuer }} </span>
-                <p class="text-2xl font-semibold uppercase">{{ generatedCode }}</p>
+                <span class="text-xl text-white">{{ issuer }} </span>
+                <p class="text-sm text-gray-200 font-semibold">{{ account }}</p>
             </div>
             <img class="h-full py-2 pr-4 ml-8 h-16" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png" />
         </div>
