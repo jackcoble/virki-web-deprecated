@@ -1,7 +1,7 @@
 <template>
-  <div class="h-screen w-full bg-[#262727]">
+  <div class="h-screen bg-[#262727]">
 
-    <div class="container p-4 space-y-3">
+    <div class="container mx-auto p-4 space-y-3">
       <!-- Vault selection dropdown -->
       <h2 class="text-2xl font-semibold text-white">Personal ▼</h2>
 
