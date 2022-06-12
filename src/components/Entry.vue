@@ -43,7 +43,7 @@ export default defineComponent({
             digits: 6
         })
 
-        onBeforeMount(() => {
+        onMounted(() => {
             // Set the current token based on the timestamp
             generatedCode.value = totp.generate({ timestamp: timestamp.value })
 
@@ -63,12 +63,13 @@ export default defineComponent({
                     break;
                 }
             }
+
+            emitter.on('countdown', handleCountdown);
         })
 
         // Listen for an event emitted to us and handle the countdown.
-        const handleCountdown = () => {
-            timestamp.value = Math.floor(Date.now());
-            const token = totp.generate({ timestamp: timestamp.value });
+        const handleCountdown = (event: any) => {
+            const token = totp.generate({ timestamp: event.timestamp });
 
             // If the token is different to what we've got currently stored
             // then reset the timer
@@ -86,8 +87,6 @@ export default defineComponent({
                 countdownLeft.value -= 1;
             }
         }
-
-        emitter.on('countdown', handleCountdown);
 
         // Alert user of TOTP
         const showTOTP = () => {
