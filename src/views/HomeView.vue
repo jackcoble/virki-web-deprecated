@@ -26,7 +26,7 @@
       <p class="text-sm text-white text-center">{{ entries.length }} entries</p>
 
       <div v-for="entry in entries" :key="entry.issuer">
-        <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret"></Entry>
+        <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon"></Entry>
       </div>
     </div>
   </div>
