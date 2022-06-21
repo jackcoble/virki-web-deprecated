@@ -34,27 +34,57 @@
 
 <script lang="ts">
 import useEmitter from "@/composables/useEmitter";
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onBeforeUnmount, onMounted } from "vue";
 import Entry from "../components/Entry.vue";
 
 export default defineComponent({
   name: "HomeView",
   setup() {
     const emitter = useEmitter();
+    let interval: any;
 
     onMounted(() => {
-      setInterval(() => {
+      interval = setInterval(() => {
         // Emit the 'countdown' event every second
-        emitter.emit("countdown");
+        const timestamp = Math.floor(Date.now());
+        emitter.emit("countdown", { timestamp });
       }, 1000)
+    })
+
+    onBeforeUnmount(() => {
+      clearInterval(interval);
     })
 
     const entries = [
       {
         issuer: "Instagram",
-        account: "jackcoble._",
+        account: "XYZ",
         secret: "JBSWY3DPEHPK3PXP",
-        icon: ""
+        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
+      },
+      {
+        issuer: "Instagram",
+        account: "XYZ",
+        secret: "JBSWY3DPEHPK3PXP",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
+      },
+      {
+        issuer: "Instagram",
+        account: "XYZ",
+        secret: "JBSWY3DPEHPK3PXP",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
+      },
+      {
+        issuer: "Instagram",
+        account: "XYZ",
+        secret: "JBSWY3DPEHPK3PXP",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
+      },
+      {
+        issuer: "Instagram",
+        account: "XYZ",
+        secret: "JBSWY3DPEHPK3PXP",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
       }
     ];
     return {
