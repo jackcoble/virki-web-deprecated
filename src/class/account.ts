@@ -35,8 +35,21 @@ export class Account {
         const masterKey = window.crypto.getRandomValues(new Uint8Array(1024));
         return masterKey;
     }
+    /**
+     * Encrypts the master key with the users stretched password. Returned payload should contain the encrypted master key
+     */
+    async encryptMasterKey(stretchedKey: string): Promise<string> {
+        const masterKeyHex = Buffer.from(this.masterKey).toString("hex");
+        const message = await createMessage({
+            text: masterKeyHex
         });
 
-        console.log(stretchedKey.hashHex);
+        const encryptedMasterKey = await encrypt({
+            message,
+            passwords: [stretchedKey],
+            format: "armored"
+        });
+
+        return encryptedMasterKey.toString();
     }
 }
