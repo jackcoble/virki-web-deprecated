@@ -24,6 +24,7 @@
 
 <script lang="ts">
 import { Account } from "@/class/account";
+import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
 import zxcvbn from "zxcvbn";
 
@@ -33,6 +34,8 @@ export default defineComponent({
         // Refs to keep track of user data
         const email = ref("");
         const password = ref("");
+        
+        const encryptionKeyStore = useEncryptionKeyStore();
 
         // Create a user account
         const registerUser = async () => {
@@ -47,6 +50,9 @@ export default defineComponent({
             // Generate and set the master key used for symmetric operations
             const masterKey = account.generateMasterKey();
             account.setMasterKey(masterKey);
+
+            const masterKeyHex = Buffer.from(masterKey).toString("hex");
+            encryptionKeyStore.setMasterKey(masterKeyHex);
 
             // Encrypt the master key
             // TODO: Send to server
