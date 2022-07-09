@@ -21,6 +21,13 @@ export class Account {
             pass: password,
             salt: salt,
     /**
+     * Set the master key for an account
+     * @param masterKey 
+     */
+    setMasterKey(masterKey: Uint8Array) {
+        this.masterKey = masterKey;
+    }
+    /**
      * Generates a "master key" which is used for OpenPGP encryption of string data
      */
     generateMasterKey(): Uint8Array {
