@@ -1,5 +1,5 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
-import { createMessage, encrypt } from "openpgp";
+import { createMessage, decrypt, encrypt, readMessage } from "openpgp";
 
 const MASTER_KEY_BITS_LENGTH = 1024;
 
@@ -69,5 +69,29 @@ export class Account {
         });
 
         return encryptedMasterKey.toString();
+    }
+
+    /**
+     * Decrypts and returns the master key
+     * @param password - user raw password
+     * @param salt - salt that was used to stretch the user password
+     * @param encryptedMasterKey - OpenPGP armored message
+     */
+    async decryptMasterKey(password: string, salt: string, encryptedMasterKey: string): Promise<string> {
+        // Convert salt into buffer format and then derive stretched password.
+        const saltBuffer = Buffer.from(salt, "hex");
+        const stretchedKey = await this.deriveStretchedPassword(password, saltBuffer);
+
+        // Now that we have the stretched key, we can use it to decrypt the PGP message
+        const encryptedMessage = await readMessage({
+            armoredMessage: encryptedMasterKey,
+        });
+
+        const decryptedMasterKey = await decrypt({
+            message: encryptedMessage,
+            passwords: [stretchedKey.key]
+        })
+
+        return decryptedMasterKey.data.toString();
     }
 }
