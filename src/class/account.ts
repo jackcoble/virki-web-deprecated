@@ -1,6 +1,8 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
 import { createMessage, encrypt } from "openpgp";
 
+const MASTER_KEY_BITS_LENGTH = 1024;
+
 export class Account {
     private masterKey: Uint8Array;
 
@@ -46,8 +48,8 @@ export class Account {
      * Generates a "master key" which is used for OpenPGP encryption of string data
      */
     generateMasterKey(): Uint8Array {
-        // 512-bit master key 
-        const masterKey = window.crypto.getRandomValues(new Uint8Array(1024));
+        // 1024-bit master symmetric key 
+        const masterKey = window.crypto.getRandomValues(new Uint8Array(MASTER_KEY_BITS_LENGTH));
         return masterKey;
     }
 
