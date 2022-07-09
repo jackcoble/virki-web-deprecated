@@ -50,11 +50,8 @@ export default defineComponent({
 
             // Encrypt the master key
             // TODO: Send to server
-            const eMK = await account.encryptMasterKey(pPassword.key);
-
-            // For testing, decrypt the master key...
-            const decryptedMasterKey = await account.decryptMasterKey(password.value, pPassword.salt, eMK);
-            console.log("decrypted:", decryptedMasterKey);
+            const encryptedMasterKey = await account.encryptMasterKey(pPassword.key);
+            console.log(encryptedMasterKey)
         }
 
         return {
