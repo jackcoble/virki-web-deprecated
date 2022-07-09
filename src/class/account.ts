@@ -1,11 +1,18 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
 import { createMessage, decrypt, encrypt, enums, readMessage, type Config } from "openpgp";
+import type { Vue2 } from "vue-demi";
 
 const MASTER_KEY_BITS_LENGTH = 1024;
 const OPENPGP_CONFIG = {
     showComment: true,
     showVersion: true
 } as Config;
+
+// Maintain encrypted payload versions for any potential changes
+// to encryption algorithms in the future
+enum PAYLOAD_VERSION {
+    V1 = 1
+}
 
 export class Account {
     private masterKey: Uint8Array;
