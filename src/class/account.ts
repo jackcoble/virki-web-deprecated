@@ -20,7 +20,14 @@ export class Account {
         const stretchedKey = await hash({
             pass: password,
             salt: salt,
-            type: ArgonType.Argon2id
+    /**
+     * Generates a "master key" which is used for OpenPGP encryption of string data
+     */
+    generateMasterKey(): Uint8Array {
+        // 512-bit master key 
+        const masterKey = window.crypto.getRandomValues(new Uint8Array(1024));
+        return masterKey;
+    }
         });
 
         console.log(stretchedKey.hashHex);
