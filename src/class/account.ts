@@ -1,6 +1,13 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
 
 export class Account {
+    private masterKey: Uint8Array;
+
+    constructor(masterKey?: Uint8Array) {
+        if (masterKey) {
+            this.masterKey = masterKey;
+        }
+    }
     /**
      * Stretch user password with Argon2
      */
