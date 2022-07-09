@@ -1,7 +1,11 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
-import { createMessage, decrypt, encrypt, enums, readMessage } from "openpgp";
+import { createMessage, decrypt, encrypt, enums, readMessage, type Config } from "openpgp";
 
 const MASTER_KEY_BITS_LENGTH = 1024;
+const OPENPGP_CONFIG = {
+    showComment: true,
+    showVersion: true
+} as Config;
 
 export class Account {
     private masterKey: Uint8Array;
@@ -65,7 +69,8 @@ export class Account {
         const encryptedMasterKey = await encrypt({
             message,
             passwords: [stretchedKey],
-            format: "armored"
+            format: "armored",
+            config: OPENPGP_CONFIG
         });
 
         return encryptedMasterKey.toString();
