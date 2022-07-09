@@ -2,6 +2,10 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import mitt from 'mitt';
 
+// Buffer
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
+
 import App from './App.vue'
 import router from './router'
 
