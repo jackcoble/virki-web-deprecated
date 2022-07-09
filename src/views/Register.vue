@@ -26,6 +26,7 @@
 import { Account } from "@/class/account";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 import zxcvbn from "zxcvbn";
 
 export default defineComponent({
@@ -35,6 +36,7 @@ export default defineComponent({
         const email = ref("");
         const password = ref("");
         
+        const router = useRouter();
         const encryptionKeyStore = useEncryptionKeyStore();
 
         // Create a user account
@@ -58,6 +60,9 @@ export default defineComponent({
             // TODO: Send to server
             const encryptedMasterKey = await account.encryptMasterKey(pPassword.key);
             console.log(encryptedMasterKey)
+
+            // Push to main page
+            router.push("/");
         }
 
         return {
