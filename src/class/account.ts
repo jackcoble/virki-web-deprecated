@@ -1,5 +1,5 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
-import { createMessage, decrypt, encrypt, readMessage } from "openpgp";
+import { createMessage, decrypt, encrypt, enums, readMessage } from "openpgp";
 
 const MASTER_KEY_BITS_LENGTH = 1024;
 
@@ -78,20 +78,24 @@ export class Account {
      * @param encryptedMasterKey - OpenPGP armored message
      */
     async decryptMasterKey(password: string, salt: string, encryptedMasterKey: string): Promise<string> {
-        // Convert salt into buffer format and then derive stretched password.
-        const saltBuffer = Buffer.from(salt, "hex");
-        const stretchedKey = await this.deriveStretchedPassword(password, saltBuffer);
+        try {
+            // Convert salt into buffer format and then derive stretched password.
+            const saltBuffer = Buffer.from(salt, "hex");
+            const stretchedKey = await this.deriveStretchedPassword(password, saltBuffer);
 
-        // Now that we have the stretched key, we can use it to decrypt the PGP message
-        const encryptedMessage = await readMessage({
-            armoredMessage: encryptedMasterKey,
-        });
+            // Now that we have the stretched key, we can use it to decrypt the PGP message
+            const encryptedMessage = await readMessage({
+                armoredMessage: encryptedMasterKey,
+            });
 
-        const decryptedMasterKey = await decrypt({
-            message: encryptedMessage,
-            passwords: [stretchedKey.key]
-        })
+            const decryptedMasterKey = await decrypt({
+                message: encryptedMessage,
+                passwords: [stretchedKey.key]
+            })
 
-        return decryptedMasterKey.data.toString();
+            return Promise.resolve(decryptedMasterKey.data.toString())
+        } catch (e) {
+            return Promise.reject("Could not decrypt master key, please check your password and try again!");
+        }
     }
 }
