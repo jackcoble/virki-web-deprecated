@@ -1,4 +1,5 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
+import { createMessage, encrypt } from "openpgp";
 
 export class Account {
     private masterKey: Uint8Array;
@@ -8,18 +9,31 @@ export class Account {
             this.masterKey = masterKey;
         }
     }
+
     /**
      * Stretch user password with Argon2
      */
     async deriveStretchedPassword(password: string, salt?: Uint8Array): Promise<any> {
         // Generate salt if not provided as parameter
         if (!salt) {
-            salt = window.crypto.getRandomValues(new Uint8Array(8));
+            salt = window.crypto.getRandomValues(new Uint8Array(16));
         }
 
         const stretchedKey = await hash({
             pass: password,
             salt: salt,
+            type: ArgonType.Argon2id,
+            hashLen: 64
+        });
+
+        const keyPayload = {
+            key: stretchedKey.hashHex,
+            salt: Buffer.from(salt).toString("hex")
+        }
+
+        return keyPayload;
+    }
+
     /**
      * Set the master key for an account
      * @param masterKey 
@@ -27,6 +41,7 @@ export class Account {
     setMasterKey(masterKey: Uint8Array) {
         this.masterKey = masterKey;
     }
+
     /**
      * Generates a "master key" which is used for OpenPGP encryption of string data
      */
@@ -35,6 +50,7 @@ export class Account {
         const masterKey = window.crypto.getRandomValues(new Uint8Array(1024));
         return masterKey;
     }
+
     /**
      * Encrypts the master key with the users stretched password. Returned payload should contain the encrypted master key
      */
