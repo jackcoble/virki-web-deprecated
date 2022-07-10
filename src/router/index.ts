@@ -4,6 +4,8 @@ import HomeView from '@/views/HomeView.vue'
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
 import New from "@/views/new/Index.vue"
+import Scan from '@/views/new/Scan.vue'
+
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 
 const router = createRouter({
@@ -31,6 +33,14 @@ const router = createRouter({
       path: "/new",
       name: "new",
       component: New,
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      path: "/new/qrcode",
+      name: "scan",
+      component: Scan,
       meta: {
         authRequired: true
       }

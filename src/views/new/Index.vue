@@ -3,7 +3,7 @@
         <h2 class="text-2xl font-semibold text-white">Create</h2>
 
         <!-- Scan QR Code -->
-        <div class="flex items-center container mx-auto p-4 rounded bg-gray-200 text-gray-700">
+        <div class="flex items-center container mx-auto p-4 rounded bg-gray-200 text-gray-700" @click="router.push('/new/qrcode')">
             <QrcodeIcon class="w-16 mr-4"></QrcodeIcon>
             <div class="flex-row">
                 <h2 class="text-xl font-bold">Quick Entry</h2>
@@ -34,6 +34,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { QrcodeIcon, LockClosedIcon, PencilIcon } from "@heroicons/vue/outline";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     name: "New",
@@ -41,6 +42,13 @@ export default defineComponent({
         QrcodeIcon,
         LockClosedIcon,
         PencilIcon
+    },
+    setup() {
+        const router = useRouter();
+
+        return {
+            router
+        }
     }
 })
 </script>
