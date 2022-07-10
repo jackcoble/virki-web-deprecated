@@ -9,6 +9,9 @@ window.Buffer = Buffer;
 import App from './App.vue'
 import router from './router'
 
+// QR Code Reader
+import QrcodeReaderVue3 from "qrcode-reader-vue3";
+
 // Styles
 import "@/assets/index.css";
 
@@ -20,5 +23,6 @@ app.config.globalProperties.emitter = emitter;
 
 app.use(createPinia())
 app.use(router)
+app.use(QrcodeReaderVue3)
 
 app.mount('#app')
