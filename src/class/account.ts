@@ -139,6 +139,25 @@ export class Account {
     }
 
     /**
+     * Decrypts an OpenPGP message with the master key
+     * @param message 
+     */
+    async decryptData(message: string): Promise<string> {
+        const masterKeyEncoded = Buffer.from(this.masterKey).toString("base64");
+
+        const encryptedMessage = await readMessage({
+            armoredMessage: message,
+        });
+
+        const decryptedData= await decrypt({
+            message: encryptedMessage,
+            passwords: [masterKeyEncoded]
+        })
+
+        return Promise.resolve(decryptedData.data.toString())
+    }
+
+    /**
      * Insert a user to IndexedDB for offline-key storage
      * @param email 
      * @param encryptedMasterKey 
