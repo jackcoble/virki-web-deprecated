@@ -63,8 +63,7 @@ router.beforeEach((to, from, next) => {
   
   if (to.matched.some(route => route.meta.authRequired)) {
     if (!encryptionKeyStore.getMasterKey) {
-      // TODO: Replace with login when working...
-      return next({ path: '/signup' })
+      return next({ path: '/login' })
     }
   }
 
