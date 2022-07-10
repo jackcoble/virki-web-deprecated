@@ -17,6 +17,9 @@
                     <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
                         name="confirm_password" placeholder="Confirm Password" required />
 
+                    <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4"
+                        name="hint" v-model="passwordHint" placeholder="Password Hint (Optional)" />
+
                     <!-- TODO: Add tickbox -->
                     <div class="text-center text-sm text-grey-dark mt-4">
                         By signing up, you agree to the
@@ -39,6 +42,7 @@
 
 <script lang="ts">
 import { Account } from "@/class/account";
+import authentication from "@/service/api/authentication";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -51,6 +55,7 @@ export default defineComponent({
         const email = ref("");
         const name = ref("");
         const password = ref("");
+        const passwordHint = ref("")
 
         const router = useRouter();
         const encryptionKeyStore = useEncryptionKeyStore();
@@ -86,12 +91,14 @@ export default defineComponent({
                 name: name.value,
                 password: {
                     hash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
-                    salt: pPassword.salt
+                    salt: pPassword.salt,
+                    hint: passwordHint.value
                 },
-                encryptedMasterKey: encryptedMasterKey
+                encrypted_master_key: encryptedMasterKey
             }
 
-            console.log(accountPayload)
+            // Send account payload to server
+            await authentication.RegisterAccount(accountPayload)
 
             // Store encrypted master key in IndexedDB for offline use
             await account.insertUserToDB(email.value, encryptedMasterKey);
@@ -104,6 +111,7 @@ export default defineComponent({
             email,
             name,
             password,
+            passwordHint,
 
             registerUser
         }
