@@ -45,7 +45,7 @@ export class Account {
         });
 
         const keyPayload = {
-            key: stretchedKey.hashHex,
+            key: Buffer.from(stretchedKey.hashHex, "hex").toString('base64'),
             salt: Buffer.from(salt).toString("base64")
         }
 
