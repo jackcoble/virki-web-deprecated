@@ -46,7 +46,7 @@ export class Account {
 
         const keyPayload = {
             key: stretchedKey.hashHex,
-            salt: Buffer.from(salt).toString("hex")
+            salt: Buffer.from(salt).toString("base64")
         }
 
         return keyPayload;
@@ -97,7 +97,7 @@ export class Account {
     async decryptMasterKey(password: string, salt: string, encryptedMasterKey: string): Promise<string> {
         try {
             // Convert salt into buffer format and then derive stretched password.
-            const saltBuffer = Buffer.from(salt, "hex");
+            const saltBuffer = Buffer.from(salt, "base64");
             const stretchedKey = await this.deriveStretchedPassword(password, saltBuffer);
 
             // Now that we have the stretched key, we can use it to decrypt the PGP message

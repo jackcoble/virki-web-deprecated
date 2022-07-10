@@ -53,13 +53,17 @@ export default defineComponent({
             const masterKey = account.generateMasterKey();
             account.setMasterKey(masterKey);
 
-            const masterKeyHex = Buffer.from(masterKey).toString("hex");
-            encryptionKeyStore.setMasterKey(masterKeyHex);
+            // Encode the master key to Base64 before setting it
+            const masterKeyEncoded = Buffer.from(masterKey).toString("base64");
+            encryptionKeyStore.setMasterKey(masterKeyEncoded);
 
             // Encrypt the master key
             // TODO: Send to server
             const encryptedMasterKey = await account.encryptMasterKey(pPassword.key);
             console.log(encryptedMasterKey)
+
+            // Store encrypted master key in IndexedDB for offline use
+            await account.insertUserToDB(email.value, encryptedMasterKey);
 
             // Push to main page
             router.push("/");
