@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import { Account } from "@/class/account";
+import type { IRegisterAccount } from "@/models/account";
 import authentication from "@/service/api/authentication";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
@@ -86,7 +87,7 @@ export default defineComponent({
             const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
 
             // Construct an account payload to be sent to the server
-            const accountPayload = {
+            const accountPayload: IRegisterAccount = {
                 email: email.value,
                 name: name.value,
                 password: {
