@@ -48,6 +48,7 @@
                 <option>Steam</option>
             </select>
 
+            <button type="submit" class="w-full text-center py-3 rounded bg-green text-white bg-blue-600 focus:outline-none my-1">Submit</button>
         </form>
     </div>
 </template>
