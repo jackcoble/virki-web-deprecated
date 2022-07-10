@@ -2,8 +2,15 @@
   <div class="h-screen bg-[#262727]">
 
     <div class="container mx-auto p-4 space-y-3">
-      <!-- Vault selection dropdown -->
-      <h2 class="text-2xl font-semibold text-white">Personal ▼</h2>
+      <div class="flex justify-between">
+        <!-- Vault selection dropdown -->
+        <h2 class="text-2xl font-semibold text-white">Personal ▼</h2>
+
+        <!-- Refresh vault button -->
+        <button class="rounded-full p-1.5 text-gray-200">
+          <RefreshIcon class="w-6 h-6" />
+        </button>
+      </div>
 
       <!-- Search bar -->
       <form>
@@ -33,22 +40,31 @@
 </template>
 
 <script lang="ts">
+import useAccount from "@/composables/useAccount";
 import useEmitter from "@/composables/useEmitter";
+
 import { defineComponent, onBeforeUnmount, onMounted } from "vue";
 import Entry from "../components/Entry.vue";
+
+import { RefreshIcon } from "@heroicons/vue/outline"
 
 export default defineComponent({
   name: "HomeView",
   setup() {
     const emitter = useEmitter();
+
     let interval: any;
 
     onMounted(() => {
+      // Fetch and initialise account class
+      const account = useAccount();
+      console.log(account)
+
       interval = setInterval(() => {
         // Emit the 'countdown' event every second
         const timestamp = Math.floor(Date.now());
         emitter.emit("countdown", { timestamp });
-      }, 1000)
+      }, 1000);
     })
 
     onBeforeUnmount(() => {
@@ -91,6 +107,6 @@ export default defineComponent({
       entries
     };
   },
-  components: { Entry }
+  components: { Entry, RefreshIcon }
 })
 </script>
