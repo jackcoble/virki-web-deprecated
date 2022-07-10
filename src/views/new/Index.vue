@@ -12,7 +12,7 @@
         </div>
 
         <!-- Advanced entry -->
-        <div class="flex items-center container mx-auto p-4 rounded bg-gray-200 text-gray-700">
+        <div class="flex items-center container mx-auto p-4 rounded bg-gray-200 text-gray-700" @click="router.push('/new/advanced')">
             <PencilIcon class="w-12 mr-4" />
             <div class="flex-row">
                 <h2 class="text-xl font-bold">Advanced Entry</h2>

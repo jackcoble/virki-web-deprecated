@@ -1,10 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 
 import HomeView from '@/views/HomeView.vue'
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
 import New from "@/views/new/Index.vue"
 import Scan from '@/views/new/Scan.vue'
+import Advanced from "@/views/new/Advanced.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 
@@ -41,6 +42,14 @@ const router = createRouter({
       path: "/new/qrcode",
       name: "scan",
       component: Scan,
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      path: "/new/advanced",
+      name: "advanced",
+      component: Advanced,
       meta: {
         authRequired: true
       }
