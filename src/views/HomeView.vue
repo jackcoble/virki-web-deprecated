@@ -52,23 +52,26 @@ export default defineComponent({
   name: "HomeView",
   setup() {
     const emitter = useEmitter();
+    const account = useAccount();
 
     const isRefreshingVault = ref(false);
-    const refreshVault = () => {
+    const refreshVault = async () => {
+      // Simulate loading be encrypting/decrypting items 50 times
       isRefreshingVault.value = true;
 
-      setTimeout(() => {
-        isRefreshingVault.value = false;
-      }, 2000);
+      for (let i = 0; i < 50; i++) {
+        const encrypted = await account?.encryptData("Hello world!");
+        const decrypted = await account?.decryptData(encrypted!);
+
+        console.log("Decrypted data:", decrypted)
+      }
+
+      isRefreshingVault.value = false;
     }
 
     let interval: any;
 
-    onMounted(() => {
-      // Fetch and initialise account class
-      const account = useAccount();
-      console.log(account)
-
+    onMounted(async() => {
       interval = setInterval(() => {
         // Emit the 'countdown' event every second
         const timestamp = Math.floor(Date.now());
