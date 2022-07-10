@@ -32,7 +32,9 @@
 <script lang="ts">
 import { Account } from "@/class/account";
 import authentication from "@/service/api/authentication";
+import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     name: "Login",
@@ -40,6 +42,8 @@ export default defineComponent({
         const email = ref("");
         const password = ref("");
 
+        const router = useRouter();
+        const authenticationStore = useAuthenticationStore();
         const account = new Account();
 
         // Handle user login
@@ -47,7 +51,7 @@ export default defineComponent({
             // Using the email address, request carry out a pre-login check for salt.
             // If we can, extend the password using it
             try {
-                const res = await authentication.PreLogin(email.value);
+                let res = await authentication.PreLogin(email.value);
                 const saltBuffer = Buffer.from(res.data.password_salt, "base64");
                 const extended = await account.deriveStretchedPassword(password.value, saltBuffer);
                 
@@ -56,7 +60,14 @@ export default defineComponent({
                 const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
                 const stretchedKeyHashEncoded = Buffer.from(stretchedKeyHashBytes).toString("base64");
 
-                await authentication.Login(email.value, stretchedKeyHashEncoded);
+                // Attempt to login and set access token in store
+                res = await authentication.Login(email.value, stretchedKeyHashEncoded);
+                if (res.data && res.data.access_token) {
+                    authenticationStore.setAccessToken(res.data.access_token);
+                }
+
+                // Push to Index
+                router.push("/");
             } catch (e) {
                 console.log(e);
             }
