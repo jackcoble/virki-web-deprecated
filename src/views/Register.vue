@@ -92,10 +92,13 @@ export default defineComponent({
                 name: name.value,
                 password: {
                     hash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
-                    salt: pPassword.salt,
-                    hint: passwordHint.value
+                    salt: pPassword.salt
                 },
                 encrypted_master_key: encryptedMasterKey
+            }
+
+            if (passwordHint.value) {
+                accountPayload.password.hint = passwordHint.value;
             }
 
             // Send account payload to server

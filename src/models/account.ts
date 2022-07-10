@@ -5,7 +5,7 @@ interface IRegisterAccount {
     password: {
         hash: string;
         salt: string;
-        hint: string;
+        hint?: string;
     }
     encrypted_master_key: string;
 }
