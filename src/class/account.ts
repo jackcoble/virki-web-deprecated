@@ -116,6 +116,27 @@ export class Account {
         }
     }
 
+    /**
+     * Encrypts string data and returns an OpenPGP message
+     * @param data
+     * @returns {string}
+     */
+    async encryptData(data: string): Promise<string> {
+        const masterKeyEncoded = Buffer.from(this.masterKey).toString("base64");
+
+        const message = await createMessage({
+            text: data
+        });
+
+        const encryptedData = await encrypt({
+            message,
+            passwords: [masterKeyEncoded],
+            format: "armored",
+            config: OPENPGP_CONFIG
+        });
+
+        return encryptedData.toString();
+    }
 
     /**
      * Insert a user to IndexedDB for offline-key storage
