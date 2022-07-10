@@ -1,24 +1,38 @@
 <template>
-    <div class="flex justify-center items-center h-screen dark:bg-gray-900">
-        <form @submit.prevent="registerUser">
-            <div class="mb-6">
-                <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email
-                    address</label>
-                <input type="email" id="email" v-model="email"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Email address" required autofocus>
+    <div class="bg-grey-lighter min-h-screen flex flex-col">
+        <div class="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
+            <div class="bg-gray-200 px-6 py-8 rounded shadow-md text-black w-full">
+                <h1 class="mb-8 text-3xl text-center">Sign up</h1>
+
+                <form @submit.prevent="registerUser">
+                    <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4" name="email"
+                        v-model="email" placeholder="Email" required autofocus />
+
+                    <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4" name="name"
+                        v-model="name" placeholder="Name" required />
+
+                    <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
+                        name="password" v-model="password" placeholder="Password" required />
+                    <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
+                        name="confirm_password" placeholder="Confirm Password" required />
+
+                    <!-- TODO: Add tickbox -->
+                    <div class="text-center text-sm text-grey-dark mt-4">
+                        By signing up, you agree to the
+                        <a class="no-underline border-b border-grey-dark text-grey-dark" href="#">
+                            Terms of Service
+                        </a> and
+                        <a class="no-underline border-b border-grey-dark text-grey-dark" href="#">
+                            Privacy Policy
+                        </a>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full text-center py-3 rounded bg-green text-white bg-gray-600 focus:outline-none my-1">Create
+                        Account</button>
+                </form>
             </div>
-            <div class="mb-6">
-                <label for="password"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Password</label>
-                <input type="password" id="password" placeholder="●●●●●●●●●●●●●●" v-model="password"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required>
-            </div>
-            <button type="submit"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign
-                Up</button>
-        </form>
+        </div>
     </div>
 </template>
 
@@ -34,8 +48,9 @@ export default defineComponent({
     setup() {
         // Refs to keep track of user data
         const email = ref("");
+        const name = ref("");
         const password = ref("");
-        
+
         const router = useRouter();
         const encryptionKeyStore = useEncryptionKeyStore();
 
@@ -63,11 +78,15 @@ export default defineComponent({
             // Generate a SHA-256 hash of the stretched key as we'll store this on the server for authentication
             const stretchedKeyBytes = new TextEncoder().encode(pPassword.key);
             const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
-            
+
             // Construct an account payload to be sent to the server
             const accountPayload = {
                 email: email.value,
-                passwordHash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
+                name: name.value,
+                password: {
+                    hash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
+                    salt: pPassword.salt
+                },
                 encryptedMasterKey: encryptedMasterKey
             }
 
@@ -82,6 +101,7 @@ export default defineComponent({
 
         return {
             email,
+            name,
             password,
 
             registerUser
