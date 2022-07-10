@@ -6,5 +6,11 @@ import type { IRegisterAccount } from "@/models/account";
 export default {
     RegisterAccount(payload: IRegisterAccount): Promise<AxiosResponse> {
         return api.post("/v1/auth/register", payload)
+    },
+
+    PreLogin(email: string): Promise<AxiosResponse> {
+        return api.post("/v1/auth/prelogin", {
+            email: email
+        })
     }
 }
