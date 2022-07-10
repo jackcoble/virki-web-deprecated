@@ -2,18 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Urbanist fonts */
+/* Manrope fonts */
 @layer base {
   @font-face {
-    font-family: "Urbanist";
-    src: url("./fonts/Urbanist-VariableFont_wght.ttf");
-    font-weight: 1 999;
-  }
-
-  @font-face {
-    font-family: "Urbanist";
-    src: url("./fonts/Urbanist-Italic-VariableFont_wght.ttf");
-    font-style: italic;
+    font-family: "Manrope";
+    src: url("./fonts/Manrope[wght].ttf");
     font-weight: 1 999;
   }
 }
