@@ -32,6 +32,7 @@
 <script lang="ts">
 import { Account } from "@/class/account";
 import authentication from "@/service/api/authentication";
+import user from "@/service/api/user";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -64,6 +65,13 @@ export default defineComponent({
                 res = await authentication.Login(email.value, stretchedKeyHashEncoded);
                 if (res.data && res.data.access_token) {
                     authenticationStore.setAccessToken(res.data.access_token);
+                }
+
+                // Fetch encrypted user account and decrypt it
+                res = await user.GetAccount();
+                if (res.data) {
+                    const masterKey = await account.decryptMasterKey(password.value, res.data.password.salt, res.data.encrypted_master_key);
+                    console.log("Master key:", masterKey);
                 }
 
                 // Push to Index
