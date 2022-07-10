@@ -1,6 +1,6 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
-import { createMessage, decrypt, encrypt, enums, readMessage, type Config } from "openpgp";
-import type { Vue2 } from "vue-demi";
+import { createMessage, decrypt, encrypt, readMessage, type Config } from "openpgp";
+import { AuthoriserDB } from "@/class/db";
 
 const MASTER_KEY_BITS_LENGTH = 1024;
 const OPENPGP_CONFIG = {
@@ -16,11 +16,16 @@ enum PAYLOAD_VERSION {
 
 export class Account {
     private masterKey: Uint8Array;
+    private authoriserDB: AuthoriserDB;
 
     constructor(masterKey?: Uint8Array) {
         if (masterKey) {
             this.masterKey = masterKey;
         }
+
+        // Initialise DB
+        const db = new AuthoriserDB();
+        this.authoriserDB = db;
     }
 
     /**
@@ -109,5 +114,18 @@ export class Account {
         } catch (e) {
             return Promise.reject("Could not decrypt master key, please check your password and try again!");
         }
+    }
+
+
+    /**
+     * Insert a user to IndexedDB for offline-key storage
+     * @param email 
+     * @param encryptedMasterKey 
+     */
+    async insertUserToDB(email: string, encryptedMasterKey: string): Promise<any> {
+        await this.authoriserDB.accounts.add({
+            account: email,
+            encryptedMasterKey: encryptedMasterKey
+        });
     }
 }
