@@ -5,7 +5,7 @@
                 <h1 class="mb-8 text-3xl text-center">Sign up</h1>
 
                 <form @submit.prevent="registerUser">
-                    <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4" name="email"
+                    <input type="email" class="block border border-grey-light w-full p-3 rounded mb-4" name="email"
                         v-model="email" placeholder="Email" required autofocus />
 
                     <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4" name="name"
@@ -13,6 +13,7 @@
 
                     <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
                         name="password" v-model="password" placeholder="Password" required />
+                        
                     <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
                         name="confirm_password" placeholder="Confirm Password" required />
 
