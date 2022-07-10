@@ -34,6 +34,7 @@ import { Account } from "@/class/account";
 import authentication from "@/service/api/authentication";
 import user from "@/service/api/user";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
+import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -45,6 +46,7 @@ export default defineComponent({
 
         const router = useRouter();
         const authenticationStore = useAuthenticationStore();
+        const encryptionKeyStore = useEncryptionKeyStore();
         const account = new Account();
 
         // Handle user login
@@ -71,7 +73,7 @@ export default defineComponent({
                 res = await user.GetAccount();
                 if (res.data) {
                     const masterKey = await account.decryptMasterKey(password.value, res.data.password.salt, res.data.encrypted_master_key);
-                    console.log("Master key:", masterKey);
+                    encryptionKeyStore.setMasterKey(masterKey);
                 }
 
                 // Push to Index
