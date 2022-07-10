@@ -9,7 +9,7 @@ import Scan from '@/views/new/Scan.vue'
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
