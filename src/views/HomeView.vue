@@ -4,10 +4,10 @@
     <div class="container mx-auto p-4 space-y-3">
       <div class="flex justify-between">
         <!-- Vault selection dropdown -->
-        <h2 class="text-2xl font-semibold text-white">Personal ▼</h2>
+        <h2 class="text-2xl font-semibold text-white">Personal 🔒</h2>
 
         <!-- Refresh vault button -->
-        <button class="rounded-full p-1.5 text-gray-200">
+        <button class="rounded-full p-1.5 text-gray-200" :class="isRefreshingVault ? 'animate-reverse-spin' : ''" @click="refreshVault">
           <RefreshIcon class="w-6 h-6" />
         </button>
       </div>
@@ -43,7 +43,7 @@
 import useAccount from "@/composables/useAccount";
 import useEmitter from "@/composables/useEmitter";
 
-import { defineComponent, onBeforeUnmount, onMounted } from "vue";
+import { defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import Entry from "../components/Entry.vue";
 
 import { RefreshIcon } from "@heroicons/vue/outline"
@@ -52,6 +52,15 @@ export default defineComponent({
   name: "HomeView",
   setup() {
     const emitter = useEmitter();
+
+    const isRefreshingVault = ref(false);
+    const refreshVault = () => {
+      isRefreshingVault.value = true;
+
+      setTimeout(() => {
+        isRefreshingVault.value = false;
+      }, 2000);
+    }
 
     let interval: any;
 
@@ -104,7 +113,10 @@ export default defineComponent({
       }
     ];
     return {
-      entries
+      entries,
+      isRefreshingVault,
+
+      refreshVault
     };
   },
   components: { Entry, RefreshIcon }
