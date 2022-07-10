@@ -12,5 +12,12 @@ export default {
         return api.post("/v1/auth/prelogin", {
             email: email
         })
+    },
+
+    Login(email: string, password: string): Promise<AxiosResponse> {
+        return api.post("/v1/auth/login", {
+            email: email,
+            password: password
+        })
     }
 }
