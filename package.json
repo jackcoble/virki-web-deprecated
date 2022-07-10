@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroicons/vue": "^1.0.6",
     "argon2-browser": "^1.18.0",
+    "dexie": "^3.2.2",
     "mitt": "^3.0.0",
     "openpgp": "^5.3.1",
     "otpauth": "^7.1.3",
