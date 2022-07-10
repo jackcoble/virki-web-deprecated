@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-center items-center h-screen">
+    <div class="flex justify-center items-center h-screen dark:bg-gray-900">
         <form @submit.prevent="registerUser">
             <div class="mb-6">
                 <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email
@@ -58,9 +58,20 @@ export default defineComponent({
             encryptionKeyStore.setMasterKey(masterKeyEncoded);
 
             // Encrypt the master key
-            // TODO: Send to server
             const encryptedMasterKey = await account.encryptMasterKey(pPassword.key);
-            console.log(encryptedMasterKey)
+
+            // Generate a SHA-256 hash of the stretched key as we'll store this on the server for authentication
+            const stretchedKeyBytes = new TextEncoder().encode(pPassword.key);
+            const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
+            
+            // Construct an account payload to be sent to the server
+            const accountPayload = {
+                email: email.value,
+                passwordHash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
+                encryptedMasterKey: encryptedMasterKey
+            }
+
+            console.log(accountPayload)
 
             // Store encrypted master key in IndexedDB for offline use
             await account.insertUserToDB(email.value, encryptedMasterKey);
