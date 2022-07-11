@@ -22,8 +22,15 @@ export default {
     },
 
     Deauthorise(masterPasswordHash: string): Promise<AxiosResponse> {
-        return api.post("/v1/auth/deauthorise", {
+        return api.post("/v1/auth/tokens/deauthorise", {
             password: masterPasswordHash
+        })
+    },
+
+    RefreshTokens(accessToken: string, refreshToken: string): Promise<AxiosResponse> {
+        return api.post("/v1/auth/tokens/refresh", {
+            access_token: accessToken,
+            refresh_token: refreshToken
         })
     }
 }
