@@ -19,5 +19,11 @@ export default {
             email: email,
             password: password
         })
+    },
+
+    Deauthorise(masterPasswordHash: string): Promise<AxiosResponse> {
+        return api.post("/v1/auth/deauthorise", {
+            password: masterPasswordHash
+        })
     }
 }
