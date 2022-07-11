@@ -6,6 +6,7 @@ import Register from "@/views/Register.vue"
 import New from "@/views/new/Index.vue"
 import Scan from '@/views/new/Scan.vue'
 import Advanced from "@/views/new/Advanced.vue"
+import Settings from "@/views/Settings.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 
@@ -50,6 +51,14 @@ const router = createRouter({
       path: "/new/advanced",
       name: "advanced",
       component: Advanced,
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      path: "/settings",
+      name: "settings",
+      component: Settings,
       meta: {
         authRequired: true
       }
