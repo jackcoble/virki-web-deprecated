@@ -3,7 +3,8 @@
         <h2 class="text-2xl font-semibold text-white">Settings</h2>
 
         <!-- Deauthorise sessions -->
-        <button class="p-3 w-full rounded bg-red-400 text-red-900 hover:bg-red-300 hover:text-red-700">
+        <DeauthoriseModal :show="showDeauthoriseSessionModal" @close="showDeauthoriseSessionModal = false" />
+        <button class="p-3 w-full rounded bg-red-400 text-red-900 hover:bg-red-300 hover:text-red-700" @click="showDeauthoriseSessionModal = !showDeauthoriseSessionModal">
             De-authorise sessions
         </button>
               
@@ -11,9 +12,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+
+// Custom components
+import DeauthoriseModal from "@/components/DeauthoriseModal.vue";
 
 export default defineComponent({
-    name: "Settings"
+    name: "Settings",
+    components: {
+        DeauthoriseModal
+    },
+    setup() {
+        const showDeauthoriseSessionModal = ref(false);
+
+        return {
+            showDeauthoriseSessionModal
+        }
+    }
 })
 </script>
