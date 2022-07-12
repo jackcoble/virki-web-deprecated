@@ -48,28 +48,36 @@ export default defineComponent({
 
         // Attempt to deauthorise user sessions
         const deauthoriseSessions = async () => {
-            // Get account details and generate master password hash
+            let passwordHash = '';
+
+            // Fetch account details and determine password hash
             try {
                 const res = await user.GetAccount();
                 if (res.data) {
-                    console.log(res.data.password.salt);
                     const saltBuffer = Buffer.from(res.data.password.salt, "base64");
                     const extended = await account.deriveStretchedPassword(password.value, saltBuffer);
 
                     // Using the extended key we can generate a SHA-256 hash of it to send to the login endpoint.
                     const stretchedKeyBytes = new TextEncoder().encode(extended.key);
                     const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
-                    const stretchedKeyHashEncoded = Buffer.from(stretchedKeyHashBytes).toString("base64");
 
-                    // Try deauthorise sessions via API and then clean out local data
-                    await authentication.Deauthorise(stretchedKeyHashEncoded);
-                    authenticationStore.clear();
-                    encryptionKeyStore.clear();
-
-                    router.push("/");
+                    passwordHash = Buffer.from(stretchedKeyHashBytes).toString("base64");
                 }
             } catch (e) {
                 toaster.error(e.response.data.error)
+            }
+
+            try {
+                // Try deauthorise sessions via API and then clean out local data
+                    const res = await authentication.Deauthorise(passwordHash);
+                    authenticationStore.clear();
+                    encryptionKeyStore.clear();
+
+                    toaster.success(res.data);
+
+                    router.push("/");
+            } catch (e) {
+                toaster.error(e.response.data.error);
             }
         }
 
