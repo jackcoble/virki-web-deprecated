@@ -12,6 +12,9 @@ import router from './router'
 // QR Code Reader
 import QrcodeReaderVue3 from "qrcode-reader-vue3";
 
+// Notifications component
+import Toaster from "@meforma/vue-toaster";
+
 // Styles
 import "@/assets/index.css";
 
@@ -24,5 +27,6 @@ app.config.globalProperties.emitter = emitter;
 app.use(createPinia())
 app.use(router)
 app.use(QrcodeReaderVue3)
+app.use(Toaster)
 
 app.mount('#app')
