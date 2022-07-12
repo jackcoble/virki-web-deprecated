@@ -57,8 +57,7 @@ export default defineComponent({
             // If we can, extend the password using it
             try {
                 let res = await authentication.PreLogin(email.value);
-                const saltBuffer = Buffer.from(res.data.password_salt, "base64");
-                const extended = await account.deriveStretchedPassword(password.value, saltBuffer);
+                const extended = await account.deriveStretchedPassword(password.value, res.data.password_salt);
                 
                 // Using the extended key we can generate a SHA-256 hash of it to send to the login endpoint.
                 const stretchedKeyBytes = new TextEncoder().encode(extended.key);
