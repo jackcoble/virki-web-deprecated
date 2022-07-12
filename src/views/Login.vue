@@ -57,22 +57,26 @@ export default defineComponent({
             // If we can, extend the password using it
             try {
                 let res = await authentication.PreLogin(email.value);
-                const extended = await account.deriveStretchedPassword(password.value, res.data.password_salt);
-                
-                // Using the extended key we can generate a SHA-256 hash of it to send to the login endpoint.
-                const stretchedKeyBytes = new TextEncoder().encode(extended.key);
-                const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
-                const stretchedKeyHashEncoded = Buffer.from(stretchedKeyHashBytes).toString("base64");
+                const extendedKeyHash = await account.deriveHashedStretchedPassword(password.value, res.data.password_salt);
 
                 // Attempt to login and set access/refresh tokens in store
-                res = await authentication.Login(email.value, stretchedKeyHashEncoded);
+                res = await authentication.Login(email.value, extendedKeyHash);
                 if (res.data && res.data.access_token && res.data.refresh_token) {
                     authenticationStore.setAccessToken(res.data.access_token);
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
+            } catch (e) {
+                if (e.response.data && e.response.data.error) {
+                    toaster.error(e.response.data.error);
+                } else {
+                    toaster.error("An unknown error has occurred.")
+                }
+            }
 
+            // Now onto the actual authentication request
+            try {
                 // Fetch encrypted user account and decrypt it
-                res = await user.GetAccount();
+                const res = await user.GetAccount();
                 if (res.data) {
                     const masterKey = await account.decryptMasterKey(password.value, res.data.password.salt, res.data.encrypted_master_key);
                     encryptionKeyStore.setMasterKey(masterKey);
@@ -81,12 +85,7 @@ export default defineComponent({
                 // Push to Index
                 router.push("/");
             } catch (e) {
-                if (e.response.data && e.response.data.error) {
-                    toaster.error(e.response.data.error);
-                } else {
-                    toaster.error("An unknown error has occurred.")
-                }
-                
+                toaster.error(e);
             }
         }
 
