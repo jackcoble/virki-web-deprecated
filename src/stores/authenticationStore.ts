@@ -19,6 +19,14 @@ export const useAuthenticationStore = defineStore({
     setRefreshToken(refreshToken: string) {
         this.refresh_token = refreshToken;
         localStorage.setItem("refresh_token", refreshToken)
+    },
+
+    clear() {
+        this.access_token = null;
+        this.refresh_token = null;
+
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
     }
   },
 })

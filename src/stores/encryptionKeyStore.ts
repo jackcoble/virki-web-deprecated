@@ -16,8 +16,10 @@ export const useEncryptionKeyStore = defineStore({
       sessionStorage.setItem("masterKey", masterKey);
     },
 
-    clearEncryptionKeys() {
-      this.masterKey = '';
+    clear() {
+      this.masterKey = null;
+
+      sessionStorage.removeItem("masterKey");
     }
   },
 })
