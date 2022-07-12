@@ -53,6 +53,34 @@ export class Account {
     }
 
     /**
+     * Returns a Base64 encoded SHA-256 hash of the users extended password (used for authentication)
+     * @param password 
+     * @param salt 
+     */
+    async deriveHashedStretchedPassword(password: string, salt: string): Promise<string> {
+        // Convert the salt from a string into Buffer
+        const saltBuffer = Buffer.from(salt, "base64");
+
+        // Stretch the password using Argon2
+        const stretchedKey = await hash({
+            pass: password,
+            salt: saltBuffer,
+            type: ArgonType.Argon2id,
+            hashLen: 64
+        });
+
+        // Convert the stretched key hexadecimal into Base64
+        const stretchedKeyBase64 = Buffer.from(stretchedKey.hashHex, "hex").toString('base64');
+
+        // Derive SHA-256 hash of the Base64 encoded stretched key
+        const stretchedKeyBytes = new TextEncoder().encode(stretchedKeyBase64);
+        const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
+        const stretchedKeyHashEncoded = Buffer.from(stretchedKeyHashBytes).toString("base64");
+
+        return stretchedKeyHashEncoded;
+    }
+
+    /**
      * Set the master key for an account
      * @param masterKey 
      */
