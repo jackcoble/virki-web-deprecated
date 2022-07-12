@@ -31,10 +31,11 @@ export class Account {
     /**
      * Stretch user password with Argon2
      */
-    async deriveStretchedPassword(password: string, salt?: Uint8Array): Promise<any> {
+    async deriveStretchedPassword(password: string, salt?: string): Promise<any> {
         // Generate salt if not provided as parameter
         if (!salt) {
-            salt = window.crypto.getRandomValues(new Uint8Array(16));
+            const saltBuffer = window.crypto.getRandomValues(new Uint8Array(16));
+            salt = Buffer.from(saltBuffer).toString('base64');
         }
 
         const stretchedKey = await hash({
@@ -44,9 +45,10 @@ export class Account {
             hashLen: 64
         });
 
+        // Convert stretched key from hexadecimal into Base64
         const keyPayload = {
             key: Buffer.from(stretchedKey.hashHex, "hex").toString('base64'),
-            salt: Buffer.from(salt).toString("base64")
+            salt: salt
         }
 
         return keyPayload;
