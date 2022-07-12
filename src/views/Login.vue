@@ -31,6 +31,7 @@
 
 <script lang="ts">
 import { Account } from "@/class/account";
+import useToaster from "@/composables/useToaster";
 import authentication from "@/service/api/authentication";
 import user from "@/service/api/user";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
@@ -47,6 +48,7 @@ export default defineComponent({
         const router = useRouter();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
+        const toaster = useToaster();
         const account = new Account();
 
         // Handle user login
@@ -63,10 +65,11 @@ export default defineComponent({
                 const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
                 const stretchedKeyHashEncoded = Buffer.from(stretchedKeyHashBytes).toString("base64");
 
-                // Attempt to login and set access token in store
+                // Attempt to login and set access/refresh tokens in store
                 res = await authentication.Login(email.value, stretchedKeyHashEncoded);
-                if (res.data && res.data.access_token) {
+                if (res.data && res.data.access_token && res.data.refresh_token) {
                     authenticationStore.setAccessToken(res.data.access_token);
+                    authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
 
                 // Fetch encrypted user account and decrypt it
@@ -79,7 +82,12 @@ export default defineComponent({
                 // Push to Index
                 router.push("/");
             } catch (e) {
-                console.log(e);
+                if (e.response.data && e.response.data.error) {
+                    toaster.error(e.response.data.error);
+                } else {
+                    toaster.error("An unknown error has occurred.")
+                }
+                
             }
         }
 
