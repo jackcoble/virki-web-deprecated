@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-center p-8 h-screen">
-        <div class="p-8 rounded bg-gray-50 border border-gray-200 space-y-2">
+        <div class="p-8 rounded shadow-sm bg-gray-200 border border-gray-200 space-y-2">
             <!-- Header -->
             <LockClosedIcon class="h-24 text-gray-700 p-2 mx-auto" />
             <h1 class="text-lg text-center">Authoriser is locked. Verify your password to continue.</h1>
@@ -17,15 +17,13 @@
 
             <!-- Unlock and Logout buttons -->
             <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-                <button @click.prevent="unlockVault" type="button"
-                    class="w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-400 focus:outline-none sm:text-sm">
+                <b-button @click.prevent="unlockVault" type="primary" :loading="isLoading">
                     Unlock
-                </button>
+                </b-button>
 
-                <button @click.prevent="logoutUser" type="button"
-                    class="w-full rounded-md border shadow-sm px-4 py-2 text-base font-medium text-gray-900 focus:outline-none sm:text-sm">
+                <b-button @click.prevent="logoutUser" type="light">
                     Logout
-                </button>
+                </b-button>
             </div>
         </div>
     </div>
@@ -55,11 +53,14 @@ export default defineComponent({
 
         const email = computed(() => authenticationStore.getEmail);
         const password = ref("");
+        const isLoading = ref(false);
 
         const account = new Account();
 
         // Function to unlock vault
         const unlockVault = async () => {
+            isLoading.value = true;
+
             // Decrypting the master key and then setting it in memory again
             try {
                 const salt = authenticationStore.getPasswordSalt;
@@ -69,6 +70,8 @@ export default defineComponent({
                     encryptionKeyStore.setMasterKey(masterKey);
                 }
             } catch (e) {
+                isLoading.value = false;
+
                 toaster.error(e);
                 return;
             }
@@ -84,9 +87,13 @@ export default defineComponent({
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
             } catch (e) {
+                isLoading.value = false;
+
                 toaster.error(e.response.data.error);
                 return;
             }
+
+            isLoading.value = false;
 
             // Push to index
             router.push("/")
@@ -105,6 +112,7 @@ export default defineComponent({
         return {
             email,
             password,
+            isLoading,
 
             unlockVault,
             logoutUser
