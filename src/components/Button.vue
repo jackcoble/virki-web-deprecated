@@ -1,7 +1,7 @@
 <template>
     <button
         :disabled="loading"
-        class="w-full rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium focus:outline-none sm:text-sm"
+        class="w-full rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium sm:text-sm"
         :class="styles[classType]"
     >
         <slot v-if="!loading">Button</slot>
