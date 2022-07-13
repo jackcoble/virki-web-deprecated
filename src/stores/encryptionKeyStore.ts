@@ -18,7 +18,7 @@ export const useEncryptionKeyStore = defineStore({
     },
 
     // Use this for keeping stretched password just in memory or localStorage
-    setStretchedPassword(password: string, persist: boolean = false) {
+    setStretchedPassword(password: string, persist?: boolean) {
       this.masterPasswordStretched = password;
 
       // Persist to LocalStorage if opted
