@@ -4,7 +4,7 @@ export const useEncryptionKeyStore = defineStore({
   id: 'encryptionKeys',
   state: () => ({
     masterPasswordStretched: localStorage.getItem("stretched_password") || "",
-    encryptedMasterKey: sessionStorage.getItem("encrypted_master_key") || "",
+    encryptedMasterKey: localStorage.getItem("encrypted_master_key") || "",
     masterKey: ""
   }),
   getters: {
@@ -30,7 +30,7 @@ export const useEncryptionKeyStore = defineStore({
     // Use this for settings the users encrypted master key in localStorage
     setEncryptedMasterKey(encryptedMasterKey: string) {
       this.encryptedMasterKey = encryptedMasterKey;
-      sessionStorage.setItem("encrypted_master_key", encryptedMasterKey);
+      localStorage.setItem("encrypted_master_key", encryptedMasterKey);
     },
 
     clear() {
