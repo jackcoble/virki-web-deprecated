@@ -56,13 +56,17 @@ export default defineComponent({
             // Using the email address, request carry out a pre-login check for salt.
             // If we can, extend the password using it
             try {
+                let salt;
                 let res = await authentication.PreLogin(email.value);
-                const extendedKeyHash = await account.deriveHashedStretchedPassword(password.value, res.data.password_salt);
+                salt = res.data.password_salt;
+
+                const extendedKeyHash = await account.deriveHashedStretchedPassword(password.value, salt);
 
                 // Attempt to login and set access/refresh tokens in store
                 res = await authentication.Login(email.value, extendedKeyHash);
                 if (res.data && res.data.access_token && res.data.refresh_token) {
                     authenticationStore.setEmail(email.value);
+                    authenticationStore.setPasswordSalt(salt);
                     authenticationStore.setAccessToken(res.data.access_token);
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
