@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useEncryptionKeyStore = defineStore({
   id: 'encryptionKeys',
   state: () => ({
-    masterKey: sessionStorage.getItem("masterKey") || null
+    masterKey: ""
   }),
   getters: {
     getMasterKey: (state) => state.masterKey
@@ -11,15 +11,10 @@ export const useEncryptionKeyStore = defineStore({
   actions: {
     setMasterKey (masterKey: string) {
       this.masterKey = masterKey;
-
-      // Store master key in sessionStorage
-      sessionStorage.setItem("masterKey", masterKey);
     },
 
     clear() {
-      this.masterKey = null;
-
-      sessionStorage.removeItem("masterKey");
+      this.masterKey = "";
     }
   },
 })
