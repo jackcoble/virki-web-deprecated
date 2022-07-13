@@ -5,7 +5,7 @@
             :class="showPassword && modelValue ? 'font-mono' : 'font-sans'"
         >
 
-        <button type="button" class="m-2 w-5 text-purple-800" @click="showPassword = !showPassword" tabindex="-1">
+        <button type="button" class="m-2 w-5 text-purple-800" @click="showPassword = !showPassword">
             <EyeOffIcon v-if="showPassword" />
             <EyeIcon v-if="!showPassword" />
         </button>
