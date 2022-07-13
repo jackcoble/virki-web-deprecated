@@ -42,5 +42,5 @@ onMounted(() => {
 
 <template>
   <RouterView />
-  <Tabs></Tabs>
+  <Tabs v-if="currentRoute.meta.showTabMenu"></Tabs>
 </template>

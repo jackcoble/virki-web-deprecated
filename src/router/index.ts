@@ -19,7 +19,8 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: {
-        authRequired: true
+        authRequired: true,
+        showTabMenu: true
       }
     },
     {
@@ -42,7 +43,8 @@ const router = createRouter({
       name: "new",
       component: New,
       meta: {
-        authRequired: true
+        authRequired: true,
+        showTabMenu: true
       }
     },
     {
@@ -50,7 +52,8 @@ const router = createRouter({
       name: "scan",
       component: Scan,
       meta: {
-        authRequired: true
+        authRequired: true,
+        showTabMenu: true
       }
     },
     {
@@ -58,7 +61,8 @@ const router = createRouter({
       name: "advanced",
       component: Advanced,
       meta: {
-        authRequired: true
+        authRequired: true,
+        showTabMenu: true
       }
     },
     {
@@ -66,7 +70,8 @@ const router = createRouter({
       name: "settings",
       component: Settings,
       meta: {
-        authRequired: true
+        authRequired: true,
+        showTabMenu: true
       }
     }
   ]
