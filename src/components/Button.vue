@@ -54,7 +54,7 @@ export default defineComponent({
         const styles: Record<string, string> = {
             "primary": "bg-purple-800 text-white hover:bg-purple-600",
             "danger": "bg-red-400 text-red-900 hover:bg-red-300 hover:text-red-700",
-            "light": "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-500"
+            "light": "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-500 border-gray-200"
         };
 
         return {
