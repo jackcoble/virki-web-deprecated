@@ -1,7 +1,9 @@
 <template>
     <div class="flex">
         <input :type="showPassword ? 'text' : 'password'" :value="modelValue" @input="updateValue" placeholder="Master password"
-            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5">
+            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5"
+            :class="showPassword && modelValue ? 'font-mono' : 'font-sans'"
+        >
 
         <button class="m-2 w-5 text-purple-800" @click.prevent="showPassword = !showPassword">
             <EyeOffIcon v-if="showPassword" />
