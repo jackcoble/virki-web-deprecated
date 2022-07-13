@@ -17,14 +17,14 @@
 
             <!-- Unlock and Logout buttons -->
             <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-                <b-button @click.prevent="unlockVault" type="primary" :loading="isLoading">
+                <b-button @click.prevent="unlockVault" classType="primary" :loading="isLoading">
                     <div class="flex flex-row justify-center">
                         <LockOpenIcon class="w-4 mr-1" />
                         Unlock
                     </div>
                 </b-button>
 
-                <b-button @click.prevent="logoutUser" type="light">
+                <b-button @click.prevent="logoutUser" classType="light">
                     <div class="flex flex-row justify-center">
                         <LogoutIcon class="w-4 mr-1" />
                         Log out

@@ -2,7 +2,7 @@
     <button
         :disabled="loading"
         class="w-full rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium focus:outline-none sm:text-sm"
-        :class="styles[type]"
+        :class="styles[classType]"
     >
         <slot v-if="!loading">Button</slot>
         <svg
@@ -43,8 +43,8 @@ export default defineComponent({
             type: Boolean,
             default: false,
         },
-        // "type" sets the class to be used on the button
-        type: {
+        // "classType" sets the class to be used on the button
+        classType: {
             type: String,
             default: "primary"
         }
