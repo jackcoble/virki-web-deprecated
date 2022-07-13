@@ -3,13 +3,14 @@ import { RouterView } from 'vue-router'
 import Tabs from './components/Tabs.vue'
 
 import { getUnixTime } from "date-fns";
+import { useAuthenticationStore } from './stores/authenticationStore';
 
-// Listen for clicks and update the "lastActive" timestamp
+const authenticationStore = useAuthenticationStore();
+
+// Listen for clicks and update the "last active" timestamp in store
 document.addEventListener("click", () => {
-  const currentDate = new Date();
-  const activeTimestamp = getUnixTime(currentDate).toString();
-
-  localStorage.setItem("lastActive", activeTimestamp)
+  const activeTimestamp = getUnixTime(new Date());
+  authenticationStore.setLastActiveTimestamp(activeTimestamp);
 })
 </script>
 
