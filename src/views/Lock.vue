@@ -49,6 +49,7 @@ export default defineComponent({
                 }
             } catch (e) {
                 toaster.error(e);
+                return;
             }
 
             // After decryption, request new access and refresh tokens from API
@@ -63,6 +64,7 @@ export default defineComponent({
                 }
             } catch (e) {
                 toaster.error(e.response.data.error);
+                return;
             }
 
             // Push to index
