@@ -1,14 +1,12 @@
 <template>
     <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-        <button @click.prevent="ok" type="button"
-            class="w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-400 focus:outline-none sm:text-sm">
+        <b-button @click.prevent="ok" type="button">
             OK
-        </button>
+        </b-button>
 
-        <button @click.prevent="cancel" type="button"
-            class="w-full rounded-md border shadow-sm px-4 py-2 text-base font-medium text-gray-900 focus:outline-none sm:text-sm">
+        <b-button @click.prevent="cancel" type="button" classType="light">
             Cancel
-        </button>
+        </b-button>
     </div>
 </template>
 
