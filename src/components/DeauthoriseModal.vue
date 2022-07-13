@@ -20,7 +20,6 @@
 import { defineComponent, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useRouter } from "vue-router";
-import user from "@/service/api/user";
 import { Account } from "@/class/account";
 import authentication from "@/service/api/authentication";
 import useToaster from "@/composables/useToaster";
@@ -50,14 +49,17 @@ export default defineComponent({
         const deauthoriseSessions = async () => {
             let passwordHash = '';
 
-            // Fetch account details and determine password hash
+            // Derive hashed stretched password
             try {
-                const res = await user.GetAccount();
-                if (res.data) {
-                    passwordHash = await account.deriveHashedStretchedPassword(password.value, res.data.password.salt);
+                const salt = authenticationStore.getPasswordSalt;
+                if (salt) {
+                    passwordHash = await account.deriveHashedStretchedPassword(password.value, salt);
+                } else {
+                    toaster.error("Master password salt not present.")
+                    return;
                 }
             } catch (e) {
-                toaster.error(e.response.data.error)
+                toaster.error(e)
             }
 
             try {
