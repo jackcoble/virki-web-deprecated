@@ -8,7 +8,7 @@
             <!-- Master password entry form -->
             <form @submit.prevent="unlockVault" class="space-y-2">
                 <!-- Password -->
-                <b-password-input v-model="password" />
+                <b-password-input v-model="password" placeholder="Master password" />
 
                 <!-- User currently logged in -->
                 <p class="text-sm">

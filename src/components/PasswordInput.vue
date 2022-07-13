@@ -1,6 +1,6 @@
 <template>
     <div class="flex">
-        <input :type="showPassword ? 'text' : 'password'" :value="modelValue" @input="updateValue" placeholder="Master password" autofocus
+        <input :type="showPassword ? 'text' : 'password'" :value="modelValue" @input="updateValue" :placeholder="placeholder" autofocus
             class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5"
             :class="showPassword && modelValue ? 'font-mono' : 'font-sans'"
         >
@@ -24,6 +24,10 @@ export default defineComponent({
     },
     props: {
         modelValue: {
+            type: String
+        },
+
+        placeholder: {
             type: String
         }
     },
