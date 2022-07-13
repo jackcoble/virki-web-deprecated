@@ -5,32 +5,35 @@
             <LockClosedIcon class="h-24 text-gray-700 p-2 mx-auto" />
             <h1 class="text-lg text-center">Authoriser is locked. Verify your password to continue.</h1>
 
-            <!-- Password -->
-            <input type="password" placeholder="Master password" v-model="password"
-                class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <!-- Master password entry form -->
+            <form @submit.prevent="unlockVault">
+                <!-- Password -->
+                <input type="password" placeholder="Master password" v-model="password" required
+                    class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
 
-            <!-- User currently logged in -->
-            <p class="text-sm">
-                Currently signed in as
-                <span class="font-bold">{{ email }}</span>
-            </p>
+                <!-- User currently logged in -->
+                <p class="text-sm">
+                    Currently signed in as
+                    <span class="font-bold">{{ email }}</span>
+                </p>
 
-            <!-- Unlock and Logout buttons -->
-            <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-                <b-button @click.prevent="unlockVault" classType="primary" :loading="isLoading">
-                    <div class="flex flex-row justify-center">
-                        <LockOpenIcon class="w-4 mr-1" />
-                        Unlock
-                    </div>
-                </b-button>
+                <!-- Unlock and Logout buttons -->
+                <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
+                    <b-button type="submit" classType="primary" :loading="isLoading">
+                        <div class="flex flex-row justify-center">
+                            <LockOpenIcon class="w-4 mr-1" />
+                            Unlock
+                        </div>
+                    </b-button>
 
-                <b-button @click.prevent="logoutUser" classType="light">
-                    <div class="flex flex-row justify-center">
-                        <LogoutIcon class="w-4 mr-1" />
-                        Log out
-                    </div>
-                </b-button>
-            </div>
+                    <b-button @click.prevent="logoutUser" classType="light">
+                        <div class="flex flex-row justify-center">
+                            <LogoutIcon class="w-4 mr-1" />
+                            Log out
+                        </div>
+                    </b-button>
+                </div>
+            </form>
         </div>
     </div>
 </template>
