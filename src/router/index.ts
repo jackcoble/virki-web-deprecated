@@ -77,8 +77,19 @@ router.beforeEach((to, from, next) => {
   const encryptionKeyStore = useEncryptionKeyStore();
   
   if (to.matched.some(route => route.meta.authRequired)) {
-    if (!encryptionKeyStore.getMasterKey) {
-      return next({ path: '/login' })
+    // Check that we have all of the following stored in state:
+    // - Stretched master password
+    // - Encrypted master key
+
+    // If we don't have an encrypted master key (at the very least, then prompt for a login)
+    if (!encryptionKeyStore.getEncryptedMasterKey) {
+      return next({ path: '/login' });
+    }
+
+    // Otherwise if we have no master key, but the encrypted master key, we can prompt for
+    // an unlock
+    if (!encryptionKeyStore.getMasterKey && encryptionKeyStore.getEncryptedMasterKey) {
+      return next({ path: "/lock" })
     }
   }
 
