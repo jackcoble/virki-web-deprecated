@@ -2,6 +2,9 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import mitt from 'mitt';
 
+// Custom components
+import BButton from "@/components/Button.vue";
+
 // Buffer
 import { Buffer } from 'buffer';
 window.Buffer = Buffer;
@@ -28,5 +31,8 @@ app.use(createPinia())
 app.use(router)
 app.use(QrcodeReaderVue3)
 app.use(Toaster)
+
+// Register custom components
+app.component("b-button", BButton);
 
 app.mount('#app')
