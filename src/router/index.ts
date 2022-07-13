@@ -7,6 +7,7 @@ import New from "@/views/new/Index.vue"
 import Scan from '@/views/new/Scan.vue'
 import Advanced from "@/views/new/Advanced.vue"
 import Settings from "@/views/Settings.vue"
+import Lock from "@/views/Lock.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 
@@ -30,6 +31,11 @@ const router = createRouter({
       path: "/signup",
       name: "register",
       component: Register
+    },
+    {
+      path: "/lock",
+      name: "lock",
+      component: Lock
     },
     {
       path: "/new",
