@@ -16,6 +16,7 @@
 
 <script lang="ts">
 import { Account } from "@/class/account";
+import useToaster from "@/composables/useToaster";
 import authentication from "@/service/api/authentication";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
@@ -27,6 +28,7 @@ export default defineComponent({
     name: "Lock",
     setup() {
         const router = useRouter();
+        const toaster = useToaster();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
 
@@ -37,7 +39,19 @@ export default defineComponent({
 
         // Function to unlock vault
         const unlockVault = async () => {
-            // Request new access and refresh tokens from API
+            // Decrypting the master key and then setting it in memory again
+            try {
+                const salt = authenticationStore.getPasswordSalt;
+                const encryptedMasterKey = encryptionKeyStore.getEncryptedMasterKey;
+                if (salt && encryptedMasterKey) {
+                    const masterKey = await account.decryptMasterKey(password.value, salt, encryptedMasterKey)
+                    encryptionKeyStore.setMasterKey(masterKey);
+                }
+            } catch (e) {
+                toaster.error(e);
+            }
+
+            // After decryption, request new access and refresh tokens from API
             try {
                 const accessToken = authenticationStore.getAccessToken;
                 const refreshToken = authenticationStore.getRefreshToken;
@@ -48,20 +62,11 @@ export default defineComponent({
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
             } catch (e) {
-                // TODO: Handle this...
-                console.log(e);
+                toaster.error(e.response.data.error);
             }
 
-            // Move onto decrypting the master key and then setting it in memory again
-            const salt = authenticationStore.getPasswordSalt;
-            const encryptedMasterKey = encryptionKeyStore.getEncryptedMasterKey;
-            if (salt && encryptedMasterKey) {
-                const masterKey = await account.decryptMasterKey(password.value, salt, encryptedMasterKey)
-                encryptionKeyStore.setMasterKey(masterKey);
-
-                // Push to index
-                router.push("/")
-            }
+            // Push to index
+            router.push("/")
         }
 
         return {
