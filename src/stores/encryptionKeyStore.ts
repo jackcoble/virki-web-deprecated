@@ -34,7 +34,12 @@ export const useEncryptionKeyStore = defineStore({
     },
 
     clear() {
+      this.masterPasswordStretched = "";
       this.masterKey = "";
+      this.encryptedMasterKey = "";
+
+      localStorage.removeItem("stretched_password");
+      localStorage.removeItem("encrypted_master_key");
     }
   },
 })
