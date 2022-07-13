@@ -18,11 +18,17 @@
             <!-- Unlock and Logout buttons -->
             <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
                 <b-button @click.prevent="unlockVault" type="primary" :loading="isLoading">
-                    Unlock
+                    <div class="flex flex-row justify-center">
+                        <LockOpenIcon class="w-4 mr-1" />
+                        Unlock
+                    </div>
                 </b-button>
 
                 <b-button @click.prevent="logoutUser" type="light">
-                    Logout
+                    <div class="flex flex-row justify-center">
+                        <LogoutIcon class="w-4 mr-1" />
+                        Log out
+                    </div>
                 </b-button>
             </div>
         </div>
@@ -38,12 +44,14 @@ import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { computed } from "@vue/reactivity";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { LockClosedIcon } from "@heroicons/vue/outline";
+import { LockClosedIcon, LockOpenIcon, LogoutIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
     name: "Lock",
     components: {
-        LockClosedIcon
+        LockOpenIcon,
+        LockClosedIcon,
+        LogoutIcon
     },
     setup() {
         const router = useRouter();
