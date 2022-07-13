@@ -6,7 +6,7 @@
             <h1 class="text-lg text-center">Authoriser is locked. Verify your password to continue.</h1>
 
             <!-- Master password entry form -->
-            <form @submit.prevent="unlockVault">
+            <form @submit.prevent="unlockVault" class="space-y-2">
                 <!-- Password -->
                 <input type="password" placeholder="Master password" v-model="password" required autofocus
                     class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
