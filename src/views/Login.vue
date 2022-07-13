@@ -62,6 +62,7 @@ export default defineComponent({
                 // Attempt to login and set access/refresh tokens in store
                 res = await authentication.Login(email.value, extendedKeyHash);
                 if (res.data && res.data.access_token && res.data.refresh_token) {
+                    authenticationStore.setEmail(email.value);
                     authenticationStore.setAccessToken(res.data.access_token);
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
@@ -79,7 +80,10 @@ export default defineComponent({
                 const res = await user.GetAccount();
                 if (res.data) {
                     const masterKey = await account.decryptMasterKey(password.value, res.data.password.salt, res.data.encrypted_master_key);
+
+                    // Set some things in the encryption key store
                     encryptionKeyStore.setMasterKey(masterKey);
+                    encryptionKeyStore.setEncryptedMasterKey(res.data.encrypted_master_key);
                 }
 
                 // Push to Index
