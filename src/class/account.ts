@@ -8,12 +8,6 @@ const OPENPGP_CONFIG = {
     showVersion: true
 } as Config;
 
-// Maintain encrypted payload versions for any potential changes
-// to encryption algorithms in the future
-enum PAYLOAD_VERSION {
-    V1 = 1
-}
-
 export class Account {
     private masterKey: Uint8Array;
     private authoriserDB: AuthoriserDB;
@@ -119,9 +113,8 @@ export class Account {
      */
     async decryptMasterKey(password: string, salt: string, encryptedMasterKey: string): Promise<string> {
         try {
-            // Convert salt into buffer format and then derive stretched password.
-            const saltBuffer = Buffer.from(salt, "base64");
-            const stretchedKey = await this.deriveStretchedPassword(password, saltBuffer);
+            // First derive stretched password.
+            const stretchedKey = await this.deriveStretchedPassword(password, salt);
 
             // Now that we have the stretched key, we can use it to decrypt the PGP message
             const encryptedMessage = await readMessage({
