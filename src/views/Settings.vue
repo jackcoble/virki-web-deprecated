@@ -1,7 +1,7 @@
 <template>
     <div class="h-screen bg-gray-50">
         <!-- Email verification warning -->
-        <button class="bg-yellow-400 text-yellow-900 p-3 text-center text-sm" v-if="!accountData.email_verified">
+        <button class="bg-yellow-400 text-yellow-900 p-3 text-center text-sm w-full" v-if="!accountData.email_verified">
             Your email hasn't been verified. Click here to send a verification email.
         </button>
 
