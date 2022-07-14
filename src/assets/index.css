@@ -10,3 +10,7 @@
     font-weight: 1 999;
   }
 }
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
