@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center items-center h-screen bg-gray-100">
-        <div class="p-6 rounded shadow-sm bg-white border border-gray-200 space-y-3 sm:w-2/6 w-full">
+        <div class="p-6 rounded md:shadow-sm md:bg-white md:border md:border-gray-200 space-y-3 sm:w-2/6 w-full">
             <!-- Header -->
             <h1 class="text-lg text-center">Create an Authoriser account.</h1>
 
