@@ -1,13 +1,13 @@
 <template>
     <button
-        :disabled="loading"
-        class="w-full rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium sm:text-sm"
+        :disabled="loading || disabled"
+        class="w-full rounded-md border border-transparent shadow-sm px-4 py-2 font-medium text-xs disabled:opacity-50 disabled:cursor-not-allowed"
         :class="styles[classType]"
     >
         <slot v-if="!loading">Button</slot>
         <svg
             v-else
-            class="animate-spin mx-auto h-5 w-5 text-white"
+            class="animate-spin mx-auto h-4 w-4 text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -52,9 +52,9 @@ export default defineComponent({
     setup() {
         // Define a dictionary of classes to be applied to the button
         const styles: Record<string, string> = {
-            "primary": "bg-purple-800 text-white hover:bg-purple-600",
-            "danger": "bg-red-400 text-red-900 hover:bg-red-300 hover:text-red-700",
-            "light": "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-500 border-gray-200"
+            "primary": "bg-purple-800 text-white hover:bg-purple-600 disabled:bg-purple-600",
+            "danger": "bg-red-400 text-red-900 hover:bg-red-300 hover:text-red-700 disabled:bg-red-300",
+            "light": "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-500 border-gray-200 disabled:bg-gray-100"
         };
 
         return {
