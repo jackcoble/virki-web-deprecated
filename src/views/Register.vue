@@ -34,7 +34,7 @@
                 <!-- Master password hint input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Master Password Hint</p>
-                    <b-input type="text" required v-model="passwordHint" />
+                    <b-input type="text" v-model="passwordHint" />
                     <p class="text-xs">Setting a hint is optional, but can help jog your memory in the event you forget your master password!</p>
                 </div>
 
@@ -63,6 +63,7 @@
 
 <script lang="ts">
 import { Account } from "@/class/account";
+import useToaster from "@/composables/useToaster";
 import type { IRegisterAccount } from "@/models/account";
 import authentication from "@/service/api/authentication";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
@@ -81,11 +82,31 @@ export default defineComponent({
         const passwordHint = ref("");
         const acceptedTerms = ref(false);
 
+        const toaster = useToaster();
         const router = useRouter();
         const encryptionKeyStore = useEncryptionKeyStore();
 
         // Create a user account
         const registerUser = async () => {
+            /* 
+            First we need to carry out some client-side checks:
+            - Password confirmation matches password
+            - Password hint doesn't contain the master password
+            - Minimum password length of 12 characters
+            - Password length/strength
+            */
+            if (confirmPassword.value !== password.value) {
+                return toaster.error("Passwords do not match!")
+            }
+
+            if (passwordHint.value.includes(password.value)) {
+                return toaster.error("Password hint cannot include master password!")
+            }
+
+            if (password.value.length < 12) {
+                return toaster.error("Password must be at least 12 characters long!")
+            }
+
             // Password strength
             const passwordStrength = zxcvbn(password.value);
 
