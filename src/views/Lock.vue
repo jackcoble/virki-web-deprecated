@@ -1,8 +1,8 @@
 <template>
-    <div class="flex items-center justify-center p-8 h-screen">
-        <div class="p-8 rounded shadow-sm bg-gray-200 border border-gray-200 space-y-2">
+    <div class="flex items-center justify-center h-screen bg-gray-100">
+        <div class="p-8 rounded shadow-sm bg-white border border-gray-200 space-y-2 sm:w-2/6 w-full">
             <!-- Header -->
-            <LockClosedIcon class="h-24 text-gray-700 p-2 mx-auto" />
+            <LockClosedIcon class="h-24 text-purple-800 p-2 mx-auto" />
             <h1 class="text-lg text-center">Authoriser is locked. Verify your password to continue.</h1>
 
             <!-- Master password entry form -->
@@ -11,7 +11,7 @@
                 <b-password-input v-model="password" placeholder="Master password" />
 
                 <!-- User currently logged in -->
-                <p class="text-sm">
+                <p class="text-sm text-center">
                     Currently signed in as
                     <span class="font-bold">{{ email }}</span>
                 </p>

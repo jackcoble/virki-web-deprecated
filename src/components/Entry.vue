@@ -1,12 +1,10 @@
 <template>
     <div class="flex items-center justify-center">
-        <div class="flex items-center justify-between w-full h-24 text-white bg-[#214974] rounded-md shadow-md"
+        <div class="flex items-center justify-between w-full h-24 text-gray-900"
             @click="showTOTP">
             <div class="flex flex-col p-4">
-                <span class="text-xl text-white">{{ issuer }} </span>
-                <p class="text-sm text-gray-200 font-semibold">{{ account }}</p>
-                
-                <h2 class="text-xl font-bold">{{ generatedCode }}</h2>
+                <span class="text-xl text-gray-900">{{ issuer }} </span>
+                <p class="text-sm text-gray-700 font-semibold">{{ account }}</p>
 
                 <p class="text-xs">{{ countdownLeft }} seconds</p>
             </div>

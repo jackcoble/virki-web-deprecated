@@ -1,13 +1,13 @@
 <template>
-  <div class="h-screen bg-[#262727]">
+  <div class="h-screen bg-gray-50">
 
     <div class="container mx-auto p-4 space-y-3">
       <div class="flex justify-between">
         <!-- Vault selection dropdown -->
-        <h2 class="text-2xl font-semibold text-white">Personal 🔒</h2>
+        <h2 class="text-2xl font-semibold text-gray-900">Personal 🔒</h2>
 
         <!-- Refresh vault button -->
-        <button class="rounded-full p-1.5 text-gray-200" :class="isRefreshingVault ? 'animate-reverse-spin' : ''" @click="refreshVault">
+        <button class="rounded-full p-1.5 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''" @click="refreshVault">
           <RefreshIcon class="w-6 h-6" />
         </button>
       </div>
@@ -25,17 +25,18 @@
             </svg>
           </div>
           <input type="search" id="default-search"
-            class="block p-2 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="pl-10 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2"
             placeholder="Search entries..." required>
         </div>
       </form>
 
-      <p class="text-sm text-white text-center">{{ entries.length }} entries</p>
-
       <div v-for="entry in entries" :key="entry.issuer">
         <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon"></Entry>
+        <div class="w-full border-t border-gray-300"></div>
       </div>
     </div>
+
+    <p class="text-sm text-gray-900 text-center">{{ entries.length }} entries</p>
   </div>
 </template>
 
