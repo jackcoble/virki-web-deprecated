@@ -1,6 +1,6 @@
 <template>
     <div class="w-full bg-gray-200 rounded">
-        <div class="text-xs font-medium text-center p-1 leading-none rounded" :class="strength.class" :style="`width: ${strength.width}%; transition: width 1s;`">
+        <div class="text-xs font-medium text-center p-1 h-5 leading-none rounded" :class="strength.class" :style="`width: ${strength.width}%; transition: width 1s;`">
             {{ strength.label }}
         </div>
     </div>   
@@ -19,7 +19,7 @@ export default defineComponent({
     },
     setup(props) {
         const strength = ref({
-            label: "Weak",
+            label: "",
             width: 0,
             class: ""
         });
@@ -27,7 +27,12 @@ export default defineComponent({
         // Function to calculate and set ZXCBN score
         const passwordScore = (password: string) => {
             // If password length is zero, then set some defaults for style
-
+            if (!password) {
+                strength.value.width = 0;
+                strength.value.label = "";
+                strength.value.class = "bg-gray-200"
+                return;
+            }
 
             const result = zxcvbn(password);
             switch (result.score) {
