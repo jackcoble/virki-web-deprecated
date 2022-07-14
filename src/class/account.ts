@@ -9,10 +9,10 @@ const OPENPGP_CONFIG = {
 } as Config;
 
 export class Account {
-    private masterKey: Uint8Array;
+    private masterKey: string;
     private authoriserDB: AuthoriserDB;
 
-    constructor(masterKey?: Uint8Array) {
+    constructor(masterKey?: string) {
         if (masterKey) {
             this.masterKey = masterKey;
         }
@@ -73,17 +73,19 @@ export class Account {
      * Set the master key for an account
      * @param masterKey 
      */
-    setMasterKey(masterKey: Uint8Array) {
+    setMasterKey(masterKey: string) {
         this.masterKey = masterKey;
     }
 
     /**
      * Generates a "master key" which is used for OpenPGP encryption of string data
      */
-    generateMasterKey(): Uint8Array {
+    generateMasterKey(): string {
         // 1024-bit master symmetric key 
         const masterKey = window.crypto.getRandomValues(new Uint8Array(MASTER_KEY_BITS_LENGTH));
-        return masterKey;
+        const masterKeyString = Buffer.from(masterKey).toString("base64");
+
+        return masterKeyString;
     }
 
     /**
@@ -138,15 +140,13 @@ export class Account {
      * @returns {string}
      */
     async encryptData(data: string): Promise<string> {
-        const masterKeyEncoded = Buffer.from(this.masterKey).toString("base64");
-
         const message = await createMessage({
             text: data
         });
 
         const encryptedData = await encrypt({
             message,
-            passwords: [masterKeyEncoded],
+            passwords: [this.masterKey],
             format: "armored",
             config: OPENPGP_CONFIG
         });
@@ -159,15 +159,13 @@ export class Account {
      * @param message 
      */
     async decryptData(message: string): Promise<string> {
-        const masterKeyEncoded = Buffer.from(this.masterKey).toString("base64");
-
         const encryptedMessage = await readMessage({
             armoredMessage: message,
         });
 
         const decryptedData= await decrypt({
             message: encryptedMessage,
-            passwords: [masterKeyEncoded]
+            passwords: [this.masterKey]
         })
 
         return Promise.resolve(decryptedData.data.toString())
