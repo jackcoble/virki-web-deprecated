@@ -7,7 +7,6 @@ export default function useAccount () {
     const encryptionKeyStore = useEncryptionKeyStore();
     
     if (encryptionKeyStore.getMasterKey) {
-        const masterKeyBuffer = new TextEncoder().encode(encryptionKeyStore.getMasterKey);
-        return new Account(masterKeyBuffer);
+        return new Account(encryptionKeyStore.getMasterKey);
     }
 }
