@@ -7,7 +7,8 @@
         <h2 class="text-2xl font-semibold text-gray-900">Personal 🔒</h2>
 
         <!-- Refresh vault button -->
-        <button class="rounded-full p-1.5 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''" @click="refreshVault">
+        <button class="rounded-full p-1.5 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''"
+          @click="refreshVault">
           <RefreshIcon class="w-6 h-6" />
         </button>
       </div>
@@ -30,13 +31,20 @@
         </div>
       </form>
 
-      <div v-for="entry in entries" :key="entry.issuer">
-        <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon"></Entry>
-        <div class="w-full border-t border-gray-300"></div>
+      <div class="flex">
+        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.issuer">
+          <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon"></Entry>
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+
+        <div v-else class="mt-48 items-center justify-items-center text-gray-400 mx-auto space-y-3">
+          <EmojiSadIcon class="w-24 mx-auto" />
+          <p class="text-sm text-center">You don't have any tokens in your vault.</p>
+        </div>
       </div>
     </div>
 
-    <p class="text-sm text-gray-900 text-center">{{ entries.length }} entries</p>
+    <p v-if="entries && entries.length !== 0" class="text-sm text-gray-400 text-center">{{ entries.length }} entries</p>
   </div>
 </template>
 
@@ -47,7 +55,7 @@ import useEmitter from "@/composables/useEmitter";
 import { defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import Entry from "../components/Entry.vue";
 
-import { RefreshIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon } from "@heroicons/vue/outline"
 
 export default defineComponent({
   name: "HomeView",
@@ -72,7 +80,7 @@ export default defineComponent({
 
     let interval: any;
 
-    onMounted(async() => {
+    onMounted(async () => {
       interval = setInterval(() => {
         // Emit the 'countdown' event every second
         const timestamp = Math.floor(Date.now());
@@ -84,38 +92,8 @@ export default defineComponent({
       clearInterval(interval);
     })
 
-    const entries = [
-      {
-        issuer: "Instagram",
-        account: "XYZ",
-        secret: "JBSWY3DPEHPK3PXP",
-        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-      },
-      {
-        issuer: "Instagram",
-        account: "XYZ",
-        secret: "JBSWY3DPEHPK3PXP",
-        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-      },
-      {
-        issuer: "Instagram",
-        account: "XYZ",
-        secret: "JBSWY3DPEHPK3PXP",
-        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-      },
-      {
-        issuer: "Instagram",
-        account: "XYZ",
-        secret: "JBSWY3DPEHPK3PXP",
-        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-      },
-      {
-        issuer: "Instagram",
-        account: "XYZ",
-        secret: "JBSWY3DPEHPK3PXP",
-        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/2048px-Instagram_logo_2016.svg.png"
-      }
-    ];
+    const entries = [] as any[];
+
     return {
       entries,
       isRefreshingVault,
@@ -123,6 +101,6 @@ export default defineComponent({
       refreshVault
     };
   },
-  components: { Entry, RefreshIcon }
+  components: { Entry, RefreshIcon, EmojiSadIcon }
 })
 </script>
