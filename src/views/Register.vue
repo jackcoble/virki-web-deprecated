@@ -1,41 +1,62 @@
 <template>
-    <div class="bg-grey-lighter min-h-screen flex flex-col">
-        <div class="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
-            <div class="bg-gray-200 px-6 py-8 rounded shadow-md text-black w-full">
-                <h1 class="mb-8 text-3xl text-center">Sign up</h1>
+    <div class="flex justify-center items-center h-screen bg-gray-100">
+        <div class="p-6 rounded shadow-sm bg-white border border-gray-200 space-y-3 sm:w-2/6 w-full">
+            <!-- Header -->
+            <h1 class="text-lg text-center">Create an Authoriser account.</h1>
 
-                <form @submit.prevent="registerUser">
-                    <input type="email" class="block border border-grey-light w-full p-3 rounded mb-4" name="email"
-                        v-model="email" placeholder="Email" required autofocus />
+            <form @submit.prevent="registerUser" class="space-y-3">
+                <!-- Email input -->
+                <div class="space-y-1.5">
+                    <p class="font-bold text-sm">Email Address</p>
+                    <input type="email" required v-model="email" class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2">
+                </div>
 
-                    <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4" name="name"
-                        v-model="name" placeholder="Name" required />
+                <!-- Name input -->
+                <div class="space-y-1.5">
+                    <p class="font-bold text-sm">Name</p>
+                    <input type="text" required v-model="name" class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2">
+                    <p class="text-xs">What do you like to be called?</p>
+                </div>
 
-                    <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
-                        name="password" v-model="password" placeholder="Password" required />
-                        
-                    <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
-                        name="confirm_password" placeholder="Confirm Password" required />
+                <!-- Master password -->
+                <div class="space-y-1.5">
+                    <p class="font-bold text-sm pt-2">Master Password</p>
+                    <b-password-input v-model="password" />
+                    <p class="text-xs">This password is used to access your token vault. It is important that you do not forget it, as due to the nature of encryption we cannot recover it for you.</p>
+                </div>
 
-                    <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4"
-                        name="hint" v-model="passwordHint" placeholder="Password Hint (Optional)" />
+                <!-- Confirm master password input -->
+                <div class="space-y-1.5">
+                    <p class="font-bold text-sm">Confirm Master Password</p>
+                    <b-password-input v-model="confirmPassword" />
+                </div>
 
-                    <!-- TODO: Add tickbox -->
-                    <div class="text-center text-sm text-grey-dark mt-4">
-                        By signing up, you agree to the
-                        <a class="no-underline border-b border-grey-dark text-grey-dark" href="#">
-                            Terms of Service
-                        </a> and
-                        <a class="no-underline border-b border-grey-dark text-grey-dark" href="#">
-                            Privacy Policy
-                        </a>
-                    </div>
+                <!-- Master password hint input -->
+                <div class="space-y-1.5">
+                    <p class="font-bold text-sm">Master Password Hint</p>
+                    <input type="text" v-model="passwordHint" class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2">
+                    <p class="text-xs">Setting a hint is optional, but can help jog your memory in the event you forget your master password!</p>
+                </div>
 
-                    <button type="submit"
-                        class="w-full text-center py-3 rounded bg-green text-white bg-gray-600 focus:outline-none my-1">Create
-                        Account</button>
-                </form>
-            </div>
+                <!-- Terms of Service and Privacy Policy tickbox -->
+                <div class="form-check">
+                    <input required class="form-check-input h-4 w-4 border border-gray-300 rounded-sm focus:outline-none transition duration-200 mt-1 align-top float-left mr-2 cursor-pointer" type="checkbox" v-model="acceptedTerms" id="flexCheckChecked" checked>
+                    <label class="form-check-label text-xs inline-block text-gray-800" for="flexCheckChecked">
+                        By checking this box, you agree to the Terms of Service and Privacy Policy.
+                    </label>
+                </div>
+
+                <!-- Submit and Cancel buttons -->
+                <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
+                    <b-button type="submit" classType="primary" :disabled="!acceptedTerms">
+                        Submit
+                    </b-button>
+
+                    <b-button classType="light" @click="router.push('/login')">
+                        Cancel
+                    </b-button>
+                </div>
+            </form>
         </div>
     </div>
 </template>
@@ -56,7 +77,9 @@ export default defineComponent({
         const email = ref("");
         const name = ref("");
         const password = ref("");
-        const passwordHint = ref("")
+        const confirmPassword = ref("");
+        const passwordHint = ref("");
+        const acceptedTerms = ref(false);
 
         const router = useRouter();
         const encryptionKeyStore = useEncryptionKeyStore();
@@ -115,7 +138,11 @@ export default defineComponent({
             email,
             name,
             password,
+            confirmPassword,
             passwordHint,
+            acceptedTerms,
+
+            router,
 
             registerUser
         }
