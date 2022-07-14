@@ -8,13 +8,13 @@
                 <!-- Email input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Email Address</p>
-                    <input type="email" required v-model="email" class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2">
+                    <b-input type="email" required v-model="email" />
                 </div>
 
                 <!-- Name input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Name</p>
-                    <input type="text" required v-model="name" class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2">
+                    <b-input type="text" required v-model="name" />
                     <p class="text-xs">What do you like to be called?</p>
                 </div>
 
@@ -34,14 +34,14 @@
                 <!-- Master password hint input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Master Password Hint</p>
-                    <input type="text" v-model="passwordHint" class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2">
+                    <b-input type="text" required v-model="passwordHint" />
                     <p class="text-xs">Setting a hint is optional, but can help jog your memory in the event you forget your master password!</p>
                 </div>
 
                 <!-- Terms of Service and Privacy Policy tickbox -->
                 <div class="form-check">
-                    <input required class="form-check-input h-4 w-4 border border-gray-300 rounded-sm focus:outline-none transition duration-200 mt-1 align-top float-left mr-2 cursor-pointer" type="checkbox" v-model="acceptedTerms" id="flexCheckChecked" checked>
-                    <label class="form-check-label text-xs inline-block text-gray-800" for="flexCheckChecked">
+                    <input required class="form-check-input h-4 w-4 border border-gray-300 rounded-sm focus:outline-none transition duration-200 mt-1 align-top float-left mr-2 cursor-pointer" type="checkbox" v-model="acceptedTerms" id="acceptedTermsCheck">
+                    <label class="form-check-label text-xs inline-block text-gray-800" for="acceptedTermsCheck">
                         By checking this box, you agree to the Terms of Service and Privacy Policy.
                     </label>
                 </div>
