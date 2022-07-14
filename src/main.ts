@@ -6,6 +6,7 @@ import mitt from 'mitt';
 import BButton from "@/components/Button.vue";
 import BPasswordInput from "@/components/PasswordInput.vue";
 import BInput from "@/components/Input.vue";
+import PasswordStrength from "@/components/PasswordStrength.vue";
 
 // Buffer
 import { Buffer } from 'buffer';
@@ -38,5 +39,6 @@ app.use(Toaster)
 app.component("b-button", BButton);
 app.component("b-password-input", BPasswordInput);
 app.component("b-input", BInput);
+app.component("password-strength", PasswordStrength);
 
 app.mount('#app')
