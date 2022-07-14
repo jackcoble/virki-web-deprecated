@@ -48,7 +48,7 @@
 
                 <!-- Submit and Cancel buttons -->
                 <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-                    <b-button type="submit" classType="primary" :disabled="!acceptedTerms">
+                    <b-button type="submit" classType="primary" :disabled="!acceptedTerms" :loading="isLoading">
                         Submit
                     </b-button>
 
@@ -66,10 +66,10 @@ import { Account } from "@/class/account";
 import useToaster from "@/composables/useToaster";
 import type { IRegisterAccount } from "@/models/account";
 import authentication from "@/service/api/authentication";
+import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import zxcvbn from "zxcvbn";
 
 export default defineComponent({
     name: "Login",
@@ -81,9 +81,12 @@ export default defineComponent({
         const confirmPassword = ref("");
         const passwordHint = ref("");
         const acceptedTerms = ref(false);
+        const isLoading = ref(false);
 
         const toaster = useToaster();
         const router = useRouter();
+
+        const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
 
         // Create a user account
@@ -93,7 +96,7 @@ export default defineComponent({
             - Password confirmation matches password
             - Password hint doesn't contain the master password
             - Minimum password length of 12 characters
-            - Password length/strength
+            - Password length
             */
             if (confirmPassword.value !== password.value) {
                 return toaster.error("Passwords do not match!")
@@ -107,8 +110,8 @@ export default defineComponent({
                 return toaster.error("Password must be at least 12 characters long!")
             }
 
-            // Password strength
-            const passwordStrength = zxcvbn(password.value);
+            // Made it to the derivation stage of the account, so set isLoading value
+            isLoading.value = true;
 
             // Account initialisation
             // Derive a stretched (more secure) password for the user
@@ -130,26 +133,38 @@ export default defineComponent({
             const stretchedKeyBytes = new TextEncoder().encode(pPassword.key);
             const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
 
-            // Construct an account payload to be sent to the server
-            const accountPayload: IRegisterAccount = {
-                email: email.value,
-                name: name.value,
-                password: {
-                    hash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
-                    salt: pPassword.salt
-                },
-                encrypted_master_key: encryptedMasterKey
+            try {
+                // Construct an account payload to be sent to the server
+                const accountPayload: IRegisterAccount = {
+                    email: email.value,
+                    name: name.value,
+                    password: {
+                        hash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
+                        salt: pPassword.salt
+                    },
+                    encrypted_master_key: encryptedMasterKey
+                }
+
+                if (passwordHint.value) {
+                    accountPayload.password.hint = passwordHint.value;
+                }
+
+                // Send account payload to server and set the access/refresh tokens we get back
+                const res = await authentication.RegisterAccount(accountPayload);
+                if (res.data) {
+                    const accessToken = res.data.access_token;
+                    const refreshToken = res.data.refresh_token;
+
+                    if (accessToken && refreshToken) {
+                        authenticationStore.setAccessToken(accessToken);
+                        authenticationStore.setRefreshToken(refreshToken);
+                    }
+                }
+            } catch (e) {
+                return toaster.error(e.response.data.error);
+            } finally {
+                isLoading.value = false;
             }
-
-            if (passwordHint.value) {
-                accountPayload.password.hint = passwordHint.value;
-            }
-
-            // Send account payload to server
-            await authentication.RegisterAccount(accountPayload)
-
-            // Store encrypted master key in IndexedDB for offline use
-            await account.insertUserToDB(email.value, encryptedMasterKey);
 
             // Push to main page
             router.push("/");
@@ -162,6 +177,7 @@ export default defineComponent({
             confirmPassword,
             passwordHint,
             acceptedTerms,
+            isLoading,
 
             router,
 
