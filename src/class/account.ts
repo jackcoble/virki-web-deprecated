@@ -92,9 +92,8 @@ export class Account {
      * Encrypts the master key with the users stretched password. Returned payload should contain the encrypted master key
      */
     async encryptMasterKey(stretchedKey: string): Promise<string> {
-        const masterKeyHex = Buffer.from(this.masterKey).toString("hex");
         const message = await createMessage({
-            text: masterKeyHex
+            text: this.masterKey
         });
 
         const encryptedMasterKey = await encrypt({
