@@ -65,7 +65,9 @@
 import { Account } from "@/class/account";
 import useToaster from "@/composables/useToaster";
 import type { IRegisterAccount } from "@/models/account";
+import type { EncryptedVault } from "@/models/vault";
 import authentication from "@/service/api/authentication";
+import vault from "@/service/api/vault";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
@@ -164,6 +166,26 @@ export default defineComponent({
                 return toaster.error(e.response.data.error);
             } finally {
                 isLoading.value = false;
+            }
+
+            // Now that user has been authenticated, we can create a Vault for them.
+            // A vault contains all the token entries for a user.
+            // If the user wishes, they can have multiple vaults (this is/will be a premium feature).
+            // The users default vault will be called "Personal 🔒", and is encrypted as expected.
+            try {
+                const encryptedVault: EncryptedVault = {
+                    name: "Personal 🔒",
+                    description: "My personal 2FA vault."
+                }
+
+                const vaultString = JSON.stringify(encryptedVault);
+                const encryptedVaultString = await account.encryptData(vaultString);
+
+                // Send the encrypted Vault string to the API
+                const res = await vault.CreateVault(encryptedVaultString);
+                console.log(res.data);
+            } catch (e) {
+                return toaster.error(e);
             }
 
             // Push to main page
