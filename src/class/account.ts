@@ -30,7 +30,7 @@ export class Account {
 
         // Generate salt if not provided as parameter
         if (!salt) {
-            saltBuffer = window.crypto.getRandomValues(new Uint8Array(16));   
+            saltBuffer = window.crypto.getRandomValues(new Uint8Array(16));
         } else {
             // Otherwise convert provided Salt string into Buffer format
             saltBuffer = Buffer.from(salt, "base64");
@@ -46,7 +46,7 @@ export class Account {
         // Convert stretched key from hexadecimal into Base64
         const keyPayload = {
             key: Buffer.from(stretchedKey.hashHex, "hex").toString('base64'),
-            salt: salt
+            salt: Buffer.from(saltBuffer).toString("base64")
         }
 
         return keyPayload;
