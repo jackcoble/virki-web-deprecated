@@ -1,6 +1,6 @@
 <template>
-    <div class="flex justify-center items-center h-screen bg-gray-100">
-        <div class="p-8 rounded shadow-sm bg-white border border-gray-200 space-y-3 sm:w-2/6 w-full">
+    <div class="flex justify-center items-center h-screen md:bg-gray-100 bg-white">
+        <div class="p-8 rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 sm:w-2/6 w-full">
             <!-- Header -->
             <ClockIcon class="h-24 text-purple-800 p-2 mx-auto" />
             <h1 class="text-lg text-center">Log in or create an Authoriser account.</h1>
