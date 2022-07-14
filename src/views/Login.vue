@@ -16,7 +16,7 @@
 
                 <!-- Unlock and Logout buttons -->
                 <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-                    <b-button type="submit" classType="primary">
+                    <b-button type="submit" classType="primary" :loading="isLoading">
                         <div class="flex flex-row justify-center">
                             <LoginIcon class="w-4 mr-1" />
                             Log In
@@ -56,6 +56,7 @@ export default defineComponent({
     setup() {
         const email = ref("");
         const password = ref("");
+        const isLoading = ref(false);
 
         const router = useRouter();
         const authenticationStore = useAuthenticationStore();
@@ -65,6 +66,8 @@ export default defineComponent({
 
         // Handle user login
         const handleSignIn = async () => {
+            isLoading.value = true;
+
             // Using the email address, request carry out a pre-login check for salt.
             // If we can, extend the password using it
             try {
@@ -83,6 +86,8 @@ export default defineComponent({
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
             } catch (e) {
+                isLoading.value = false;
+
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
                     return;
@@ -109,12 +114,15 @@ export default defineComponent({
             } catch (e) {
                 toaster.error(e);
                 return;
+            } finally {
+                isLoading.value = false;
             }
         }
 
         return {
             email,
             password,
+            isLoading,
 
             router,
 
