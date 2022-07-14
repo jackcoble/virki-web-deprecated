@@ -1,5 +1,10 @@
 <template>
     <div class="h-screen bg-gray-50">
+        <!-- Email verification warning -->
+        <button class="bg-yellow-400 text-yellow-900 p-3 text-center text-sm" v-if="!accountData.email_verified">
+            Your email hasn't been verified. Click here to send a verification email.
+        </button>
+
         <div class="container p-4 mx-auto space-y-3">
             <h2 class="text-2xl font-semibold text-gray-900">Settings ⚙️</h2>
 
@@ -54,12 +59,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 
 import { UserIcon, ShieldCheckIcon, AdjustmentsIcon, StarIcon } from "@heroicons/vue/outline"
 
 // Custom components
 import DeauthoriseModal from "@/components/DeauthoriseModal.vue";
+import user from "@/service/api/user";
 
 export default defineComponent({
     name: "Settings",
@@ -72,9 +78,21 @@ export default defineComponent({
         StarIcon
     },
     setup() {
+        const accountData = ref({});
         const showDeauthoriseSessionModal = ref(false);
 
+        onMounted(async () => {
+            // Fetch account data from API
+            try {
+                const res = await user.GetAccount();
+                accountData.value = res.data;
+            } catch (e) {
+                console.log(e);
+            }
+        })
+
         return {
+            accountData,
             showDeauthoriseSessionModal
         }
     }
