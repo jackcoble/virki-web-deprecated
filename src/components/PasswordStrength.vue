@@ -1,6 +1,6 @@
 <template>
     <div class="w-full bg-gray-200 rounded">
-        <div class="text-xs font-medium text-center p-1 h-5 leading-none rounded" :class="strength.class" :style="`width: ${strength.width}%; transition: width 1s;`">
+        <div class="text-xs font-medium text-center p-1 h-5 leading-none rounded transition-all ease-in-out duration-500" :class="strength.class" :style="`width: ${strength.width}%`">
             {{ strength.label }}
         </div>
     </div>   
