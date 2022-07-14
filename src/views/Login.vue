@@ -1,31 +1,37 @@
 <template>
-    <div class="flex justify-center items-center h-screen">
-        <form @submit.prevent="handleSignIn">
-            <div class="mb-6">
-                <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email
-                    address</label>
-                <input type="email" id="email"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Email address" v-model="email" required autofocus>
-            </div>
-            <div class="mb-6">
-                <label for="password"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Password</label>
-                <input type="password" id="password" placeholder="●●●●●●●●●●●●●●"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required v-model="password">
-            </div>
-            <div class="flex items-start mb-6">
-                <div class="flex items-center h-5">
-                    <input id="remember" type="checkbox" value=""
-                        class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
+    <div class="flex justify-center items-center h-screen bg-gray-100">
+        <div class="p-8 rounded shadow-sm bg-white border border-gray-200 space-y-3 sm:w-2/6 w-full">
+            <!-- Header -->
+            <ClockIcon class="h-24 text-purple-800 p-2 mx-auto" />
+            <h1 class="text-lg text-center">Log in or create an Authoriser account.</h1>
+
+            <form @submit.prevent="handleSignIn" class="space-y-2">
+                <!-- Email input -->
+                <p class="font-bold text-sm">Email Address</p>
+                <b-input type="email" v-model="email" autofocus />
+
+                <!-- Master password -->
+                <p class="font-bold text-sm pt-2">Master Password</p>
+                <b-password-input v-model="password" />
+
+                <!-- Unlock and Logout buttons -->
+                <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
+                    <b-button type="submit" classType="primary">
+                        <div class="flex flex-row justify-center">
+                            <LoginIcon class="w-4 mr-1" />
+                            Log In
+                        </div>
+                    </b-button>
+
+                    <b-button classType="light" @click="router.push('/signup')">
+                        <div class="flex flex-row justify-center">
+                            <UserAddIcon class="w-4 mr-1" />
+                            Create Account
+                        </div>
+                    </b-button>
                 </div>
-                <label for="remember" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Remember
-                    email</label>
-            </div>
-            <button type="submit"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-        </form>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -38,9 +44,15 @@ import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
+import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
     name: "Login",
+    components: {
+        ClockIcon,
+        LoginIcon,
+        UserAddIcon
+    },
     setup() {
         const email = ref("");
         const password = ref("");
@@ -73,8 +85,10 @@ export default defineComponent({
             } catch (e) {
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
+                    return;
                 } else {
-                    toaster.error("An unknown error has occurred.")
+                    toaster.error("An unknown error has occurred.");
+                    return;
                 }
             }
 
@@ -94,12 +108,15 @@ export default defineComponent({
                 router.push("/");
             } catch (e) {
                 toaster.error(e);
+                return;
             }
         }
 
         return {
             email,
             password,
+
+            router,
 
             handleSignIn
         }
