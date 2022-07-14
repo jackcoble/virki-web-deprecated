@@ -5,6 +5,7 @@ import mitt from 'mitt';
 // Custom components
 import BButton from "@/components/Button.vue";
 import BPasswordInput from "@/components/PasswordInput.vue";
+import BInput from "@/components/Input.vue";
 
 // Buffer
 import { Buffer } from 'buffer';
@@ -36,5 +37,6 @@ app.use(Toaster)
 // Register custom components
 app.component("b-button", BButton);
 app.component("b-password-input", BPasswordInput);
+app.component("b-input", BInput);
 
 app.mount('#app')
