@@ -22,6 +22,7 @@
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm pt-2">Master Password</p>
                     <b-password-input v-model="password" />
+                    <password-strength :password="password" />
                     <p class="text-xs">This password is used to access your token vault. It is important that you do not forget it, as due to the nature of encryption we cannot recover it for you.</p>
                 </div>
 
