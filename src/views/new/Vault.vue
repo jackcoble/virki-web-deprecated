@@ -4,12 +4,15 @@
             <h2 class="text-2xl font-semibold text-gray-900">Create vault</h2>
 
             <!-- Vault icon/image upload -->
-            <input class="hidden" type="file" accept="image/*" @change="handleImage" ref="iconInput" />
-            <div class="ml-7 object-contain rounded-full w-24 h-24 p-7 bg-gray-200 cursor-pointer" @click="triggerFileUploadPrompt">
-                <PhotographIcon class="text-gray-500 rounded-full" />
+            <div class="flex justify-center pt-8">
+                <input class="hidden" type="file" accept="image/*" @change="handleImage" ref="iconInput" />
+                <div class="object-contain rounded-full w-24 h-24 bg-gray-200 cursor-pointer"
+                    :class="[!uploadedIcon ? 'p-7' : '']" @click="triggerFileUploadPrompt">
+                    <PhotographIcon v-if="!uploadedIcon" class="text-gray-500 rounded-full" />
+                    <img v-else class="rounded-full w-24 h-24" :src="uploadedIcon" alt="Uploaded Icon">
+                </div>
             </div>
-
-            <img :src="uploadedIcon" alt="Uploaded image">
+            <p class="text-xs text-center text-gray-600">Upload a vault icon (1MB maximum)</p>
         </div>
     </div>
 </template>
