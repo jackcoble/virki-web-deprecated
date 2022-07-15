@@ -1,9 +1,8 @@
 <template>
     <!-- Vault currently active -->
-    <button @click="showModal = !showModal"
-        class="text-left w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-        {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : '' }}
-    </button>
+    <h2 class="text-2xl font-semibold text-gray-900 cursor-pointer" @click="showModal = !showModal">
+        {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : 'No vault found...' }}
+    </h2>
 
     <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" doneFooter>
         <template v-slot:body>
