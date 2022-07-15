@@ -24,6 +24,10 @@ export const useVaultStore = defineStore({
 
         setActiveVault(id: string) {
             this.activeVaultId = id;
+        },
+
+        clear() {
+            this.vaults = [];
         }
     },
 })
