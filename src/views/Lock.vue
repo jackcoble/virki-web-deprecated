@@ -1,6 +1,6 @@
 <template>
-    <div class="flex items-center justify-center h-screen bg-gray-100">
-        <div class="p-8 rounded shadow-sm bg-white border border-gray-200 space-y-2 sm:w-2/6 w-full">
+    <div class="flex items-center justify-center h-screen md:bg-gray-100">
+        <div class="p-8 rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-2 sm:w-2/6 w-full">
             <!-- Header -->
             <LockClosedIcon class="h-24 text-purple-800 p-2 mx-auto" />
             <h1 class="text-lg text-center">Authoriser is locked. Verify your password to continue.</h1>
