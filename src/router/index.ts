@@ -5,6 +5,7 @@ import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
 import New from "@/views/new/Index.vue"
 import Scan from '@/views/new/Scan.vue'
+import NewVault from "@/views/new/Vault.vue"
 import Advanced from "@/views/new/Advanced.vue"
 import Settings from "@/views/Settings.vue"
 import Lock from "@/views/Lock.vue"
@@ -60,6 +61,15 @@ const router = createRouter({
       path: "/new/advanced",
       name: "advanced",
       component: Advanced,
+      meta: {
+        authRequired: true,
+        showTabMenu: true
+      }
+    },
+    {
+      path: "/new/vault",
+      name: "newVault",
+      component: NewVault,
       meta: {
         authRequired: true,
         showTabMenu: true
