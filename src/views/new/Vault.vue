@@ -16,14 +16,14 @@
             <div class="space-y-2">
                 <!-- Vault name -->
                 <p class="font-bold text-sm pt-2">Name</p>
-                <b-input type="text" placeholder="Vault name" />
+                <b-input type="text" placeholder="Vault name" v-model="name" />
 
                 <!-- Vault description -->
                 <p class="font-bold text-sm pt-2">Description</p>
-                <textarea rows="4" placeholder="A description of what you'll store in this vault" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2" />
+                <textarea v-model="description" rows="4" placeholder="A description of what you'll store in this vault" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2" />
             
                 <!-- Submit button -->
-                <b-button>Submit</b-button>
+                <b-button @click="createVault">Submit</b-button>
             </div>
         </div>
     </div>
@@ -34,6 +34,11 @@ import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
 
 import { PhotographIcon } from "@heroicons/vue/outline";
+import type { EncryptedVault } from "@/models/vault";
+import useAccount from "@/composables/useAccount";
+import vault from "@/service/api/vault";
+import { useVaultStore } from "@/stores/vaultStore";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     name: "NewVault",
@@ -41,10 +46,17 @@ export default defineComponent({
         PhotographIcon
     },
     setup() {
+        const account = useAccount();
         const toaster = useToaster();
+        const router = useRouter();
+
+        const vaultStore = useVaultStore();
 
         const iconInput = ref();
         const uploadedIcon = ref(""); // Stores Base64 encoded image/icon
+
+        const name = ref("");
+        const description = ref("");
 
         // Function to trigger hidden input prompt
         const triggerFileUploadPrompt = () => {
@@ -79,12 +91,50 @@ export default defineComponent({
             reader.readAsDataURL(selectedImage);
         }
 
+        // Function to construct a vault entry, encrypt it,
+        // send to API, and update active vault
+        const createVault = async () => {
+            // Check that account has been initialised before trying to use it
+            if (!account) {
+                return toaster.error("Account has not been initialised.");
+            }
+
+            try {
+                const encryptedVault: EncryptedVault = {
+                    name: name.value,
+                    description: description.value,
+                    icon: uploadedIcon.value
+                }
+
+                const vaultString = JSON.stringify(encryptedVault);
+                const encryptedVaultString = await account.encryptData(vaultString);
+
+                // Send the encrypted Vault string to the API
+                const res = await vault.CreateVault(encryptedVaultString);
+
+                // Take the ID off the response data and add the vault to the VaultStore
+                encryptedVault.id = res.data.id;
+                vaultStore.add(encryptedVault);
+
+                // Set the active vault to be the one just created
+                vaultStore.setActiveVault(encryptedVault.id!);
+                router.push("/");
+                
+            } catch (e) {
+                return toaster.error("There was an error creating your vault.");
+            }
+        }
+
         return {
             iconInput,
             uploadedIcon,
 
+            name,
+            description,
+
             triggerFileUploadPrompt,
-            handleImage
+            handleImage,
+            createVault
         }
     }
 })
