@@ -4,7 +4,7 @@
     <div class="container mx-auto p-4 space-y-3">
       <div class="flex justify-between">
         <!-- Vault selection dropdown -->
-        <h2 class="text-2xl font-semibold text-gray-900">Personal 🔒</h2>
+        <VaultSelector />
 
         <!-- Refresh vault button -->
         <button class="rounded-full p-1.5 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''"
@@ -13,8 +13,7 @@
         </button>
       </div>
 
-      <!-- Search bar -->
-      <form>
+      <div class="flex-row">
         <label for="default-search"
           class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search</label>
         <div class="relative">
@@ -29,10 +28,10 @@
             class="pl-10 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2"
             placeholder="Search entries..." required>
         </div>
-      </form>
+      </div>
 
       <div class="flex">
-        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.issuer">
+        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.issuer" class="w-full">
           <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon"></Entry>
           <div class="w-full border-t border-gray-300"></div>
         </div>
@@ -44,7 +43,7 @@
       </div>
     </div>
 
-    <p v-if="entries && entries.length !== 0" class="text-sm text-gray-400 text-center">{{ entries.length }} entries</p>
+    <p v-if="entries && entries.length !== 0" class="text-sm text-gray-400 text-center">{{ entries.length }} {{ entries.length === 1 ? 'entry' : 'entries'  }}</p>
   </div>
 </template>
 
@@ -54,14 +53,19 @@ import useEmitter from "@/composables/useEmitter";
 
 import { defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import Entry from "../components/Entry.vue";
+import VaultSelector from "@/components/VaultSelector.vue"
 
 import { RefreshIcon, EmojiSadIcon } from "@heroicons/vue/outline"
+import vault from "@/service/api/vault";
+import type { EncryptedVault } from "@/models/vault";
+import { useVaultStore } from "@/stores/vaultStore";
 
 export default defineComponent({
   name: "HomeView",
   setup() {
     const emitter = useEmitter();
     const account = useAccount();
+    const vaultStore = useVaultStore();
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
@@ -81,10 +85,36 @@ export default defineComponent({
     let interval: any;
 
     onMounted(async () => {
+      // Fetch list of Vaults belonging to the user
+      // and decrypt the data
+      try {
+        await vault.GetVaults().then(async res => {
+          const vaults = res.data;
+          if (vaults) {
+            // Attempt to decrypt
+            vaults.forEach(async (v: any) => {
+              if (account) {
+                const decryptedVaultString = await account?.decryptData(v.data);
+                const decryptedVault = JSON.parse(decryptedVaultString!) as EncryptedVault;
+
+                // Add vault list of vaults in store
+                decryptedVault.id = v.id;
+                vaultStore.add(decryptedVault);
+              }
+            })
+          }
+        })
+      } catch (e) {
+        // TODO: Handle this better
+        console.log("Error with vaults:", e)
+      }
+
+      // Fire off initial countdown event
+      emitCountdownEvent();
+
       interval = setInterval(() => {
         // Emit the 'countdown' event every second
-        const timestamp = Math.floor(Date.now());
-        emitter.emit("countdown", { timestamp });
+        emitCountdownEvent();
       }, 1000);
     })
 
@@ -92,15 +122,27 @@ export default defineComponent({
       clearInterval(interval);
     })
 
+    // Function to handle firing off events to be consumed by 2FA entry
+    const emitCountdownEvent = () => {
+      const currentDate = new Date();
+      const eventPayload = {
+        milliseconds: Math.floor(currentDate.getTime()),
+        seconds: Math.floor(currentDate.getTime() / 1000)
+      }
+      emitter.emit("countdown", eventPayload);
+    }
+
     const entries = [] as any[];
 
     return {
       entries,
       isRefreshingVault,
 
+      vaultStore,
+
       refreshVault
     };
   },
-  components: { Entry, RefreshIcon, EmojiSadIcon }
+  components: { Entry, VaultSelector, RefreshIcon, EmojiSadIcon }
 })
 </script>
