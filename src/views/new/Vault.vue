@@ -12,6 +12,19 @@
                 </div>
             </div>
             <p class="text-xs text-center text-gray-600">Upload a vault icon (1MB maximum)</p>
+
+            <div class="space-y-2">
+                <!-- Vault name -->
+                <p class="font-bold text-sm pt-2">Name</p>
+                <b-input type="text" placeholder="Vault name" />
+
+                <!-- Vault description -->
+                <p class="font-bold text-sm pt-2">Description</p>
+                <textarea rows="4" placeholder="A description of what you'll store in this vault" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2" />
+            
+                <!-- Submit button -->
+                <b-button>Submit</b-button>
+            </div>
         </div>
     </div>
 </template>
