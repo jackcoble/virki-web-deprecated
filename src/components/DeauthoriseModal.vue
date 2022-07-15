@@ -1,16 +1,18 @@
 <template>
     <BaseModal :show="show" @ok="deauthoriseSessions" okFooter>
-        <div class="space-y-2">
-            <h1 class="text-xl text-center">De-authorise sessions?</h1>
-            <p class="text-sm">
-                You are about to de-authorise all devices. This is a recommended security step if you have lost a
-                device, or no longer have access to it.
-            </p>
+        <template v-slot:body>
+            <div class="space-y-2">
+                <h1 class="text-xl text-center">De-authorise sessions?</h1>
+                <p class="text-sm">
+                    You are about to de-authorise all devices. This is a recommended security step if you have lost a
+                    device, or no longer have access to it.
+                </p>
 
-            <!-- Password -->
-            <p class="font-bold text-sm">Master Password</p>
-            <b-password-input v-model="password" />
-        </div>
+                <!-- Password -->
+                <p class="font-bold text-sm">Master Password</p>
+                <b-password-input v-model="password" />
+            </div>
+        </template>
     </BaseModal>
 </template>
 

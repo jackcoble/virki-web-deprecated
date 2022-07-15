@@ -5,26 +5,28 @@
         {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : '' }}
     </button>
 
-    <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" :doneFooter="true">
-        <div class="space-y-2">
-            <h1 class="text-xl text-center">Vault Selector</h1>
-            <p class="text-xs">
-                Quickly switch between the different vaults for your authentication tokens.
-            </p>
+    <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" noFooter>
+        <template v-slot:body>
+            <div class="space-y-2">
+                <h1 class="text-xl text-center">Vault Selector</h1>
+                <p class="text-xs">
+                    Quickly switch between the different vaults for your authentication tokens.
+                </p>
 
-            <fieldset class="h-48 w-full p-2 overflow-auto">
-                <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-                    <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3" @click="selectedVault = vault.id!">
-                        <div class="mr-3 flex items-center h-5">
-                            <input type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" :checked="vault.id === selectedVault" />
-                        </div>
-                        <div class="min-w-0 flex-1 text-sm">
-                            <label class="font-medium text-gray-700 select-none">{{ vault.name }}</label>
+                <fieldset class="h-48 w-full p-2 overflow-auto">
+                    <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
+                        <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3" @click="selectedVault = vault.id!">
+                            <div class="mr-3 flex items-center h-5">
+                                <input type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" :checked="vault.id === selectedVault" />
+                            </div>
+                            <div class="min-w-0 flex-1 text-sm">
+                                <label class="font-medium text-gray-700 select-none">{{ vault.name }}</label>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </fieldset>
-        </div>
+                </fieldset>
+            </div>
+        </template>
     </BaseModal>
 </template>
 
