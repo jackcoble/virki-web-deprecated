@@ -6,5 +6,9 @@ export default {
         return api.post("/v1/vault", {
             data: encryptedData
         });
+    },
+
+    GetVaults(): Promise<AxiosResponse> {
+        return api.get("/v1/vaults");
     }
 }
