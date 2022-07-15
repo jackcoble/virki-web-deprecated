@@ -15,8 +15,8 @@
         <template v-slot:body>
             <div class="space-y-2">
                 <h1 class="text-xl text-center">Change Vault</h1>
-                <p class="text-xs">
-                    Quickly switch between the different vaults for your authentication tokens.
+                <p class="text-xs text-center">
+                    Switch between the different vaults containing your authentication tokens.
                 </p>
 
                 <fieldset class="h-48 w-full p-2 overflow-auto">
