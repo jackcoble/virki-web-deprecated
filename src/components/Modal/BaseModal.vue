@@ -49,13 +49,18 @@
             </div>
             <div class="sm:flex sm:items-start">
               <div class="mt-3 sm:mt-0 sm:text-left w-full">
-                <slot />
+                <slot name="body" />
               </div>
             </div>
 
             <!-- Footer (make this dynamic for the different footers) -->
-            <OK v-show="okFooter" @ok="$emit('ok')" @cancel="closeModal" />
-            <Done v-show="doneFooter" @done="$emit('done')" />
+            <div v-if="noFooter">
+              <slot name="footer" />
+            </div>
+            <div v-else>
+              <OK v-show="okFooter" @ok="$emit('ok')" @cancel="closeModal" />
+              <Done v-show="doneFooter" @done="$emit('done')" />
+            </div>
           </div>
         </div>
       </div>
@@ -84,6 +89,10 @@ export default defineComponent({
     },
 
     // Footer type props
+    noFooter: {
+      type: Boolean,
+      default: false
+    },
     okFooter: {
       type: Boolean,
       default: false,
