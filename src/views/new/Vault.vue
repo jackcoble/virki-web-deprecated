@@ -6,7 +6,7 @@
             <!-- Vault icon/image upload -->
             <input type="file"
                 id="avatar" name="avatar"
-                accept="image/png, image/jpeg"
+                accept="image/*"
                 @change="handleImage"
             />
 
@@ -16,18 +16,25 @@
 </template>
 
 <script lang="ts">
+import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
     name: "NewVault",
     setup() {
+        const toaster = useToaster();
+
         const uploadedIcon = ref(""); // Stores Base64 encoded image/icon
 
         // Function to receive file upload event
         // (would like to use a type here, but we're feeling risky with any)
         const handleImage = (e: any) => {
-            // Get the file from the event
-            const selectedImage = e.target.files[0];
+            // Get the file from the event and check its size
+            const maximumFileSizeBytes = 1 * 1024 * 1024; // 1MB
+            const selectedImage = e.target.files[0] as Blob;
+            if (selectedImage.size > maximumFileSizeBytes) {
+                return toaster.error("Uploaded image is too big!");
+            }
 
             // Read the file into a FileReader as Data URL
             const reader = new FileReader();
