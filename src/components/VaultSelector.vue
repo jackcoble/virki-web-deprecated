@@ -1,8 +1,14 @@
 <template>
     <!-- Vault currently active -->
-    <h2 class="text-2xl font-semibold text-gray-900 cursor-pointer" @click="showModal = !showModal">
-        {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : 'No vault found...' }}
-    </h2>
+    <div class="flex flex-row items-center space-x-2">
+        <div class="object-contain cursor-pointer rounded-full w-10 bg-gray-200 p-1.5" @click="showModal = !showModal">
+            <ClockIcon class="text-purple-800" />
+        </div>
+
+        <h2 class="text-2xl font-semibold text-gray-900">
+            {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : 'No vault found...' }}
+        </h2>
+    </div>
 
     <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" doneFooter>
         <template v-slot:body>
@@ -30,14 +36,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
-import type { EncryptedVault } from "@/models/vault";
+
+import { ClockIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
     components: {
         BaseModal,
+        ClockIcon
     },
     setup() {
         const vaultStore = useVaultStore();
