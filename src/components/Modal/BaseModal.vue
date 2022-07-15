@@ -48,7 +48,7 @@
               </button>
             </div>
             <div class="sm:flex sm:items-start">
-              <div class="mt-3 sm:mt-0 sm:text-left">
+              <div class="mt-3 sm:mt-0 sm:text-left w-full">
                 <slot />
               </div>
             </div>
