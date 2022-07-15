@@ -5,7 +5,7 @@
         {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : '' }}
     </button>
 
-    <BaseModal :show="showModal" @cancel="showModal = !showModal" @close="showModal = !showModal" okFooter>
+    <BaseModal :show="showModal" @done="showModal = !showModal" @close="showModal = !showModal" :doneFooter="true">
         <div class="space-y-2">
             <h1 class="text-xl text-center">Vault Selector</h1>
             <p class="text-xs">
@@ -14,7 +14,7 @@
 
             <fieldset class="h-48 w-full p-2 overflow-auto">
                 <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-                    <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3">
+                    <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3" @click="vaultStore.setActiveVault(vault.id!)">
                         <div class="mr-3 flex items-center h-5">
                             <input type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" :checked="vault.id === vaultStore.getActiveVaultId" />
                         </div>
