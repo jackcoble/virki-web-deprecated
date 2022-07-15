@@ -8,10 +8,17 @@
     </div>
 
     <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-      <MenuItems class="origin-top-right absolute left-0 mt-1 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-        <div class="py-1">
+      <MenuItems class="origin-top-right absolute left-0 mt-1 w-56 rounded-md overflow-auto shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+        <div>
           <MenuItem v-slot="{ active }" v-for="vault in vaultStore.getVaults" :key="vault.id">
             <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">{{ vault.name }}</a>
+          </MenuItem>
+
+          <!-- Create new Vault -->
+          <MenuItem v-slot="{ active }">
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm font-medium']">
+                Create new vault
+            </a>
           </MenuItem>
         </div>
       </MenuItems>
