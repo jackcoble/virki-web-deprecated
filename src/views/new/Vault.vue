@@ -23,7 +23,7 @@
                 <textarea v-model="description" rows="4" placeholder="A description of what you'll store in this vault" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2" />
             
                 <!-- Submit button -->
-                <b-button @click="createVault">Submit</b-button>
+                <b-button @click="createVault" :loading="isLoading">Submit</b-button>
             </div>
         </div>
     </div>
@@ -57,6 +57,8 @@ export default defineComponent({
 
         const name = ref("");
         const description = ref("");
+
+        const isLoading = ref(false);
 
         // Function to trigger hidden input prompt
         const triggerFileUploadPrompt = () => {
@@ -99,6 +101,8 @@ export default defineComponent({
                 return toaster.error("Account has not been initialised.");
             }
 
+            isLoading.value = true;
+
             try {
                 const encryptedVault: EncryptedVault = {
                     name: name.value,
@@ -122,6 +126,8 @@ export default defineComponent({
                 
             } catch (e) {
                 return toaster.error("There was an error creating your vault.");
+            } finally {
+                isLoading.value = false;
             }
         }
 
@@ -131,6 +137,8 @@ export default defineComponent({
 
             name,
             description,
+
+            isLoading,
 
             triggerFileUploadPrompt,
             handleImage,
