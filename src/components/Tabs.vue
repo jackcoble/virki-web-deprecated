@@ -1,8 +1,8 @@
 <template>
-<nav class="fixed bottom-0 p-2 w-full bg-gray-50 flex border-t-4 border-purple-800">
+<nav class="fixed bottom-0 p-2 w-full bg-gray-50 flex border-t-2 border-gray-200">
     <div v-for="button in buttons" :key="button.label" class="flex flex-col flex-grow w-full justify-center items-center text-center truncate">
         <router-link :to="button.route">
-            <component class="h-6 mx-auto" :class="[button.classes, currentRoute.path === button.route ? 'text-gray-600' : '']" :is="button.icon" />
+            <component class="h-6 mx-auto" :class="[button.classes, currentRoute.path === button.route ? 'text-purple-800' : '']" :is="button.icon" />
         </router-link>
     </div>
 </nav>
