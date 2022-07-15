@@ -38,7 +38,9 @@
 
         <div v-else class="mt-48 items-center justify-items-center text-gray-400 mx-auto space-y-3">
           <EmojiSadIcon class="w-24 mx-auto" />
-          <p class="text-sm text-center">You don't have any tokens in your vault.</p>
+          <p class="text-sm text-center">
+            You don't have any tokens in your <span class="font-semibold text-gray-800">{{ vaultStore.getActiveVault?.name }}</span> vault.
+          </p>
         </div>
       </div>
     </div>
