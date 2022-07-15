@@ -23,11 +23,13 @@
                     <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
                         <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3 cursor-pointer" @click="selectedVault = vault.id!">
                             <div class="mr-3 flex items-center space-x-3 w-full text-sm">
-                                <input type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" :checked="vault.id === selectedVault" />
+                                <input type="radio" class="h-4 w-4 border-gray-300" :checked="vault.id === selectedVault" />
 
-                                <div class="object-contain rounded-full w-8">
-                                    <KeyIcon v-if="!vault.icon" class="text-purple-800 bg-red-500 rounded-full" />
-                                    <img v-else class="rounded-full" :src="vault.icon" alt="Vault Icon">
+                                <div class="rounded-full bg-gray-200 border-2 border-gray-300">
+                                    <div v-if="!vault.icon" class="w-8 h-8 p-1.5 bg-gray-200 rounded-full">
+                                        <ClockIcon class="text-gray-500" />
+                                    </div>
+                                    <img v-else class="rounded-full object-cover w-8 h-8" :src="vault.icon" alt="Vault Icon">
                                 </div>
 
                                 <p class="font-medium text-gray-700 select-none">{{ vault.name }}</p>
@@ -53,14 +55,13 @@ import { defineComponent, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
 
-import { ClockIcon, KeyIcon, PlusIcon } from "@heroicons/vue/outline";
+import { ClockIcon, PlusIcon } from "@heroicons/vue/outline";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
     components: {
         BaseModal,
         ClockIcon,
-        KeyIcon,
         PlusIcon
     },
     setup() {
