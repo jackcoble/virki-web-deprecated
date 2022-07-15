@@ -43,7 +43,9 @@
       </div>
     </div>
 
-    <p v-if="entries && entries.length !== 0" class="text-sm text-gray-400 text-center">{{ entries.length }} {{ entries.length === 1 ? 'entry' : 'entries'  }}</p>
+    <p v-if="entries && entries.length !== 0" class="text-sm text-gray-400 text-center">{{ entries.length }} {{
+        entries.length === 1 ? 'entry' : 'entries'
+    }}</p>
   </div>
 </template>
 
@@ -62,6 +64,12 @@ import { useVaultStore } from "@/stores/vaultStore";
 
 export default defineComponent({
   name: "HomeView",
+  components: { 
+    Entry,
+    VaultSelector,
+    RefreshIcon,
+    EmojiSadIcon
+  },
   setup() {
     const emitter = useEmitter();
     const account = useAccount();
@@ -91,6 +99,9 @@ export default defineComponent({
         await vault.GetVaults().then(async res => {
           const vaults = res.data;
           if (vaults) {
+            // Clear existing vaults
+            vaultStore.clear()
+
             // Attempt to decrypt
             vaults.forEach(async (v: any) => {
               if (account) {
@@ -102,6 +113,13 @@ export default defineComponent({
                 vaultStore.add(decryptedVault);
               }
             })
+
+            // If we don't have an active vault already set,
+            // set the first vault as the "default"
+            if (!vaultStore.getActiveVaultId) {
+              const firstVault = vaultStore.getVaults[0];
+              vaultStore.setActiveVault(firstVault.id!);
+            }
           }
         })
       } catch (e) {
@@ -142,7 +160,6 @@ export default defineComponent({
 
       refreshVault
     };
-  },
-  components: { Entry, VaultSelector, RefreshIcon, EmojiSadIcon }
+  }
 })
 </script>
