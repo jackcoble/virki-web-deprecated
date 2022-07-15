@@ -5,7 +5,7 @@
         {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : '' }}
     </button>
 
-    <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" noFooter>
+    <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" doneFooter>
         <template v-slot:body>
             <div class="space-y-2">
                 <h1 class="text-xl text-center">Vault Selector</h1>
