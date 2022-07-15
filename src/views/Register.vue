@@ -123,10 +123,7 @@ export default defineComponent({
             // Generate and set the master key used for symmetric operations
             const masterKey = account.generateMasterKey();
             account.setMasterKey(masterKey);
-
-            // Encode the master key to Base64 before setting it
-            const masterKeyEncoded = Buffer.from(masterKey).toString("base64");
-            encryptionKeyStore.setMasterKey(masterKeyEncoded);
+            encryptionKeyStore.setMasterKey(masterKey);
 
             // Encrypt the master key
             const encryptedMasterKey = await account.encryptMasterKey(pPassword.key);
