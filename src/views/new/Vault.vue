@@ -6,10 +6,9 @@
             <!-- Vault icon/image upload -->
             <div class="flex justify-center pt-8">
                 <input class="hidden" type="file" accept="image/*" @change="handleImage" ref="iconInput" />
-                <div class="object-cover rounded-full w-24 h-24 bg-gray-200 border-2 border-gray-300 cursor-pointer"
-                    :class="[!uploadedIcon ? 'p-7' : '']" @click="triggerFileUploadPrompt">
-                    <PhotographIcon v-if="!uploadedIcon" class="text-gray-500 rounded-full" />
-                    <img v-else class="rounded-full" :src="uploadedIcon" alt="Uploaded Icon">
+                <div class="rounded-full bg-gray-200 border-2 border-gray-300 cursor-pointer" @click="triggerFileUploadPrompt">
+                    <PhotographIcon v-if="!uploadedIcon" class="text-gray-500 rounded-full w-24 p-4" />
+                    <img v-else class="rounded-full object-cover w-24 h-24" :src="uploadedIcon" alt="Uploaded Icon">
                 </div>
             </div>
             <p class="text-xs text-center text-gray-600">Upload a vault icon (1MB maximum)</p>
