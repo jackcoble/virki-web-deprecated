@@ -38,7 +38,7 @@
 
                         <!-- Add new vault -->
                         <div class="flex flex-row items-center w-100 text-sm h-14 space-x-3 cursor-pointer" @click="router.push('/new/vault')">
-                            <div class="ml-7 object-contain rounded-full w-8 h-8 p-1.5 bg-gray-200">
+                            <div class="ml-7 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
                                 <PlusIcon class="text-gray-500 rounded-full" />
                             </div>
                             <p class="font-medium text-gray-700 select-none">Create a new vault</p>
