@@ -35,7 +35,7 @@
                         </div>
 
                         <!-- Add new vault -->
-                        <div class="flex flex-row items-center w-100 text-sm h-14 space-x-3 cursor-pointer">
+                        <div class="flex flex-row items-center w-100 text-sm h-14 space-x-3 cursor-pointer" @click="router.push('/new/vault')">
                             <div class="ml-7 object-contain rounded-full w-8 h-8 p-1.5 bg-gray-200">
                                 <PlusIcon class="text-gray-500 rounded-full" />
                             </div>
@@ -54,6 +54,7 @@ import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
 
 import { ClockIcon, KeyIcon, PlusIcon } from "@heroicons/vue/outline";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     components: {
@@ -63,6 +64,7 @@ export default defineComponent({
         PlusIcon
     },
     setup() {
+        const router = useRouter();
         const vaultStore = useVaultStore();
 
         // Ref controlling whether modal should be shown or not
@@ -80,6 +82,7 @@ export default defineComponent({
             selectedVault,
             vaultStore,
 
+            router,
             updateActiveVault
         }
     },
