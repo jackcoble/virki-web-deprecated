@@ -94,7 +94,11 @@ export default defineComponent({
 
     onMounted(async () => {
       // Fetch list of Vaults belonging to the user
-      // and decrypt the data
+      // and decrypt the data (if we don't already have a list of vaults already)
+      if (vaultStore.getVaults.length > 0) {
+        return;
+      }
+
       try {
         await vault.GetVaults().then(async res => {
           const vaults = res.data;
