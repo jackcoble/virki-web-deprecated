@@ -14,20 +14,32 @@
     <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" doneFooter>
         <template v-slot:body>
             <div class="space-y-2">
-                <h1 class="text-xl text-center">Vault Selector</h1>
+                <h1 class="text-xl text-center">Change Vault</h1>
                 <p class="text-xs">
                     Quickly switch between the different vaults for your authentication tokens.
                 </p>
 
                 <fieldset class="h-48 w-full p-2 overflow-auto">
                     <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-                        <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3" @click="selectedVault = vault.id!">
-                            <div class="mr-3 flex items-center h-5">
+                        <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3 cursor-pointer" @click="selectedVault = vault.id!">
+                            <div class="mr-3 flex items-center space-x-3 w-full text-sm">
                                 <input type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" :checked="vault.id === selectedVault" />
+
+                                <div class="object-contain rounded-full w-8">
+                                    <KeyIcon v-if="!vault.icon" class="text-purple-800 bg-red-500 rounded-full" />
+                                    <img v-else class="rounded-full" :src="vault.icon" alt="Vault Icon">
+                                </div>
+
+                                <p class="font-medium text-gray-700 select-none">{{ vault.name }}</p>
                             </div>
-                            <div class="min-w-0 flex-1 text-sm">
-                                <label class="font-medium text-gray-700 select-none">{{ vault.name }}</label>
+                        </div>
+
+                        <!-- Add new vault -->
+                        <div class="flex flex-row items-center w-100 text-sm h-14 space-x-3 cursor-pointer">
+                            <div class="ml-7 object-contain rounded-full w-8 h-8 p-1.5 bg-gray-200">
+                                <PlusIcon class="text-gray-500 rounded-full" />
                             </div>
+                            <p class="font-medium text-gray-700 select-none">Create a new vault</p>
                         </div>
                     </div>
                 </fieldset>
@@ -41,12 +53,14 @@ import { defineComponent, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
 
-import { ClockIcon } from "@heroicons/vue/outline";
+import { ClockIcon, KeyIcon, PlusIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
     components: {
         BaseModal,
-        ClockIcon
+        ClockIcon,
+        KeyIcon,
+        PlusIcon
     },
     setup() {
         const vaultStore = useVaultStore();
