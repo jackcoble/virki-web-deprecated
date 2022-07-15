@@ -5,7 +5,7 @@
         {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : '' }}
     </button>
 
-    <BaseModal :show="showModal" @done="showModal = !showModal" @close="showModal = !showModal" :doneFooter="true">
+    <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" :doneFooter="true">
         <div class="space-y-2">
             <h1 class="text-xl text-center">Vault Selector</h1>
             <p class="text-xs">
@@ -14,9 +14,9 @@
 
             <fieldset class="h-48 w-full p-2 overflow-auto">
                 <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-                    <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3" @click="vaultStore.setActiveVault(vault.id!)">
+                    <div v-for="(vault) in vaultStore.getVaults" :key="vault.id" class="relative flex items-start py-3" @click="selectedVault = vault.id!">
                         <div class="mr-3 flex items-center h-5">
-                            <input type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" :checked="vault.id === vaultStore.getActiveVaultId" />
+                            <input type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" :checked="vault.id === selectedVault" />
                         </div>
                         <div class="min-w-0 flex-1 text-sm">
                             <label class="font-medium text-gray-700 select-none">{{ vault.name }}</label>
@@ -43,10 +43,20 @@ export default defineComponent({
 
         // Ref controlling whether modal should be shown or not
         const showModal = ref(false);
+        const selectedVault = ref(vaultStore.getActiveVaultId);
+
+        // Update active vault (gets triggered when we receive the 'done' event)
+        const updateActiveVault = () => {
+            vaultStore.setActiveVault(selectedVault.value);
+            showModal.value = !showModal.value;
+        }
 
         return {
             showModal,
-            vaultStore
+            selectedVault,
+            vaultStore,
+
+            updateActiveVault
         }
     },
 });
