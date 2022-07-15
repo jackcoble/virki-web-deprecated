@@ -1,15 +1,17 @@
 <template>
-    <div class="flex items-center justify-center">
-        <div class="flex items-center justify-between w-full h-24 text-gray-900"
-            @click="showTOTP">
-            <div class="flex flex-col p-4">
-                <span class="text-xl text-gray-900">{{ issuer }} </span>
-                <p class="text-sm text-gray-700 font-semibold">{{ account }}</p>
-                <p>{{ generatedCode }}</p>
-                <p class="text-xs">{{ countdownLeft }}s</p>
+    <div class="pb-2">
+        <div class="flex items-center w-full h-24 text-gray-900" @click="showTOTP">
+            <img class="h-16 pr-4" :src="icon" />
+
+            <div class="flex flex-col flex-grow">
+                <span class="text-sm text-gray-900">{{ issuer }} </span>
+                <p class="text-xs text-gray-700 font-semibold pb-2">{{ account }}</p>
+                <p class="text-2xl">{{ generatedCode }}</p>
             </div>
-            <img class="h-full py-2 pr-4 ml-8 h-16"
-                :src="icon" />
+
+            <div class="flex-col mr-2">
+                <p class="text-xs">{{ countdownLeft }}s left</p>
+            </div>
         </div>
     </div>
 </template>
