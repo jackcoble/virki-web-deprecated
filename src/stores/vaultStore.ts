@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 export const useVaultStore = defineStore({
     id: 'vaults',
     state: () => ({
-        activeVaultId: "",
+        activeVaultId: localStorage.getItem("lastActiveVault") || "",
         vaults: [] as EncryptedVault[]
     }),
     getters: {
@@ -24,6 +24,7 @@ export const useVaultStore = defineStore({
 
         setActiveVault(id: string) {
             this.activeVaultId = id;
+            localStorage.setItem("lastActiveVault", id)
         },
 
         clear() {
