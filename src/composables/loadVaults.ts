@@ -59,10 +59,4 @@ export async function loadVaults() {
             console.log(e);
         }
     }
-
-    // At this point we should have a vault, so set a default "active vault"
-    if (!vaultStore.getActiveVaultId) {
-        const firstVault = vaultStore.getVaults[0];
-        vaultStore.setActiveVault(firstVault.id!);
-    }
 }
