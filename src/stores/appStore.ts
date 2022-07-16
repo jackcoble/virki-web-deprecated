@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 export const useApplicationStore = defineStore({
     id: 'application',
     state: () => ({
-        online: true
+        online: navigator.onLine
     }),
     getters: {
         isOnline: (state) => state.online
