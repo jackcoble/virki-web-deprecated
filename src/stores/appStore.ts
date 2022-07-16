@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 // General application state
-export const useAppStore = defineStore({
+export const useApplicationStore = defineStore({
     id: 'application',
     state: () => ({
         online: true
