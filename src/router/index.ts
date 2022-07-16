@@ -8,6 +8,7 @@ import Scan from '@/views/new/Scan.vue'
 import NewVault from "@/views/new/Vault.vue"
 import Advanced from "@/views/new/Advanced.vue"
 import Settings from "@/views/Settings.vue"
+import SettingsSecurity from "@/views/settings/Security.vue";
 import Lock from "@/views/Lock.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
@@ -79,6 +80,15 @@ const router = createRouter({
       path: "/settings",
       name: "settings",
       component: Settings,
+      meta: {
+        authRequired: true,
+        showTabMenu: true
+      },
+    },
+    {
+      path: "/settings/security",
+      name: "securitySettings",
+      component: SettingsSecurity,
       meta: {
         authRequired: true,
         showTabMenu: true
