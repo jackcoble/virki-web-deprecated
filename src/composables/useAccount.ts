@@ -9,4 +9,6 @@ export default function useAccount () {
     if (encryptionKeyStore.getMasterKey) {
         return new Account(encryptionKeyStore.getMasterKey);
     }
+
+    return new Account();
 }
