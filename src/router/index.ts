@@ -111,9 +111,9 @@ router.beforeEach((to, from, next) => {
       return next({ path: '/login' });
     }
 
-    // Otherwise if we have no master key, but the encrypted master key, we can prompt for
+    // Otherwise if we have no master key, stretched password, but have the encrypted master key, we can prompt for
     // an unlock
-    if (!encryptionKeyStore.getMasterKey && encryptionKeyStore.getEncryptedMasterKey) {
+    if (!encryptionKeyStore.getMasterKey && !encryptionKeyStore.getStretchedPassword && encryptionKeyStore.getEncryptedMasterKey) {
       return next({ path: "/lock" })
     }
   }
