@@ -6,11 +6,18 @@
         <!-- Vault selection dropdown -->
         <VaultSelector />
 
-        <!-- Refresh vault button -->
-        <button class="rounded-full p-1.5 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''"
-          @click="refreshVault">
-          <RefreshIcon class="w-6 h-6" />
-        </button>
+        <div class="flex-row">
+          <!-- Refresh vault button -->
+          <button class="rounded-full p-1 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''"
+            @click="refreshVault">
+            <RefreshIcon class="w-6 h-6" />
+          </button>
+
+          <!-- Disconnected from cloud alert -->
+          <button class="rounded-full p-1 text-red-400">
+            <CloudIcon class="w-6 h-6" />
+          </button>
+        </div>
       </div>
 
       <div class="flex-row">
@@ -59,7 +66,7 @@ import { defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import Entry from "../components/Entry.vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, CloudIcon } from "@heroicons/vue/outline"
 import vault from "@/service/api/vault";
 import type { EncryptedVault } from "@/models/vault";
 import { useVaultStore } from "@/stores/vaultStore";
@@ -70,7 +77,8 @@ export default defineComponent({
     Entry,
     VaultSelector,
     RefreshIcon,
-    EmojiSadIcon
+    EmojiSadIcon,
+    CloudIcon
   },
   setup() {
     const emitter = useEmitter();
