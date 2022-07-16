@@ -8,13 +8,14 @@
 
         <div class="flex-row">
           <!-- Refresh vault button -->
-          <button class="rounded-full p-1 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''"
+          <button v-if="isOnline" class="rounded-full p-1 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''"
             @click="refreshVault">
             <RefreshIcon class="w-6 h-6" />
           </button>
 
           <!-- Disconnected from cloud alert -->
-          <button class="rounded-full p-1 text-red-400">
+          <OfflineAlertModal :show="showOfflineAlertModal" @close="showOfflineAlertModal = false" @done="showOfflineAlertModal = false" />
+          <button v-if="!isOnline" class="rounded-full p-1 text-red-400" @click="showOfflineAlertModal = !showOfflineAlertModal">
             <CloudIcon class="w-6 h-6" />
           </button>
         </div>
@@ -62,7 +63,7 @@
 import useAccount from "@/composables/useAccount";
 import useEmitter from "@/composables/useEmitter";
 
-import { defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import Entry from "../components/Entry.vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
@@ -70,20 +71,30 @@ import { RefreshIcon, EmojiSadIcon, CloudIcon } from "@heroicons/vue/outline"
 import vault from "@/service/api/vault";
 import type { EncryptedVault } from "@/models/vault";
 import { useVaultStore } from "@/stores/vaultStore";
+import { useApplicationStore } from "@/stores/appStore";
+import OfflineAlertModal from "../components/OfflineAlertModal.vue";
 
 export default defineComponent({
   name: "HomeView",
-  components: { 
+  components: {
     Entry,
     VaultSelector,
     RefreshIcon,
     EmojiSadIcon,
-    CloudIcon
-  },
+    CloudIcon,
+    OfflineAlertModal
+},
   setup() {
     const emitter = useEmitter();
     const account = useAccount();
+
+    const applicationStore = useApplicationStore();
     const vaultStore = useVaultStore();
+
+    // Computed values from store
+    const isOnline = computed(() => applicationStore.isOnline);
+
+    const showOfflineAlertModal = ref(false);
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
@@ -167,6 +178,9 @@ export default defineComponent({
     return {
       entries,
       isRefreshingVault,
+      isOnline,
+
+      showOfflineAlertModal,
 
       vaultStore,
 
