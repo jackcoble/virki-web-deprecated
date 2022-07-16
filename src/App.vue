@@ -5,15 +5,31 @@ import Tabs from './components/Tabs.vue'
 import { fromUnixTime, getUnixTime, sub } from "date-fns";
 import { useAuthenticationStore } from './stores/authenticationStore';
 import { onMounted, onUnmounted } from 'vue';
+import { useApplicationStore } from './stores/appStore';
 
 const router = useRouter();
 const currentRoute = useRoute();
+
+const applicationStore = useApplicationStore();
 const authenticationStore = useAuthenticationStore();
 
 // Listen for clicks and update the "last active" timestamp in store
 document.addEventListener("click", () => {
   const activeTimestamp = getUnixTime(new Date());
   authenticationStore.setLastActiveTimestamp(activeTimestamp);
+})
+
+// Listen for online/offline events and update application state as necessary
+window.addEventListener("online", (event) => {
+  if (event) {
+    applicationStore.setOnline(true);
+  }
+})
+
+window.addEventListener("offline", (event) => {
+  if (event) {
+    applicationStore.setOnline(false);
+  }
 })
 
 let inactivityInterval: NodeJS.Timer;
