@@ -14,7 +14,7 @@ interface IVaultDB {
     created: string;
 }
 
-export class AuthoriserDB extends Dexie {
+class AuthoriserDB extends Dexie {
     accounts!: Table<IAccountDB>;
     vaults!: Table<IVaultDB>;
 
@@ -28,4 +28,13 @@ export class AuthoriserDB extends Dexie {
             vaults: "id, uid, data, created"
         })
     }
+}
+
+export {
+    AuthoriserDB
+}
+
+export type {
+    IAccountDB,
+    IVaultDB
 }
