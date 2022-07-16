@@ -67,7 +67,7 @@ import useToaster from "@/composables/useToaster";
 import type { IRegisterAccount } from "@/models/account";
 import type { EncryptedVault } from "@/models/vault";
 import authentication from "@/service/api/authentication";
-import vault from "@/service/api/vault";
+import vault from "@/service/api/vaultService";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
