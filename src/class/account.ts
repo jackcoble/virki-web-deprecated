@@ -187,7 +187,7 @@ export class Account {
      * @param vault 
      */
     async addVaultToDB(vault: IVaultDB): Promise<any> {
-        await this.authoriserDB.vaults.add({
+        await this.authoriserDB.vaults.put({
             id: vault.id,
             uid: vault.uid,
             data: vault.data,
