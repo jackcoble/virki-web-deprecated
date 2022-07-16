@@ -14,9 +14,14 @@ export const useVaultStore = defineStore({
         },
         getActiveVaultId: (state) => state.activeVaultId,
         getActiveVault: (state) => {
-            const activeVaultId = state.activeVaultId;
-            const activeVault = state.vaults.find(v => v.id === activeVaultId);
+            // If there's no active vault ID,
+            // just fetch the first vault in state
+            if (!state.activeVaultId) {
+                return state.vaults[0];
+            }
 
+            // Otherwise find and return the vault active
+            const activeVault = state.vaults.find(v => v.id === state.activeVaultId);
             return activeVault;
         }
     },
