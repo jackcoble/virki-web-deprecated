@@ -25,6 +25,7 @@ import authentication from "@/service/api/authentication";
 import useToaster from "@/composables/useToaster";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
+import { useVaultStore } from "@/stores/vaultStore";
 
 export default defineComponent({
     components: {
@@ -42,6 +43,7 @@ export default defineComponent({
 
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
+        const vaultStore = useVaultStore();
 
         const password = ref("");
 
@@ -67,6 +69,7 @@ export default defineComponent({
                     const res = await authentication.Deauthorise(passwordHash);
                     authenticationStore.clear();
                     encryptionKeyStore.clear();
+                    vaultStore.clear();
 
                     toaster.success(res.data);
 

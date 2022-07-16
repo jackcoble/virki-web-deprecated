@@ -45,6 +45,9 @@ export const useVaultStore = defineStore({
 
         clear() {
             this.vaults = [];
+            this.activeVaultId = "";
+
+            localStorage.removeItem("lastActiveVault");
         }
     },
 })
