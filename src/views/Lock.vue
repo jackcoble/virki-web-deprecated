@@ -47,6 +47,7 @@ import { computed } from "@vue/reactivity";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { LockClosedIcon, LockOpenIcon, LogoutIcon } from "@heroicons/vue/outline";
+import { useApplicationStore } from "@/stores/appStore";
 
 export default defineComponent({
     name: "Lock",
@@ -58,10 +59,14 @@ export default defineComponent({
     setup() {
         const router = useRouter();
         const toaster = useToaster();
+
+        const applicationStore = useApplicationStore();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
 
+        const isOnline = computed(() => applicationStore.isOnline);
         const email = computed(() => authenticationStore.getEmail);
+
         const password = ref("");
         const isLoading = ref(false);
 
@@ -86,21 +91,23 @@ export default defineComponent({
                 return;
             }
 
-            // After decryption, request new access and refresh tokens from API
-            try {
-                const accessToken = authenticationStore.getAccessToken;
-                const refreshToken = authenticationStore.getRefreshToken;
+            // After decryption, request new access and refresh tokens from API (if device is online)
+            if (!!isOnline.value) {
+                try {
+                    const accessToken = authenticationStore.getAccessToken;
+                    const refreshToken = authenticationStore.getRefreshToken;
 
-                const res = await authentication.RefreshTokens(accessToken!, refreshToken!);
-                if (res.data) {
-                    authenticationStore.setAccessToken(res.data.access_token);
-                    authenticationStore.setRefreshToken(res.data.refresh_token);
+                    const res = await authentication.RefreshTokens(accessToken!, refreshToken!);
+                    if (res.data) {
+                        authenticationStore.setAccessToken(res.data.access_token);
+                        authenticationStore.setRefreshToken(res.data.refresh_token);
+                    }
+                } catch (e) {
+                    isLoading.value = false;
+
+                    toaster.error(e.response.data.error);
+                    return;
                 }
-            } catch (e) {
-                isLoading.value = false;
-
-                toaster.error(e.response.data.error);
-                return;
             }
 
             isLoading.value = false;
