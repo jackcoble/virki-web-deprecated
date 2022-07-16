@@ -8,7 +8,10 @@ export const useVaultStore = defineStore({
         vaults: [] as EncryptedVault[]
     }),
     getters: {
-        getVaults: (state) => state.vaults,
+        getVaults: (state) => {
+            // Return alphabetical list of vaults (by name)
+            return state.vaults.sort((a, b) => a.name.localeCompare(b.name))
+        },
         getActiveVaultId: (state) => state.activeVaultId,
         getActiveVault: (state) => {
             const activeVaultId = state.activeVaultId;
