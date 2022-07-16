@@ -39,6 +39,31 @@ class Vault extends Account {
             return Promise.reject(e);
         }
     }
+
+    // IndexedDB Methods
+    // =================
+
+    /**
+     * Insert an encrypted vault payload to IndexedDB so we can use offline.
+     * @param vault 
+     */
+     async saveToDB(vault: EncryptedVault): Promise<void> {
+        await this.authoriserDB.vaults.put({
+            id: vault.id,
+            uid: vault.uid,
+            data: vault.data,
+            created: vault.created
+        });
+    }
+
+    /**
+     * Fetches an array of all the encrypted vaults we have stored locally.
+     * @returns 
+     */
+    async getAllFromDB(): Promise<EncryptedVault[]> {
+        const vaults = await this.authoriserDB.vaults.toArray();
+        return vaults;
+    }
 }
 
 export {
