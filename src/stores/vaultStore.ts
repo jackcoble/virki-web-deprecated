@@ -1,11 +1,11 @@
-import type { EncryptedVault } from '@/models/vault';
+import type { DecryptedVault } from '@/class/vault';
 import { defineStore } from 'pinia'
 
 export const useVaultStore = defineStore({
     id: 'vaults',
     state: () => ({
         activeVaultId: localStorage.getItem("lastActiveVault") || "",
-        vaults: [] as EncryptedVault[]
+        vaults: [] as DecryptedVault[]
     }),
     getters: {
         getVaults: (state) => {
@@ -26,7 +26,7 @@ export const useVaultStore = defineStore({
         }
     },
     actions: {
-        add(vault: EncryptedVault) {
+        add(vault: DecryptedVault) {
             // Check that the vault ID doesn't already exist. If it does, just update the vaults array
             // with the contents of the vault provided to us.
             const existingVaultIndex = this.vaults.findIndex(v => v.id === vault.id);
