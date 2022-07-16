@@ -194,4 +194,13 @@ export class Account {
             created: vault.created
         });
     }
+
+    /**
+     * Fetches an array of all the vaults we have locally.
+     * @returns 
+     */
+    async getVaultsFromDB(): Promise<IVaultDB[]> {
+        const vaults = await this.authoriserDB.vaults.toArray();
+        return vaults;
+    }
 }
