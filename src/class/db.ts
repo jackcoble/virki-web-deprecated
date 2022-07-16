@@ -7,8 +7,16 @@ interface IAccountDB {
     encryptedMasterKey: string;
 }
 
+interface IVaultDB {
+    id: string;
+    uid: string;
+    data: string;
+    created: string;
+}
+
 export class AuthoriserDB extends Dexie {
     accounts!: Table<IAccountDB>;
+    vaults!: Table<IVaultDB>;
 
     /**
      * Initialise encrypted key store for multiple accounts
@@ -16,7 +24,8 @@ export class AuthoriserDB extends Dexie {
     constructor() {
         super("authoriser");
         this.version(1).stores({
-            accounts: "++id, account, encryptedMasterKey"
+            accounts: "++id, account, encryptedMasterKey",
+            vaults: "id, uid, data, created"
         })
     }
 }
