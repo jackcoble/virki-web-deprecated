@@ -6,7 +6,9 @@
             <img v-else class="rounded-full" :src="vaultStore.getActiveVault?.icon" alt="Vault Icon">
         </div>
 
-        <h2 class="text-2xl font-semibold text-gray-900">
+        <!-- Active vault title and rename modal -->
+        <RenameVaultModal :show="showVaultRenameModal" @close="showVaultRenameModal = false" @done="showVaultRenameModal = false" />
+        <h2 class="text-2xl font-semibold text-gray-900" @click="showRenameVault">
             {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : 'No vault found...' }}
         </h2>
     </div>
@@ -59,13 +61,15 @@ import { ClockIcon, PlusIcon } from "@heroicons/vue/outline";
 import { useRouter } from "vue-router";
 import { useApplicationStore } from "@/stores/appStore";
 import { computed } from "@vue/reactivity";
+import RenameVaultModal from "./RenameVaultModal.vue";
 
 export default defineComponent({
     components: {
-        BaseModal,
-        ClockIcon,
-        PlusIcon
-    },
+    BaseModal,
+    ClockIcon,
+    PlusIcon,
+    RenameVaultModal
+},
     setup() {
         const router = useRouter();
         const applicationStore = useApplicationStore();
@@ -75,6 +79,7 @@ export default defineComponent({
 
         // Ref controlling whether modal should be shown or not
         const showModal = ref(false);
+        const showVaultRenameModal = ref(false);
         const selectedVault = ref(vaultStore.getActiveVaultId);
 
         // Update active vault (gets triggered when we receive the 'done' event)
@@ -83,13 +88,25 @@ export default defineComponent({
             showModal.value = !showModal.value;
         }
 
+        // Function to toggle showVaultRenameModal
+        const showRenameVault = () => {
+            // If we don't have an active vault, don't open it
+            if (!vaultStore.getActiveVault || !vaultStore.getActiveVaultId) {
+                return;
+            }
+
+            showVaultRenameModal.value = true;
+        }
+
         return {
             showModal,
             selectedVault,
             vaultStore,
             isOnline,
+            showVaultRenameModal,
 
             router,
+            showRenameVault,
             updateActiveVault
         }
     },
