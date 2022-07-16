@@ -2,6 +2,11 @@ import { Account } from "./account";
 
 // Details we expected the encrypted vault payload to have when decrypted
 interface DecryptedVault {
+    // Provided by the API
+    id?: string;
+    created?: string;
+
+    // Provided by the client
     name: string;
     description?: string;
     icon?: string;
