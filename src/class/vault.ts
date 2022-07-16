@@ -39,3 +39,8 @@ class Vault extends Account {
 export {
     Vault
 }
+
+export type {
+    DecryptedVault,
+    EncryptedVault
+}
