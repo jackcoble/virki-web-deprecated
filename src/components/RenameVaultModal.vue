@@ -17,10 +17,10 @@
 import { computed, defineComponent, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
-import type { EncryptedVault } from "@/models/vault";
+import type { DecryptedVault, EncryptedVault } from "@/class/vault";
 import useAccount from "@/composables/useAccount";
-import type { IVaultDB } from "@/class/db";
-import vault from "@/service/api/vault";
+import vaultService from "@/service/api/vaultService";
+import useVault from "@/composables/useVault";
 
 export default defineComponent({
     name: "RenameVaultModal",
@@ -34,6 +34,8 @@ export default defineComponent({
     },
     setup() {
         const account = useAccount();
+        const vault = useVault();
+
         const vaultStore = useVaultStore();
         
         const vaultName = ref("");
@@ -46,32 +48,37 @@ export default defineComponent({
                 return;
             }
 
-            // Otherwise we can construct an updated Vault payload using existing data
+            // Otherwise we can construct an updated Vault payload using existing data.
+            // We only want to update the name, description and icon at most as this is all the user has control over.
             const activeVault = vaultStore.getActiveVault;
-            const modifiedVault: EncryptedVault = {
-                name: vaultName.value,
-                description: activeVault?.description!,
-                icon: activeVault?.icon!
-            }
+            if (activeVault) {
+                const modifiedVault: DecryptedVault = {
+                    name: vaultName.value,
+                    description: activeVault.description,
+                    icon: activeVault.icon
+                }
 
-            const vaultString = JSON.stringify(modifiedVault);
-            const encryptedVaultString = await account.encryptData(vaultString);
+                // Create an encrypted object of the vault data, and set the IDs for both the modified + encrypted before sending to API.
+                const encryptedVault = await vault?.createEncryptedVaultObject(modifiedVault);
+                modifiedVault.id = activeVault.id;
+                encryptedVault!.id = activeVault.id!;
 
-            // Send the encrypted Vault string to the API
-            const res = await vault.UpdateVault(activeVault!.id!, encryptedVaultString);
-            if (res && res.data) {
-                const vault = res.data;
+                try {
+                    await vaultService.UpdateVault(encryptedVault!).then(res => {
+                        const response = res.data as EncryptedVault;
 
-                // Decrypt the returned response and update IndexedDB + Store
-                const decryptedVaultString = await account.decryptData(vault.data);
-                const decryptedVault = JSON.parse(decryptedVaultString) as EncryptedVault;
-                decryptedVault.id = vault.id;
+                        // Need to set UID and Created date again before inserting to IndexedDB
+                        encryptedVault!.uid = response.uid;
+                        encryptedVault!.created = response.created;
+                    })
+                } catch (e) {
+                    // TODO: Handle
+                    console.log(e);
+                }
 
-                // For good measure we should put this in IndexedDB too (just in case data has updated at all!)
-                await account.addVaultToDB(vault);
-
-                // Then we can add/update the store
-                vaultStore.add(decryptedVault);
+                // Insert into IndexedDB and update the store
+                await vault?.saveToDB(encryptedVault!);
+                vaultStore.add(modifiedVault);
             }
         }
 
