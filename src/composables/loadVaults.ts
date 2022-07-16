@@ -4,7 +4,7 @@ import { useApplicationStore } from "@/stores/appStore";
 
 import useAccount from "./useAccount";
 import type { IVaultDB } from "@/class/db";
-import vault from "@/service/api/vault";
+import vaultService from "@/service/api/vaultService";
 import { computed } from "vue";
 
 // Handles the loading, decryption and setting of the active vault
@@ -38,7 +38,7 @@ export async function loadVaults() {
     if (!!isOnline.value && account) {
         try {
             // Fetch vaults
-            const res = await vault.GetVaults();
+            const res = await vaultService.GetVaults();
             if (res && res.data) {
                 const vaults = res.data as IVaultDB[]; // Already formatted as to how we want them stored in IndexedDB.
 
