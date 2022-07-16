@@ -30,9 +30,9 @@
         </div>
       </div>
 
-      <div class="flex">
-        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.issuer" class="w-full">
-          <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon"></Entry>
+      <div class="flex flex-col">
+        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.issuer">
+          <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon" />
           <div class="w-full border-t border-gray-300"></div>
         </div>
 
@@ -97,40 +97,38 @@ export default defineComponent({
     onMounted(async () => {
       // Fetch list of Vaults belonging to the user
       // and decrypt the data (if we don't already have a list of vaults already)
-      if (vaultStore.getVaults.length > 0) {
-        return;
-      }
+      if (vaultStore.getVaults.length === 0) {
+        try {
+          await vault.GetVaults().then(async res => {
+            const vaults = res.data;
+            if (vaults) {
+              // Clear existing vaults
+              vaultStore.clear()
 
-      try {
-        await vault.GetVaults().then(async res => {
-          const vaults = res.data;
-          if (vaults) {
-            // Clear existing vaults
-            vaultStore.clear()
+              // Attempt to decrypt
+              vaults.forEach(async (v: any) => {
+                if (account) {
+                  const decryptedVaultString = await account?.decryptData(v.data);
+                  const decryptedVault = JSON.parse(decryptedVaultString!) as EncryptedVault;
 
-            // Attempt to decrypt
-            vaults.forEach(async (v: any) => {
-              if (account) {
-                const decryptedVaultString = await account?.decryptData(v.data);
-                const decryptedVault = JSON.parse(decryptedVaultString!) as EncryptedVault;
+                  // Add vault list of vaults in store
+                  decryptedVault.id = v.id;
+                  vaultStore.add(decryptedVault);
+                }
+              })
 
-                // Add vault list of vaults in store
-                decryptedVault.id = v.id;
-                vaultStore.add(decryptedVault);
+              // If we don't have an active vault already set,
+              // set the first vault as the "default"
+              if (!vaultStore.getActiveVaultId) {
+                const firstVault = vaultStore.getVaults[0];
+                vaultStore.setActiveVault(firstVault.id!);
               }
-            })
-
-            // If we don't have an active vault already set,
-            // set the first vault as the "default"
-            if (!vaultStore.getActiveVaultId) {
-              const firstVault = vaultStore.getVaults[0];
-              vaultStore.setActiveVault(firstVault.id!);
             }
-          }
-        })
-      } catch (e) {
-        // TODO: Handle this better
-        console.log("Error with vaults:", e)
+          })
+        } catch (e) {
+          // TODO: Handle this better
+          console.log("Error with vaults:", e)
+        }
       }
 
       // Fire off initial countdown event
