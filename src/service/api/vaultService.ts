@@ -7,10 +7,10 @@ export default {
         return api.post("/v1/vault", vault);
     },
 
-    UpdateVault(vaultId: string, encryptedData: string): Promise<AxiosResponse> {
+    UpdateVault(vault: EncryptedVault): Promise<AxiosResponse> {
         return api.put("/v1/vault", {
-            id: vaultId,
-            data: encryptedData
+            id: vault.id,
+            data: vault.data
         })
     },
 
