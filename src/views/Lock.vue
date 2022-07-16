@@ -48,6 +48,7 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { LockClosedIcon, LockOpenIcon, LogoutIcon } from "@heroicons/vue/outline";
 import { useApplicationStore } from "@/stores/appStore";
+import { loadVaults } from "@/composables/loadVaults";
 
 export default defineComponent({
     name: "Lock",
@@ -109,6 +110,9 @@ export default defineComponent({
                     return;
                 }
             }
+
+            // As state has likely been cleared, load in vaults again!
+            await loadVaults();
 
             isLoading.value = false;
 
