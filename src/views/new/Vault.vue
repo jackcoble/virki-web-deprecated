@@ -34,11 +34,12 @@ import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
 
 import { PhotographIcon } from "@heroicons/vue/outline";
-import type { EncryptedVault } from "@/models/vault";
 import useAccount from "@/composables/useAccount";
-import vault from "@/service/api/vault";
+import vaultService from "@/service/api/vaultService";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useRouter } from "vue-router";
+import useVault from "@/composables/useVault";
+import type { EncryptedVault, DecryptedVault } from "@/class/vault";
 
 export default defineComponent({
     name: "NewVault",
@@ -47,6 +48,8 @@ export default defineComponent({
     },
     setup() {
         const account = useAccount();
+        const vault = useVault();
+
         const toaster = useToaster();
         const router = useRouter();
 
@@ -104,25 +107,43 @@ export default defineComponent({
             isLoading.value = true;
 
             try {
-                const encryptedVault: EncryptedVault = {
+                // Prepare a payload as to what the data should look in decrypted format...
+                const vaultDetails: DecryptedVault = {
                     name: name.value,
                     description: description.value,
                     icon: uploadedIcon.value
                 }
+                
+                // Now that we have the decrypted vault payload prepared, we can encrypt it and
+                // submit the returned object to our API
+                const encryptedVaultDetails = await vault?.createEncryptedVaultObject(vaultDetails);
+                if (encryptedVaultDetails) {
+                    await vaultService.CreateVault(encryptedVaultDetails).then(res => {
+                        // Need to set the missing ID, UID and Created properties which we receive in the response
+                        const encryptedVaultResponse = res.data as EncryptedVault;
 
-                const vaultString = JSON.stringify(encryptedVault);
-                const encryptedVaultString = await account.encryptData(vaultString);
+                        encryptedVaultDetails.id = encryptedVaultResponse.id;
+                        encryptedVaultDetails.uid = encryptedVaultResponse.uid;
+                        encryptedVaultDetails.created = encryptedVaultResponse.created;
 
-                // Send the encrypted Vault string to the API
-                const res = await vault.CreateVault(encryptedVaultString);
+                        // Do the same, but for our decrypted payload which we'll add to the store.
+                        vaultDetails.id = encryptedVaultResponse.id;
+                        vaultDetails.created = encryptedVaultDetails.created;
+                    })
+                }
 
-                // Take the ID off the response data and add the vault to the VaultStore
-                encryptedVault.id = res.data.id;
-                vaultStore.add(encryptedVault);
+                // The encrypted vault data should now be ready to be stored client side again,
+                // so add it to IndexedDB and the "Decrypted" version to the in-memory store.
+                if (encryptedVaultDetails) {
+                    await vault?.saveToDB(encryptedVaultDetails);
+                    vaultStore.add(vaultDetails);
 
-                // Set the active vault to be the one just created
-                vaultStore.setActiveVault(encryptedVault.id!);
-                router.push("/");
+                    // As this vault is newly created, it is likely a good idea to set it as the "active" vault.
+                    vaultStore.setActiveVault(encryptedVaultDetails.id);
+
+                    // Push back to main page, where the new vault should now be active! 
+                    router.push("/");
+                }
                 
             } catch (e) {
                 return toaster.error("There was an error creating your vault.");
