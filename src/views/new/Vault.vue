@@ -35,11 +35,11 @@ import { defineComponent, ref } from "vue";
 
 import { PhotographIcon } from "@heroicons/vue/outline";
 import useAccount from "@/composables/useAccount";
-import vaultService from "@/service/api/vaultService";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useRouter } from "vue-router";
 import useVault from "@/composables/useVault";
-import type { EncryptedVault, DecryptedVault } from "@/class/vault";
+import type { IVault } from "@/class/vault";
+import { useApplicationStore } from "@/stores/appStore";
 
 export default defineComponent({
     name: "NewVault",
@@ -53,6 +53,7 @@ export default defineComponent({
         const toaster = useToaster();
         const router = useRouter();
 
+        const applicationStore = useApplicationStore();
         const vaultStore = useVaultStore();
 
         const iconInput = ref();
@@ -108,42 +109,40 @@ export default defineComponent({
 
             try {
                 // Prepare a payload as to what the data should look in decrypted format...
-                const vaultDetails: DecryptedVault = {
-                    name: name.value,
-                    description: description.value,
-                    icon: uploadedIcon.value
-                }
-                
-                // Now that we have the decrypted vault payload prepared, we can encrypt it and
-                // submit the returned object to our API
-                const encryptedVaultDetails = await vault?.createEncryptedVaultObject(vaultDetails);
-                if (encryptedVaultDetails) {
-                    await vaultService.CreateVault(encryptedVaultDetails).then(res => {
-                        // Need to set the missing ID, UID and Created properties which we receive in the response
-                        const encryptedVaultResponse = res.data as EncryptedVault;
+                // Description and Icon are optional so set them later if available
+                const vaultDetails = {
+                    name: name.value
+                } as IVault;
 
-                        encryptedVaultDetails.id = encryptedVaultResponse.id;
-                        encryptedVaultDetails.uid = encryptedVaultResponse.uid;
-                        encryptedVaultDetails.created = encryptedVaultResponse.created;
-
-                        // Do the same, but for our decrypted payload which we'll add to the store.
-                        vaultDetails.id = encryptedVaultResponse.id;
-                        vaultDetails.created = encryptedVaultDetails.created;
-                    })
+                if (description.value.trim().length > 0) {
+                    vaultDetails.description = description.value;
                 }
 
-                // The encrypted vault data should now be ready to be stored client side again,
-                // so add it to IndexedDB and the "Decrypted" version to the in-memory store.
-                if (encryptedVaultDetails) {
-                    await vault?.saveToDB(encryptedVaultDetails);
-                    vaultStore.add(vaultDetails);
+                if (uploadedIcon.value.trim().length > 0) {
+                    vaultDetails.icon = uploadedIcon.value;
+                }
+                        
+                // Now that we have the vault payload prepared, we can encrypt it and
+                // save to IndexedDB, and submit to our API (if we're online).
+                const encryptedVault = await vault?.createEncryptedVaultObject(vaultDetails, !applicationStore.isOnline);
+                if (encryptedVault) {
+                    await vault?.saveToDB(encryptedVault);
 
-                    // As this vault is newly created, it is likely a good idea to set it as the "active" vault.
-                    vaultStore.setActiveVault(encryptedVaultDetails.id);
+                    if (applicationStore.isOnline) {
+                        // Send to API...
+                        // TODO
+                        console.log("Send encrypted vault to API!")
+                    }
 
-                    // Push back to main page, where the new vault should now be active! 
+                    // Decrypt the vault we just created, and then set the active vault + add to store
+                    const decryptedVault = await vault?.decryptFromVaultObject(encryptedVault);
+                    vaultStore.setActiveVault(decryptedVault!.v_id);
+                    vaultStore.add(decryptedVault!)
+
+                    // Push to Index
                     router.push("/");
                 }
+
                 
             } catch (e) {
                 return toaster.error("There was an error creating your vault.");
