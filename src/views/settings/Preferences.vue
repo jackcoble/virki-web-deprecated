@@ -7,7 +7,10 @@
             <p class="text-xs font-medium text-gray-700">Inactivity Timeout</p>
             <p class="text-sm">Authoriser can lock itself after a certain number of minutes to remove your encryption key from memory, protecting your authentication tokens.</p>
 
-            <b-input type="number" v-model="timeout" />
+            <div class="flex items-center space-x-2">
+                <b-input type="number" v-model="timeout" />
+                <span class="text-sm font-bold">minutes</span>
+            </div>
 
             <p class="text-sm">If you have an encryption key remembered on this device, the inactivity timeout will be ignored.</p>
         </div>
@@ -35,7 +38,7 @@ export default defineComponent({
             if (!timeout.value) {
                 timeout.value = "0"
             }
-            
+
             applicationStore.setInactivityTimeout(timeout.value)
         })
 
