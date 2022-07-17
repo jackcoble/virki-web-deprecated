@@ -53,13 +53,13 @@ export default defineComponent({
 
         const applicationStore = useApplicationStore();
         const vaultStore = useVaultStore();
-        
-        const name = ref("");
-        const description = ref("");
-        const icon = ref("");
 
         const activeVault = computed(() => vaultStore.getActiveVault);
         const activeVaultName = computed(() => vaultStore.getActiveVault?.name);
+        
+        const name = ref("");
+        const description = ref("");
+        const icon = ref(activeVault.value?.icon);
 
         // Function to handle re-encryption of vault data with updated name
         const handleRename = async () => {
