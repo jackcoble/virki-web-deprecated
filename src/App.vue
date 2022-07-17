@@ -6,12 +6,15 @@ import { fromUnixTime, getUnixTime, sub } from "date-fns";
 import { useAuthenticationStore } from './stores/authenticationStore';
 import { onMounted, onUnmounted } from 'vue';
 import { useApplicationStore } from './stores/appStore';
+import useToaster from './composables/useToaster';
 
 const router = useRouter();
 const currentRoute = useRoute();
 
 const applicationStore = useApplicationStore();
 const authenticationStore = useAuthenticationStore();
+
+const toaster = useToaster();
 
 // Listen for clicks and update the "last active" timestamp in store
 document.addEventListener("click", () => {
@@ -23,6 +26,8 @@ document.addEventListener("click", () => {
 window.addEventListener("online", (event) => {
   if (event) {
     applicationStore.setOnline(true);
+
+    toaster.info("Syncing vaults...")
   }
 })
 
