@@ -22,7 +22,7 @@ class AuthoriserDB extends Dexie {
         this.version(1).stores({
             accounts: "++id, account, encryptedMasterKey",
             vaults: "v_id, name, description, icon, offline, created",
-            tokens: "t_id, v_id, issuer, account, secret, icon_url, icon_data, algorithm, type, duration, digits, offline, created, modified"
+            tokens: "t_id, v_id, issuer, account, secret, icon, algorithm, type, duration, digits, offline, created, modified"
         })
     }
 }
