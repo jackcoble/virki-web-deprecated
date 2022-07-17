@@ -1,7 +1,7 @@
 import { Account, EncryptionType } from "./account";
 
 // Details we expected the encrypted vault payload to have when decrypted
-interface Vault {
+interface IVault {
     v_id: string;
     name: string;
     description?: string;
@@ -10,20 +10,12 @@ interface Vault {
     created: number;
 }
 
-// What we expect a vault payload to look like after its encrypted/returned back from API
-interface EncryptedVault {
-    id: string;
-    uid: string;
-    data: string;
-    created: string;
-}
-
 class Vault extends Account {
     constructor(masterKey: string) {
         super(masterKey);
     }
 
-    async createEncryptedVaultObject(vaultDetails: Vault, offline?: boolean): Promise<Vault> {
+    async createEncryptedVaultObject(vaultDetails: IVault, offline?: boolean): Promise<IVault> {
         // Generate a UUID (v4), remove hyphens and prepend 'v' to indicate vault, and append with EncryptionType to
         // indicate the type of encryption we are using.
         let vaultId = window.crypto.randomUUID();
@@ -68,7 +60,7 @@ class Vault extends Account {
      * Insert an encrypted vault payload to IndexedDB so we can use offline.
      * @param vault 
      */
-     async saveToDB(vault: Vault): Promise<void> {
+     async saveToDB(vault: IVault): Promise<void> {
         await this.authoriserDB.vaults.put(vault);
     }
 
@@ -76,7 +68,7 @@ class Vault extends Account {
      * Fetches an array of all the encrypted vaults we have stored locally.
      * @returns 
      */
-    async getAllFromDB(): Promise<EncryptedVault[]> {
+    async getAllFromDB(): Promise<IVault[]> {
         const vaults = await this.authoriserDB.vaults.toArray();
         return vaults;
     }
@@ -87,6 +79,5 @@ export {
 }
 
 export type {
-    DecryptedVault,
-    EncryptedVault
+    IVault
 }
