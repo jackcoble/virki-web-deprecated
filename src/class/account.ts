@@ -8,6 +8,10 @@ const OPENPGP_CONFIG = {
     showVersion: true
 } as Config;
 
+enum EncryptionType {
+    OPENPGP = 1
+};
+
 export class Account {
     private masterKey: string;
     private authoriserDB: AuthoriserDB;
@@ -227,3 +231,5 @@ export class Account {
         return vaults;
     }
 }
+
+export { EncryptionType }
