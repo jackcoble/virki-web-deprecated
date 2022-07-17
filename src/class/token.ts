@@ -29,6 +29,7 @@ interface IToken {
     algorithm: TokenAlgorithm;
     type: TokenType;
     duration: number;
+    digits: number;
 }
 
 class Token extends Account {
@@ -42,16 +43,18 @@ class Token extends Account {
      * @returns {token}
      */
     async createEncryptedToken(token: IToken, offline?: boolean): Promise<IToken> {
+        const encryptedToken = { ...token };
+
         // If we don't have a token ID for this entry, generate one.
         // It will be in the same format that we use for Vaults.
-        if (!token.t_id) {
+        if (!encryptedToken.t_id) {
             // Token format: t-d68f86c1fbe145b7bbba0f36b4cdfa6e-v1
             //               [Token Identifier Character]-[UUID]-[Encryption Type]
             let tokenId = window.crypto.randomUUID();
             tokenId = tokenId.replace(/-/g, "");
             tokenId = `t-${tokenId}-v${EncryptionType.OPENPGP}`;
 
-            token.t_id = tokenId;
+            encryptedToken.t_id = tokenId;
         }
 
         // We should encrypt the following data:
@@ -59,29 +62,29 @@ class Token extends Account {
         // - Account
         // - Secret
         // - Icon (if available)
-        token.issuer = await this.encryptData(token.issuer);
-        token.account = await this.encryptData(token.account);
-        token.secret = await this.encryptData(token.secret);
+        encryptedToken.issuer = await this.encryptData(token.issuer);
+        encryptedToken.account = await this.encryptData(token.account);
+        encryptedToken.secret = await this.encryptData(token.secret);
 
-        if (token.icon) {
-            token.icon.data = await this.encryptData(token.icon.data);
-            token.icon.url = await this.encryptData(token.icon.url);
+        if (encryptedToken.icon) {
+            encryptedToken.icon.data = await this.encryptData(encryptedToken.icon.data);
+            encryptedToken.icon.url = await this.encryptData(encryptedToken.icon.url);
         }
 
         // If device is offline, set the offline timestamp as current device UNIX time (microseconds)
         const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
         if (offline === true) {
-            token.offline = currentUnixMilliseconds;
+            encryptedToken.offline = currentUnixMilliseconds;
         } else {
-            token.offline = false;
+            encryptedToken.offline = false;
         }
 
         // Set the created time as current UNIX time if not already set
-        if (!token.created) {
-            token.created = currentUnixMilliseconds;
+        if (!encryptedToken.created) {
+            encryptedToken.created = currentUnixMilliseconds;
         }
         
-        return Promise.resolve(token);
+        return Promise.resolve(encryptedToken);
     }
 
     /**
