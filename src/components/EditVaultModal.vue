@@ -59,7 +59,9 @@ export default defineComponent({
         
         const name = ref("");
         const description = ref("");
-        const icon = ref(activeVault.value?.icon);
+
+        const icon = ref("");
+        const removeIcon = ref(false);
 
         // Function to handle re-encryption of vault data with updated name
         const handleRename = async () => {
@@ -72,6 +74,15 @@ export default defineComponent({
             const activeVault = vaultStore.getActiveVault as IVault;
             if (activeVault) {
                 const modifiedVault = { ...activeVault };
+
+                // Determine the icon we want to use
+                if (removeIcon.value === true) {
+                    // Remove the icon entirely
+                    icon.value = "";
+                } else if (!removeIcon.value && activeVault.icon) {
+                    // Stick with the existing icon
+                    icon.value = activeVault.icon;
+                }
 
                 // Update vault name, description and icon
                 modifiedVault.name = name.value ? name.value : activeVault.name;
@@ -91,12 +102,14 @@ export default defineComponent({
         // Function to handle the "imageData" event from icon upload component
         const handleImageData = (e: any) => {
             // If the event is undefined, that means
-            // the image has been cleared, so do that with our icon
+            // the image has been cleared, so we want to remove the icon from this vault.
             if (!e) {
+                removeIcon.value = true;
                 icon.value = "";
             }
             else {
                 // Update icon from the string in the event
+                removeIcon.value = false;
                 icon.value = e;
             }
         }
