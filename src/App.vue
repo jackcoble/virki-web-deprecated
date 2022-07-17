@@ -14,8 +14,6 @@ const currentRoute = useRoute();
 const applicationStore = useApplicationStore();
 const authenticationStore = useAuthenticationStore();
 
-const toaster = useToaster();
-
 // Listen for clicks and update the "last active" timestamp in store
 document.addEventListener("click", () => {
   const activeTimestamp = getUnixTime(new Date());
@@ -27,7 +25,11 @@ window.addEventListener("online", (event) => {
   if (event) {
     applicationStore.setOnline(true);
 
-    toaster.info("Syncing vaults...")
+    // Simulate syncing for 2 seconds after reconnect
+    applicationStore.setSyncing(true);
+    setTimeout(() => {
+      applicationStore.setSyncing(false);
+    }, 2000)
   }
 })
 
