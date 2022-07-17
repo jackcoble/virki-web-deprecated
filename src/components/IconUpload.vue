@@ -7,12 +7,17 @@
 </template>
 
 <script lang="ts">
-import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
+
+import useToaster from "@/composables/useToaster";
+import { PhotographIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
     name: "IconUpload",
     emits: ["imageData"],
+    components: {
+        PhotographIcon
+    },
     setup(props, { emit }) {
         const toaster = useToaster();
 
