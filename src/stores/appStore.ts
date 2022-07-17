@@ -5,10 +5,12 @@ export const useApplicationStore = defineStore({
     id: 'application',
     state: () => ({
         online: navigator.onLine,
+        syncing: false,
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10" // 10 minute default inactivity timeout
     }),
     getters: {
         isOnline: (state) => state.online,
+        isSyncing: (state) => state.syncing,
         getInactivityTimeout: (state) => parseInt(state.inactivityTimeout)
     },
     actions: {
@@ -19,6 +21,10 @@ export const useApplicationStore = defineStore({
         setInactivityTimeout(timeout: string) {
             this.inactivityTimeout = timeout;
             localStorage.setItem("inactivityTimeout", timeout)
+        },
+
+        setSyncing(sync: boolean) {
+            this.syncing = sync;
         }
     },
 })
