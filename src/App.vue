@@ -39,8 +39,8 @@ onMounted(() => {
     const inactivityLimit = applicationStore.getInactivityTimeout;
     const currentDate = new Date();
 
-    // If the inactivity limit is set to zero, then we never want to lock
-    if (inactivityLimit === 0) {
+    // If the inactivity limit is set to zero, or we have an encryption key remembered on the device, then we never want to lock
+    if (inactivityLimit === 0 || localStorage.getItem("stretched_password")) {
       return;
     }
 

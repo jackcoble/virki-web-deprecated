@@ -27,7 +27,7 @@
                 </router-link>
 
                 <!-- Preferences -->
-                <router-link to="/" class="flex flex-row items-middle p-3 border rounded">
+                <router-link to="/settings/preferences" class="flex flex-row items-middle p-3 border rounded">
                     <AdjustmentsIcon class="w-5 mr-1" />
                     <span class="text-sm font-medium">Preferences</span>
                 </router-link>
