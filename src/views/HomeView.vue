@@ -39,8 +39,8 @@
       </div>
 
       <div class="flex flex-col">
-        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.issuer">
-          <Entry :issuer="entry.issuer" :account="entry.account" :secret="entry.secret" :icon="entry.icon" />
+        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.t_id">
+          <Entry :token="entry" />
           <div class="w-full border-t border-gray-300"></div>
         </div>
 
@@ -74,6 +74,8 @@ import OfflineAlertModal from "../components/OfflineAlertModal.vue";
 import useVault from "@/composables/useVault";
 import useToaster from "@/composables/useToaster";
 import vaultService from "@/service/api/vaultService";
+import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
+import { useTokenStore } from "@/stores/tokenStore";
 
 export default defineComponent({
   name: "HomeView",
@@ -92,7 +94,9 @@ export default defineComponent({
     const toaster = useToaster();
 
     const applicationStore = useApplicationStore();
+    const encryptionKeyStore = useEncryptionKeyStore();
     const vaultStore = useVaultStore();
+    const tokenStore = useTokenStore();
 
     // Computed values from store
     const isOnline = computed(() => applicationStore.isOnline);
@@ -149,11 +153,11 @@ export default defineComponent({
             await vaultService.GetVaults();
           } catch (e) {
             if (e.response && e.response.data) {
-              return toaster.error(e.response.data.error);
+              toaster.error(e.response.data.error);
             }
 
             // Something else has gone wrong
-            return toaster.error("Unknown error has occurred syncing vaults!");
+            toaster.error("Unknown error has occurred syncing vaults!");
           }
         }
       }
@@ -181,7 +185,7 @@ export default defineComponent({
       emitter.emit("countdown", eventPayload);
     }
 
-    const entries = [] as any[];
+    const entries = computed(() => tokenStore.getTokens);
 
     return {
       entries,
