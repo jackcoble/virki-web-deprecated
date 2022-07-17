@@ -1,17 +1,11 @@
 import Dexie, { type Table } from "dexie";
+import type { Vault } from "./vault";
 
 // Interface for Dexie table
 interface IAccountDB {
     id?: number;
     account: string;
     encryptedMasterKey: string;
-}
-
-interface IVaultDB {
-    id: string;
-    uid: string;
-    data: string;
-    created: string;
 }
 
 interface ITokenDB {
@@ -25,7 +19,7 @@ interface ITokenDB {
 
 class AuthoriserDB extends Dexie {
     accounts!: Table<IAccountDB>;
-    vaults!: Table<IVaultDB>;
+    vaults!: Table<Vault>;
     tokens!: Table<ITokenDB>
 
     /**
@@ -35,7 +29,7 @@ class AuthoriserDB extends Dexie {
         super("authoriser");
         this.version(1).stores({
             accounts: "++id, account, encryptedMasterKey",
-            vaults: "id, uid, data, created",
+            vaults: "v_id, name, description, icon, offline, created",
             tokens: "id, uid, vaultId, data, created, modified"
         })
     }
