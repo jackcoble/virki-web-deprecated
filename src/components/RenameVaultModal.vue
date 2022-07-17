@@ -64,8 +64,7 @@ export default defineComponent({
 
         // Function to handle re-encryption of vault data with updated name
         const handleRename = async () => {
-            // If new vault name is empty, just close the modal
-            if (!name.value || !account) {
+            if (!account) {
                 return;
             }
 
@@ -76,7 +75,7 @@ export default defineComponent({
                 const modifiedVault = { ...activeVault };
 
                 // Update vault name, description and icon
-                modifiedVault.name = name.value;
+                modifiedVault.name = name.value ? name.value : activeVault.name;
                 modifiedVault.description = description.value;
                 modifiedVault.icon = icon.value;
 
