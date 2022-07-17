@@ -8,6 +8,8 @@
             <p class="text-sm">Authoriser can lock itself after a certain number of minutes to remove your encryption key from memory, protecting your authentication tokens.</p>
 
             <b-input type="number" v-model="timeout" />
+
+            <p class="text-sm">If you have an encryption key remembered on this device, the inactivity timeout will be ignored.</p>
         </div>
     </div>
 </template>
@@ -30,6 +32,10 @@ export default defineComponent({
 
         // Watch timeout ref and make changes in store if needed
         watch((timeout), () => {
+            if (!timeout.value) {
+                timeout.value = "0"
+            }
+            
             applicationStore.setInactivityTimeout(timeout.value)
         })
 
