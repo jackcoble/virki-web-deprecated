@@ -16,7 +16,7 @@
           <!-- Disconnected from cloud alert -->
           <OfflineAlertModal :show="showOfflineAlertModal" @close="showOfflineAlertModal = false" @done="showOfflineAlertModal = false" />
           <button v-if="!isOnline" class="rounded-full p-1 text-red-400" @click="showOfflineAlertModal = !showOfflineAlertModal">
-            <CloudIcon class="w-6 h-6" />
+            <StatusOfflineIcon class="w-6 h-6" />
           </button>
         </div>
       </div>
@@ -67,7 +67,7 @@ import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue"
 import Entry from "../components/Entry.vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, CloudIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import OfflineAlertModal from "../components/OfflineAlertModal.vue";
@@ -85,7 +85,7 @@ export default defineComponent({
     VaultSelector,
     RefreshIcon,
     EmojiSadIcon,
-    CloudIcon,
+    StatusOfflineIcon,
     OfflineAlertModal
 },
   setup() {
