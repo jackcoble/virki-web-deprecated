@@ -15,6 +15,7 @@ enum TokenType {
 // Interface describing the properties a "Token" entry should have
 interface IToken {
     t_id: string;
+    v_id: string; // Vault the token belongs to
     offline: boolean | number // If device is offline, this should be a timestamp of when it went offline in UNIX time (ms)
     created: number;
 
