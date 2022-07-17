@@ -1,5 +1,5 @@
 import Dexie, { type Table } from "dexie";
-import type { Vault } from "./vault";
+import type { IVault } from "./vault";
 
 // Interface for Dexie table
 interface IAccountDB {
@@ -19,7 +19,7 @@ interface ITokenDB {
 
 class AuthoriserDB extends Dexie {
     accounts!: Table<IAccountDB>;
-    vaults!: Table<Vault>;
+    vaults!: Table<IVault>;
     tokens!: Table<ITokenDB>
 
     /**
@@ -41,6 +41,5 @@ export {
 
 export type {
     IAccountDB,
-    IVaultDB,
     ITokenDB
 }
