@@ -1,11 +1,11 @@
-import type { DecryptedVault } from '@/class/vault';
+import type { IVault } from '@/class/vault';
 import { defineStore } from 'pinia'
 
 export const useVaultStore = defineStore({
     id: 'vaults',
     state: () => ({
         activeVaultId: localStorage.getItem("lastActiveVault") || "",
-        vaults: [] as DecryptedVault[]
+        vaults: [] as IVault[]
     }),
     getters: {
         getVaults: (state) => {
@@ -21,15 +21,15 @@ export const useVaultStore = defineStore({
             }
 
             // Otherwise find and return the vault active
-            const activeVault = state.vaults.find(v => v.id === state.activeVaultId);
+            const activeVault = state.vaults.find(v => v.v_id === state.activeVaultId);
             return activeVault;
         }
     },
     actions: {
-        add(vault: DecryptedVault) {
+        add(vault: IVault) {
             // Check that the vault ID doesn't already exist. If it does, just update the vaults array
             // with the contents of the vault provided to us.
-            const existingVaultIndex = this.vaults.findIndex(v => v.id === vault.id);
+            const existingVaultIndex = this.vaults.findIndex(v => v.v_id === vault.v_id);
             if (existingVaultIndex !== -1) {
                 this.vaults[existingVaultIndex] = vault;
             }
