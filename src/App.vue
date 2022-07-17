@@ -34,10 +34,15 @@ window.addEventListener("offline", (event) => {
 
 let inactivityInterval: NodeJS.Timer;
 onMounted(() => {
-  // Create an interval to check that page hasn't been inactive for the past 30 minutes
+  // Create an interval to check that page hasn't been inactive
   inactivityInterval = setInterval(() => {
-    const inactivityLimit = 30;
+    const inactivityLimit = applicationStore.getInactivityTimeout;
     const currentDate = new Date();
+
+    // If the inactivity limit is set to zero, then we never want to lock
+    if (inactivityLimit === 0) {
+      return;
+    }
 
     const leastActivityDate = sub(currentDate, { minutes: inactivityLimit });
     if (leastActivityDate > fromUnixTime(authenticationStore.getLastActiveTimestamp)) {
