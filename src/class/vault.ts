@@ -24,11 +24,14 @@ class Vault extends Account {
     async createEncryptedVaultObject(vaultDetails: IVault, offline?: boolean): Promise<IVault> {
         // Generate a UUID (v4), remove hyphens and prepend 'v' to indicate vault, and append with EncryptionType to
         // indicate the type of encryption we are using.
-        let vaultId = window.crypto.randomUUID();
-        vaultId = vaultId.replace(/-/g, "");
-        vaultId = `v-${vaultId}-v${EncryptionType.OPENPGP}`;
+        // Only do this though if the vault doesn't have an ID already present.
+        if (!vaultDetails.v_id) {
+            let vaultId = window.crypto.randomUUID();
+            vaultId = vaultId.replace(/-/g, "");
+            vaultId = `v-${vaultId}-v${EncryptionType.OPENPGP}`;
 
-        vaultDetails.v_id = vaultId;
+            vaultDetails.v_id = vaultId;
+        }
 
         // Now that we've got an ID set, we can start to encrypt some elements of a vault individually
         // - Name
