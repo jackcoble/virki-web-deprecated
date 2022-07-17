@@ -1,4 +1,5 @@
 import { Account } from "./account";
+import * as OTPAuth from 'otpauth';
 
 // Enums for Algorithm and Type
 enum TokenAlgorithm {
@@ -39,13 +40,40 @@ class Token extends Account {
         return Promise.resolve(token);
     }
 
+    /**
+     * Generate and return a OTP code in string format.
+     * @param secret 
+     * @param type 
+     * @param digits 
+     * @param period 
+     * @param algorithm 
+     * @returns 
+     */
     getCode(
         secret: string,
         type: TokenType,
+        digits: number,
         period: number,
-        len?: number,
         algorithm?: TokenAlgorithm
-    ) {}
+    ) {
+        // Authoriser only supports TOTP generation at the moment,
+        // due to being reliant upon the otpauth library. When we have the
+        // chance, implement the algorithms ourselves.
+        switch (type) {
+            case TokenType.TOTP:
+                const totp = new OTPAuth.TOTP({
+                    secret: secret,
+                    algorithm: "SHA1",
+                    digits: digits,
+                    period: period
+                });
+
+                return totp.generate();
+        
+            default:
+                break;
+        }
+    }
 }
 
 export {
