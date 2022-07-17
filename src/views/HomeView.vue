@@ -76,6 +76,7 @@ import useToaster from "@/composables/useToaster";
 import vaultService from "@/service/api/vaultService";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { useTokenStore } from "@/stores/tokenStore";
+import useToken from "@/composables/useToken";
 
 export default defineComponent({
   name: "HomeView",
@@ -91,6 +92,7 @@ export default defineComponent({
     const emitter = useEmitter();
     const account = useAccount();
     const vault = useVault();
+    const token = useToken();
     const toaster = useToaster();
 
     const applicationStore = useApplicationStore();
@@ -160,6 +162,15 @@ export default defineComponent({
             toaster.error("Unknown error has occurred syncing vaults!");
           }
         }
+      }
+
+      // Lets do the same as above, but for token entries instead!
+      if (tokenStore.getTokens.length === 0) {
+        const tokens = await token?.getTokensInDB();
+        tokens?.forEach(async t => {
+          const decryptedToken = await token?.decryptToken(t);
+          tokenStore.add(decryptedToken!);
+        });
       }
 
       // Fire off initial countdown event
