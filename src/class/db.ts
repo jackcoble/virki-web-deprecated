@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import type { IToken } from "./token";
 import type { IVault } from "./vault";
 
 // Interface for Dexie table
@@ -8,19 +9,10 @@ interface IAccountDB {
     encryptedMasterKey: string;
 }
 
-interface ITokenDB {
-    id: string;
-    uid: string;
-    vaultId: string;
-    data: string;
-    created: string;
-    modified: string;
-}
-
 class AuthoriserDB extends Dexie {
     accounts!: Table<IAccountDB>;
     vaults!: Table<IVault>;
-    tokens!: Table<ITokenDB>
+    tokens!: Table<IToken>
 
     /**
      * Initialise encrypted key store for multiple accounts
@@ -30,7 +22,7 @@ class AuthoriserDB extends Dexie {
         this.version(1).stores({
             accounts: "++id, account, encryptedMasterKey",
             vaults: "v_id, name, description, icon, offline, created",
-            tokens: "id, uid, vaultId, data, created, modified"
+            tokens: "t_id, v_id, issuer, account, secret, icon_url, icon_data, algorithm, type, duration, digits, offline, created, modified"
         })
     }
 }
@@ -40,6 +32,5 @@ export {
 }
 
 export type {
-    IAccountDB,
-    ITokenDB
+    IAccountDB
 }
