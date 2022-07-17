@@ -2,7 +2,7 @@
     <input class="hidden" type="file" accept="image/*" @change="handleImage" ref="iconInput" />
     <div class="rounded-full bg-gray-200 border-2 border-gray-300 cursor-pointer" @click="triggerFileUploadPrompt">
         <PhotographIcon v-if="!uploadedIcon" class="text-gray-500 rounded-full w-24 p-4" />
-        <img v-else class="rounded-full object-cover w-24 h-24" :src="uploadedIcon" alt="Uploaded Icon">
+        <img v-if="uploadedIcon" class="rounded-full object-cover w-24 h-24" :src="uploadedIcon" alt="Uploaded Icon">
     </div>
 </template>
 
@@ -14,6 +14,11 @@ import { PhotographIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
     name: "IconUpload",
+    props: {
+        image: {
+            type: String
+        }
+    },
     emits: ["imageData"],
     components: {
         PhotographIcon
@@ -22,7 +27,7 @@ export default defineComponent({
         const toaster = useToaster();
 
         const iconInput = ref();
-        const uploadedIcon = ref("");
+        const uploadedIcon = ref(props.image);
 
         // Function to trigger/click the file upload prompt
         const triggerFileUploadPrompt = () => {
