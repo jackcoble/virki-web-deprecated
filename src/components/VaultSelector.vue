@@ -38,8 +38,8 @@
                             </div>
                         </div>
 
-                        <!-- Add new vault (if not offline) -->
-                        <div v-if="!!isOnline" class="flex flex-row items-center w-100 text-sm h-14 space-x-3 cursor-pointer" @click="router.push('/new/vault')">
+                        <!-- Add new vault -->
+                        <div class="flex flex-row items-center w-100 text-sm h-14 space-x-3 cursor-pointer" @click="router.push('/new/vault')">
                             <div class="ml-7 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
                                 <PlusIcon class="text-gray-500 rounded-full" />
                             </div>
@@ -72,10 +72,7 @@ export default defineComponent({
 },
     setup() {
         const router = useRouter();
-        const applicationStore = useApplicationStore();
         const vaultStore = useVaultStore();
-
-        const isOnline = computed(() => applicationStore.isOnline)
 
         // Ref controlling whether modal should be shown or not
         const showModal = ref(false);
@@ -102,7 +99,6 @@ export default defineComponent({
             showModal,
             selectedVault,
             vaultStore,
-            isOnline,
             showVaultRenameModal,
 
             router,
