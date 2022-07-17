@@ -21,7 +21,7 @@
                     Switch between the different vaults containing your authentication tokens.
                 </p>
 
-                <fieldset class="h-48 w-full p-2 overflow-auto">
+                <fieldset class="h-52 w-full p-2 overflow-auto">
                     <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
                         <div v-for="(vault) in vaultStore.getVaults" :key="vault.v_id" class="relative flex items-start py-3 cursor-pointer" @click="selectedVault = vault.v_id">
                             <div class="mr-3 flex items-center space-x-3 w-full text-sm">
