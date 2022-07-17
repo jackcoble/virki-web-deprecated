@@ -1,8 +1,11 @@
 <template>
     <div class="flex p-2 space-x-4">
         <!-- Issuer icon -->
-        <div class="flex-shrink-0 ">
-            <img class="w-12 h-12 m-2 rounded-full " :src="token?.icon" />
+        <div class="flex-shrink-0">
+            <img v-if="token?.icon" class="w-12 h-12 m-2 rounded-full " :src="token.icon" />
+            <div v-else class="w-12 h-12 p-1.5 bg-gray-200 rounded-full">
+                <ClockIcon class="text-gray-500" />
+            </div>
         </div>
 
         <!-- Token details -->
@@ -24,6 +27,7 @@
 import { defineComponent, onMounted, ref, type PropType } from "vue";
 import useEmitter from "@/composables/useEmitter";
 import { Token, type IToken } from "@/class/token";
+import { ClockIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
     name: "Entry",
@@ -31,6 +35,9 @@ export default defineComponent({
         token: {
             type: Object as PropType<IToken>
         }
+    },
+    components: {
+        ClockIcon
     },
     setup(props) {
         const emitter = useEmitter();
