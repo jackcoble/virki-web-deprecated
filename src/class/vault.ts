@@ -1,15 +1,13 @@
-import { Account } from "./account";
+import { Account, EncryptionType } from "./account";
 
 // Details we expected the encrypted vault payload to have when decrypted
 interface DecryptedVault {
-    // Provided by the API
-    id?: string;
-    created?: string;
-
-    // Provided by the client
+    v_id: string;
     name: string;
     description?: string;
     icon?: string;
+    offline: boolean | number // If device is offline, this should be a timestamp of when it went offline in UNIX time (ms)
+    created: number;
 }
 
 // What we expect a vault payload to look like after its encrypted/returned back from API
@@ -25,19 +23,42 @@ class Vault extends Account {
         super(masterKey);
     }
 
-    async createEncryptedVaultObject(vaultDetails: DecryptedVault): Promise<EncryptedVault> {
-        try {
-            const vaultDetailsString = JSON.stringify(vaultDetails);
-            const ev = await this.encryptData(vaultDetailsString);
+    async createEncryptedVaultObject(vaultDetails: DecryptedVault, offline?: boolean): Promise<DecryptedVault> {
+        // Generate a UUID (v4), remove hyphens and prepend 'v' to indicate vault, and append with EncryptionType to
+        // indicate the type of encryption we are using.
+        let vaultId = window.crypto.randomUUID();
+        vaultId = vaultId.replace(/-/g, "");
+        vaultId = `v-${vaultId}-v${EncryptionType.OPENPGP}`;
 
-            const encryptedVault = {
-                data: ev
-            } as EncryptedVault
+        vaultDetails.v_id = vaultId;
 
-            return Promise.resolve(encryptedVault);
-        } catch (e) {
-            return Promise.reject(e);
+        // Now that we've got an ID set, we can start to encrypt some elements of a vault individually
+        // - Name
+        // - Description
+        // - Icon
+        vaultDetails.name = await this.encryptData(vaultDetails.name);
+
+        // Check that description and icon aren't empty or length is zero
+        if (vaultDetails.description && vaultDetails.description.trim().length > 0) {
+            vaultDetails.description = await this.encryptData(vaultDetails.description);
         }
+
+        if (vaultDetails.icon && vaultDetails.icon.trim().length > 0) {
+            vaultDetails.icon = await this.encryptData(vaultDetails.icon);
+        }
+       
+        // If device is offline, set the offline timestamp as current device UNIX time (microseconds)
+        const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
+        if (!!offline) {
+            vaultDetails.offline = currentUnixMilliseconds;
+        } else {
+            vaultDetails.offline = false;
+        }
+
+        // Set the created time as current UNIX time
+        vaultDetails.created = currentUnixMilliseconds;
+
+        return Promise.resolve(vaultDetails);
     }
 
     // IndexedDB Methods
@@ -48,12 +69,7 @@ class Vault extends Account {
      * @param vault 
      */
      async saveToDB(vault: EncryptedVault): Promise<void> {
-        await this.authoriserDB.vaults.put({
-            id: vault.id,
-            uid: vault.uid,
-            data: vault.data,
-            created: vault.created
-        });
+        await this.authoriserDB.vaults.put(vault);
     }
 
     /**
