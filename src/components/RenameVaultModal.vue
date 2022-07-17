@@ -2,12 +2,14 @@
     <BaseModal :show="show" okFooter @ok="handleRename">
         <template v-slot:body>
             <div class="space-y-2">
-                <h1 class="text-xl text-center">Rename your vault</h1>
-                <p class="text-sm">
-                    Enter a new name for your vault below.
-                </p>
+                <h1 class="text-xl text-center">Edit your vault</h1>
 
+                <!-- Icon -->
+               
+                <!-- Name -->
                 <b-input type="text" v-model="vaultName" :placeholder="activeVaultName" />
+
+                <!-- Description -->
             </div>
         </template>
     </BaseModal>
@@ -17,10 +19,10 @@
 import { computed, defineComponent, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
-import type { DecryptedVault, EncryptedVault } from "@/class/vault";
+import type { IVault } from "@/class/vault";
 import useAccount from "@/composables/useAccount";
-import vaultService from "@/service/api/vaultService";
 import useVault from "@/composables/useVault";
+import { useApplicationStore } from "@/stores/appStore";
 
 export default defineComponent({
     name: "RenameVaultModal",
@@ -36,6 +38,7 @@ export default defineComponent({
         const account = useAccount();
         const vault = useVault();
 
+        const applicationStore = useApplicationStore();
         const vaultStore = useVaultStore();
         
         const vaultName = ref("");
@@ -50,35 +53,20 @@ export default defineComponent({
 
             // Otherwise we can construct an updated Vault payload using existing data.
             // We only want to update the name, description and icon at most as this is all the user has control over.
-            const activeVault = vaultStore.getActiveVault;
+            const activeVault = vaultStore.getActiveVault as IVault;
             if (activeVault) {
-                const modifiedVault: DecryptedVault = {
-                    name: vaultName.value,
-                    description: activeVault.description,
-                    icon: activeVault.icon
-                }
+                const modifiedVault = { ...activeVault };
 
-                // Create an encrypted object of the vault data, and set the IDs for both the modified + encrypted before sending to API.
-                const encryptedVault = await vault?.createEncryptedVaultObject(modifiedVault);
-                modifiedVault.id = activeVault.id;
-                encryptedVault!.id = activeVault.id!;
+                // Update vault name
+                modifiedVault.name = vaultName.value;
 
-                try {
-                    await vaultService.UpdateVault(encryptedVault!).then(res => {
-                        const response = res.data as EncryptedVault;
+                // Re-encrypt the active vault with the new data, and save it to IndexedDB
+                const encryptedActiveVault = await vault?.createEncryptedVaultObject(modifiedVault, !applicationStore.isOnline);
+                await vault?.saveToDB(encryptedActiveVault!);
 
-                        // Need to set UID and Created date again before inserting to IndexedDB
-                        encryptedVault!.uid = response.uid;
-                        encryptedVault!.created = response.created;
-                    })
-                } catch (e) {
-                    // TODO: Handle
-                    console.log(e);
-                }
-
-                // Insert into IndexedDB and update the store
-                await vault?.saveToDB(encryptedVault!);
-                vaultStore.add(modifiedVault);
+                // Decrypt it and then update in vault store
+                const decryptedActiveVault = await vault?.decryptFromVaultObject(encryptedActiveVault!);
+                vaultStore.add(decryptedActiveVault!);
             }
         }
 
