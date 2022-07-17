@@ -8,8 +8,8 @@
 
         <div class="flex-row">
           <!-- Refresh vault button -->
-          <button v-if="isOnline" class="rounded-full p-1 text-purple-800" :class="isRefreshingVault ? 'animate-reverse-spin' : ''"
-            @click="refreshVault">
+          <button v-if="isOnline" class="rounded-full p-1 text-purple-800" :class="isRefreshingVault || isSyncing ? 'animate-reverse-spin' : ''"
+            @click="refreshVault" :disabled="isRefreshingVault || isSyncing">
             <RefreshIcon class="w-6 h-6" />
           </button>
 
@@ -96,12 +96,12 @@ export default defineComponent({
     const toaster = useToaster();
 
     const applicationStore = useApplicationStore();
-    const encryptionKeyStore = useEncryptionKeyStore();
     const vaultStore = useVaultStore();
     const tokenStore = useTokenStore();
 
     // Computed values from store
     const isOnline = computed(() => applicationStore.isOnline);
+    const isSyncing = computed(() => applicationStore.isSyncing);
 
     const showOfflineAlertModal = ref(false);
 
@@ -202,6 +202,7 @@ export default defineComponent({
       entries,
       isRefreshingVault,
       isOnline,
+      isSyncing,
 
       showOfflineAlertModal,
 
