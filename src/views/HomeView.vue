@@ -71,7 +71,9 @@ import { RefreshIcon, EmojiSadIcon, CloudIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import OfflineAlertModal from "../components/OfflineAlertModal.vue";
-import { loadVaults } from "@/composables/loadVaults";
+import useVault from "@/composables/useVault";
+import useToaster from "@/composables/useToaster";
+import vaultService from "@/service/api/vaultService";
 
 export default defineComponent({
   name: "HomeView",
@@ -86,6 +88,8 @@ export default defineComponent({
   setup() {
     const emitter = useEmitter();
     const account = useAccount();
+    const vault = useVault();
+    const toaster = useToaster();
 
     const applicationStore = useApplicationStore();
     const vaultStore = useVaultStore();
@@ -113,8 +117,46 @@ export default defineComponent({
     let interval: any;
 
     onMounted(async () => {
-      // loadVault composable
-      await loadVaults();
+      if (!vault) {
+        return;
+      }
+
+      // Let's start with an initial load. If the vault store is empty,
+      // we are going to assume that the page has just been loaded/refreshed, so populate that first!
+      // As Authoriser is offline-first, we can attempt to populate with some entries from IndexedDB
+      // before making a request to our API for updated entries.
+      if (vaultStore.getVaults.length === 0) {
+        // Fetch vaults from IndexedDB, decrypt them and set in store
+        const vaults = await vault.getAllFromDB();
+        vaults.forEach(async v => {
+          const decryptedVault = await vault.decryptFromVaultObject(v);
+          vaultStore.add(decryptedVault);
+        });
+
+        /*
+          If we're online make a request to our API for a more up-to-date
+          list of vaults, and handle any conflicts as necessary.
+          
+          Should the "offline" timestamp from the API be newer
+          than the one on this device, we want to discard our local changes and replace with the more
+          up to date one vault.
+
+          In the other case, if our timestamp is newer than the one returned to us,
+          update the API with our modified vault data.
+        */
+        if (!!applicationStore.isOnline) {
+          try {
+            await vaultService.GetVaults();
+          } catch (e) {
+            if (e.response && e.response.data) {
+              return toaster.error(e.response.data.error);
+            }
+
+            // Something else has gone wrong
+            return toaster.error("Unknown error has occurred syncing vaults!");
+          }
+        }
+      }
 
       // Fire off initial countdown event
       emitCountdownEvent();
