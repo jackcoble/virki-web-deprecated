@@ -1,7 +1,7 @@
 import { Account, EncryptionType } from "./account";
 
 // Details we expected the encrypted vault payload to have when decrypted
-interface DecryptedVault {
+interface Vault {
     v_id: string;
     name: string;
     description?: string;
@@ -23,7 +23,7 @@ class Vault extends Account {
         super(masterKey);
     }
 
-    async createEncryptedVaultObject(vaultDetails: DecryptedVault, offline?: boolean): Promise<DecryptedVault> {
+    async createEncryptedVaultObject(vaultDetails: Vault, offline?: boolean): Promise<Vault> {
         // Generate a UUID (v4), remove hyphens and prepend 'v' to indicate vault, and append with EncryptionType to
         // indicate the type of encryption we are using.
         let vaultId = window.crypto.randomUUID();
@@ -68,7 +68,7 @@ class Vault extends Account {
      * Insert an encrypted vault payload to IndexedDB so we can use offline.
      * @param vault 
      */
-     async saveToDB(vault: EncryptedVault): Promise<void> {
+     async saveToDB(vault: Vault): Promise<void> {
         await this.authoriserDB.vaults.put(vault);
     }
 
