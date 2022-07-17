@@ -16,7 +16,7 @@ interface IToken {
     issuer: string;
     account: string;
     secret: string;
-    icon: {
+    icon?: {
         url: string;
         data: string;
     }
