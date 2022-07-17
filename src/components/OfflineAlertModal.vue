@@ -4,7 +4,7 @@
             <div class="space-y-2">
                 <h1 class="text-xl text-center">Your device is offline!</h1>
                 <p class="text-sm">
-                    In offline mode, you won't be able to make any modifications to your vaults, but you can still access your authentication tokens.
+                    Don't worry though - any changes you make will be synced back to our servers when you're connected again!
                 </p>
             </div>
         </template>
