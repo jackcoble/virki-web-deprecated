@@ -9,31 +9,61 @@
 
             <p class="text-sm">Usually we do not recommend this, but if your device is protected via a form of biometric security, enabling this option could save you some time when launching Authoriser.</p>
         
-            <RememberEncryptionKeyModal :show="showRememberEncryptionKeyModal" />
-            <b-button @click="handleRememberEncryptionKey">Remember encryption key?</b-button>
+            <RememberEncryptionKeyModal :show="showRememberEncryptionKeyModal" @ok="checkEncryptionKeyIsSet" @cancel="showRememberEncryptionKeyModal = !showRememberEncryptionKeyModal" />
+            <b-button @click="handleRememberEncryptionKey" :classType="encryptionKeyExists ? 'danger' : 'primary'">
+                {{ encryptionKeyExists ? 'Remove encryption key' : 'Remember encryption key' }}
+            </b-button>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue"
+import { defineComponent, onMounted, ref } from "vue"
 import RememberEncryptionKeyModal from "../../components/RememberEncryptionKeyModal.vue"
 
 export default defineComponent({
     name: "Settings",
     setup() {
+        const showRememberEncryptionKeyModal = ref(false);
+        const encryptionKeyExists = ref(false);
+
+        onMounted(() => {
+            // Check when page loads if the encryption key already exists
+            const encryptionKey = localStorage.getItem("stretched_password");
+            if (encryptionKey) {
+                encryptionKeyExists.value = true;
+            }
+        })
+
         // Function to determine whether remember encryption key modal needs to be shown
-        const showRememberEncryptionKeyModal = ref(false)
         const handleRememberEncryptionKey = () => {
             // If we've already got an encryption key, we want to remove it
+            if (encryptionKeyExists.value) {
+                localStorage.removeItem("stretched_password");
+                encryptionKeyExists.value = false;
+
+                return;
+            }
             
             // Otherwise show the modal
             showRememberEncryptionKeyModal.value = !showRememberEncryptionKeyModal.value;
         };
 
+        // When we receive the OK event, we want to check if the encryption key has been set
+        const checkEncryptionKeyIsSet = () => {
+            const encryptionKey = localStorage.getItem("stretched_password");
+            if (encryptionKey) {
+                encryptionKeyExists.value = true;
+                showRememberEncryptionKeyModal.value = !showRememberEncryptionKeyModal.value;
+            }
+        }
+
         return {
+            encryptionKeyExists,
             showRememberEncryptionKeyModal,
-            handleRememberEncryptionKey
+
+            handleRememberEncryptionKey,
+            checkEncryptionKeyIsSet
         };
     },
     components: { RememberEncryptionKeyModal }

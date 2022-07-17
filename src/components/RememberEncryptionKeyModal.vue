@@ -33,7 +33,7 @@ export default defineComponent({
             type: Boolean,
         },
     },
-    setup() {
+    setup(props, { emit }) {
         const toaster = useToaster();
         const account = new Account();
 
@@ -53,6 +53,8 @@ export default defineComponent({
                     // Derive the stretched key used to encrypt the master key and save it
                     const stretchedKey = await account.deriveStretchedPassword(password.value, salt!);
                     encryptionKeyStore.setStretchedPassword(stretchedKey.key, true);
+
+                    emit("ok")
                 }
             } catch (e) {
                 return toaster.error(e);
