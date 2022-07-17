@@ -35,10 +35,9 @@ import useAccount from "@/composables/useAccount";
 import useVault from "@/composables/useVault";
 import { useApplicationStore } from "@/stores/appStore";
 import IconUpload from "./IconUpload.vue";
-import { es } from "date-fns/locale";
 
 export default defineComponent({
-    name: "RenameVaultModal",
+    name: "EditVaultModal",
     components: {
     BaseModal,
     IconUpload
