@@ -162,8 +162,21 @@ class Token extends Account {
     // IndexedDB Methods
     // =================
 
+    /**
+     * Save encrypted into IndexedDB
+     * @param token 
+     */
     async saveTokenInDB(token: IToken): Promise<any> {
         await this.authoriserDB.tokens.put(token);
+    }
+
+    /**
+     * Return all encrypted tokens from IndexedDB
+     * @returns {IToken}
+     */
+    async getTokensInDB(): Promise<IToken[]> {
+        const tokens = await this.authoriserDB.tokens.toArray();
+        return tokens;
     }
 }
 
