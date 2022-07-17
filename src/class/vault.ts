@@ -50,14 +50,16 @@ class Vault extends Account {
        
         // If device is offline, set the offline timestamp as current device UNIX time (microseconds)
         const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
-        if (!!offline) {
+        if (offline === true) {
             vaultDetails.offline = currentUnixMilliseconds;
         } else {
             vaultDetails.offline = false;
         }
 
-        // Set the created time as current UNIX time
-        vaultDetails.created = currentUnixMilliseconds;
+        // Set the created time as current UNIX time if not already set
+        if (!vaultDetails.created) {
+            vaultDetails.created = currentUnixMilliseconds;
+        }
 
         return Promise.resolve(vaultDetails);
     }
