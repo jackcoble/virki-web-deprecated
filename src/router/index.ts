@@ -12,6 +12,7 @@ import SettingsSecurity from "@/views/settings/Security.vue";
 import Lock from "@/views/Lock.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
+import useAccount from '@/composables/useAccount'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -98,13 +99,22 @@ const router = createRouter({
 })
 
 // On specified, check that user is authenticated by checking for presence of "master key"
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const encryptionKeyStore = useEncryptionKeyStore();
   
   if (to.matched.some(route => route.meta.authRequired)) {
     // Check that we have all of the following stored in state:
     // - Stretched master password
     // - Encrypted master key
+
+    // If the stretched master password is set, but master key isn't present
+    // then decrypt encrypted master key with stretched password
+    if (encryptionKeyStore.getStretchedPassword && !encryptionKeyStore.getMasterKey) {
+      const account = useAccount();
+      const masterKey = await account.decryptMasterKeyWithStretchedPassword(encryptionKeyStore.getStretchedPassword, encryptionKeyStore.getEncryptedMasterKey);
+
+      encryptionKeyStore.setMasterKey(masterKey);
+    }
 
     // If we don't have an encrypted master key (at the very least, then prompt for a login)
     if (!encryptionKeyStore.getEncryptedMasterKey) {
