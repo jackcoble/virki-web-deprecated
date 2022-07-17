@@ -85,6 +85,46 @@ class Token extends Account {
     }
 
     /**
+     * Returns a decrypted Token object
+     * @param encryptedToken 
+     * @returns 
+     */
+    async decryptToken(encryptedToken: IToken): Promise<IToken> {
+        // Create a copy of the encrypted token for us to work with.
+        const decryptedToken = { ...encryptedToken };
+
+        // Parse the token ID to extract the encryption type
+        const splitTokenID = decryptedToken.t_id.split("-");
+        const encryptionType = parseInt(splitTokenID[2].substring(1));
+
+        if (encryptionType) {
+            switch (encryptionType) {
+                // Decrypt using OpenPGP.js
+                case EncryptionType.OPENPGP:
+                    // The properties we are mainly interested in are Issuer, Account, Secret and Icon (if available)  
+                    decryptedToken.issuer = await this.decryptData(encryptedToken.issuer);
+                    decryptedToken.account = await this.decryptData(encryptedToken.account);
+                    decryptedToken.secret = await this.decryptData(encryptedToken.secret);
+                    
+                    if (decryptedToken.icon) {
+                        // If icon is available on the copy of the object, it's available here too..
+                        decryptedToken.icon = await this.decryptData(encryptedToken.icon!);
+                    }
+
+                    break;
+            
+                // We have no other encryption types, so something went wrong here...
+                default:
+                    return Promise.reject("Encryption type is not supported!");
+            }
+        } else {
+            return Promise.reject("Could not determine encryption type!")
+        }
+
+        return Promise.resolve(decryptedToken);
+    }
+
+    /**
      * Generate and return a OTP code in string format.
      * @param secret 
      * @param type 
