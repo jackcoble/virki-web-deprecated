@@ -23,10 +23,7 @@ interface IToken {
     issuer: string;
     account: string;
     secret: string;
-    icon?: {
-        url: string;
-        data: string;
-    }
+    icon?: string;
     algorithm: TokenAlgorithm;
     type: TokenType;
     duration: number;
@@ -68,8 +65,7 @@ class Token extends Account {
         encryptedToken.secret = await this.encryptData(token.secret);
 
         if (encryptedToken.icon) {
-            encryptedToken.icon.data = await this.encryptData(encryptedToken.icon.data);
-            encryptedToken.icon.url = await this.encryptData(encryptedToken.icon.url);
+            encryptedToken.icon = await this.encryptData(encryptedToken.icon);
         }
 
         // If device is offline, set the offline timestamp as current device UNIX time (microseconds)
@@ -121,6 +117,13 @@ class Token extends Account {
             default:
                 break;
         }
+    }
+
+    // IndexedDB Methods
+    // =================
+
+    async saveTokenInDB(token: IToken): Promise<any> {
+        await this.authoriserDB.tokens.put(token);
     }
 }
 
