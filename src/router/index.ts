@@ -112,7 +112,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const encryptionKeyStore = useEncryptionKeyStore();
   
-  if (false) {
+  if (to.matched.some(route => route.meta.authRequired)) {
     // Check that we have all of the following stored in state:
     // - Stretched master password
     // - Encrypted master key
