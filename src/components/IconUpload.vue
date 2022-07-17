@@ -37,7 +37,7 @@ export default defineComponent({
                 uploadedIcon.value = "";
 
                 // Emit updated data URL (empty) so our parent can handle the change
-                emit("imageData", "");
+                emit("imageData");
 
                 return;
             }
