@@ -134,6 +134,29 @@ export class Account {
     }
 
     /**
+     * Decrypt an encrypted master key with the users stretched (Argon2) password
+     * @param stretchedKey 
+     * @param encryptedMasterKey 
+     * @returns {string} - Decrypted master key
+     */
+    async decryptMasterKeyWithStretchedPassword(stretchedKey: string, encryptedMasterKey: string): Promise<string> {
+        try {
+            const encryptedMessage = await readMessage({
+                armoredMessage: encryptedMasterKey,
+            });
+
+            const decryptedMasterKey = await decrypt({
+                message: encryptedMessage,
+                passwords: [stretchedKey]
+            })
+
+            return Promise.resolve(decryptedMasterKey.data.toString())
+        } catch (e) {
+            return Promise.reject("Could not decrypt master key, please check your password and try again!");
+        }
+    }
+
+    /**
      * Encrypts string data and returns an OpenPGP message
      * @param data
      * @returns {string}
