@@ -3,7 +3,7 @@ import axios from "axios";
 import authentication from "./authentication";
 
 export const api = axios.create({
-    baseURL: "http://localhost:5000",
+    baseURL: "/api",
     headers: {
         "Content-Type": "application/json"
     }
