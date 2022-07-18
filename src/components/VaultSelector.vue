@@ -13,7 +13,7 @@
         </h2>
     </div>
 
-    <BaseModal :show="showModal" @done="updateActiveVault" @close="showModal = !showModal" doneFooter>
+    <BaseModal v-if="showModal" @done="updateActiveVault" @close="showModal = !showModal" doneFooter>
         <template v-slot:body>
             <div class="space-y-2">
                 <h1 class="text-xl text-center">Change Vault</h1>
