@@ -79,10 +79,22 @@ export default defineComponent({
                 if (removeIcon.value === true) {
                     // Remove the icon entirely
                     icon.value = "";
-                } else if (!removeIcon.value && activeVault.icon) {
+                }
+                else if (!removeIcon.value && icon.value !== activeVault.icon) {
+                    // Set a new icon as its different
+                    icon.value = icon.value;
+                }
+                else if (!removeIcon.value && activeVault.icon) {
                     // Stick with the existing icon
                     icon.value = activeVault.icon;
+                }   
+                else {
+                    // The uploaded icon doesn't need to change
+                    icon.value = icon.value;
                 }
+
+                // Reset removeIcon value
+                removeIcon.value = false;
 
                 // Update vault name, description and icon
                 modifiedVault.name = name.value ? name.value : activeVault.name;
