@@ -7,7 +7,7 @@
         </div>
 
         <!-- Active vault title and edit vault modal -->
-        <EditVaultModal :show="showVaultEditModal" @close="showVaultEditModal = false" @ok="showVaultEditModal = false" />
+        <EditVaultModal v-if="showVaultEditModal" @close="showVaultEditModal = false" @ok="showVaultEditModal = false" />
         <h2 class="text-2xl font-semibold text-gray-900" @click="showRenameVault">
             {{ vaultStore.getActiveVault ? vaultStore.getActiveVault.name : 'No vault found...' }}
         </h2>
