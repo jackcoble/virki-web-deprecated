@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :show="show" @ok="deauthoriseSessions" okFooter>
+    <BaseModal v-if="show" @ok="deauthoriseSessions" okFooter>
         <template v-slot:body>
             <div class="space-y-2">
                 <h1 class="text-xl text-center">De-authorise sessions?</h1>

@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :show="show" doneFooter>
+    <BaseModal v-if="show" doneFooter>
         <template v-slot:body>
             <div class="space-y-2">
                 <h1 class="text-xl text-center">Your device is offline!</h1>

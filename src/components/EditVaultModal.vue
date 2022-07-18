@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :show="show" okFooter @ok="handleRename">
+    <BaseModal v-if="show" okFooter @ok="handleRename">
         <template v-slot:body>
             <div class="space-y-3">
                 <h1 class="text-xl text-center">Edit your vault</h1>
