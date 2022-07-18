@@ -2,7 +2,7 @@
 <nav class="fixed bottom-0 p-2 w-full bg-gray-50 flex border-t-2 border-gray-200">
     <div v-for="button in buttons" :key="button.label" class="flex flex-col flex-grow w-full justify-center items-center text-center truncate">
         <router-link :to="button.route">
-            <component class="h-6 mx-auto" :class="[button.classes, currentRoute.path === button.route ? 'text-purple-800' : '']" :is="button.icon" />
+            <component class="mx-auto" :class="[button.classes, currentRoute.path === button.route ? 'text-purple-800' : '']" :is="button.icon" />
         </router-link>
     </div>
 </nav>
@@ -20,7 +20,7 @@ const buttons = ref([
         label: "Tokens",
         route: "/",
         icon: HomeIcon,
-        classes: "text-gray-400"
+        classes: "h-6 text-gray-400"
     },
     {
         label: "New",
@@ -32,7 +32,7 @@ const buttons = ref([
         label: "Settings",
         route: "/settings",
         icon: CogIcon,
-        classes: "text-gray-400"
+        classes: "h-6 text-gray-400"
     }
 ])
 </script>
