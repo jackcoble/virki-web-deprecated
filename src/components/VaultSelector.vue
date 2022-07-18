@@ -1,9 +1,9 @@
 <template>
     <!-- Vault currently active -->
     <div class="flex flex-row items-center space-x-2">
-        <div class="object-contain cursor-pointer rounded-full w-10" :class="[vaultStore.getActiveVault?.icon ? 'rounded-full' : 'bg-gray-200 p-1.5']" @click="showModal = !showModal">
+        <div class="object-contain cursor-pointer rounded-full" :class="[vaultStore.getActiveVault?.icon ? '' : 'bg-gray-200 p-1.5 h-10 w-10']" @click="showModal = !showModal">
             <ClockIcon v-if="!vaultStore.getActiveVault?.icon" class="text-gray-500" />
-            <img v-else class="rounded-full" :src="vaultStore.getActiveVault?.icon" alt="Vault Icon">
+            <img v-else class="rounded-full w-10 h-10 object-cover" :src="vaultStore.getActiveVault?.icon" alt="Vault Icon">
         </div>
 
         <!-- Active vault title and edit vault modal -->
