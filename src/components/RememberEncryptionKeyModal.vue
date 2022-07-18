@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :show="show" @ok="rememberEncryptionKey" okFooter>
+    <BaseModal @ok="rememberEncryptionKey" okFooter>
         <template v-slot:body>
             <div class="space-y-2">
                 <h1 class="text-xl text-center">Remember encryption key?</h1>

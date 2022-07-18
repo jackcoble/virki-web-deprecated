@@ -9,7 +9,7 @@
 
             <p class="text-sm">Usually we do not recommend this, but if your device is protected via a form of biometric security, enabling this option could save you some time when launching Authoriser.</p>
         
-            <RememberEncryptionKeyModal :show="showRememberEncryptionKeyModal" @ok="checkEncryptionKeyIsSet" @cancel="showRememberEncryptionKeyModal = !showRememberEncryptionKeyModal" />
+            <RememberEncryptionKeyModal v-if="showRememberEncryptionKeyModal" @ok="checkEncryptionKeyIsSet" @cancel="showRememberEncryptionKeyModal = !showRememberEncryptionKeyModal" />
             <b-button @click="handleRememberEncryptionKey" :classType="encryptionKeyExists ? 'danger' : 'primary'">
                 {{ encryptionKeyExists ? 'Remove encryption key' : 'Remember encryption key' }}
             </b-button>
