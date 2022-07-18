@@ -1,4 +1,5 @@
 <template>
+  <teleport to="body">
     <Transition
       appear
       enter-active-class="transition ease-out duration-200 transform"
@@ -64,6 +65,7 @@
         </div>
       </div>
     </Transition>
+  </teleport>
 </template>
 
 <script lang="ts">
