@@ -1,6 +1,6 @@
 <template>
-  <teleport to="body">
-    <transition
+    <Transition
+      appear
       enter-active-class="transition ease-out duration-200 transform"
       enter-from-class="opacity-0"
       enter-to-class="opacity-100"
@@ -13,7 +13,6 @@
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
-        v-if="showModal"
       >
         <div
           class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
@@ -64,8 +63,7 @@
           </div>
         </div>
       </div>
-    </transition>
-  </teleport>
+    </Transition>
 </template>
 
 <script lang="ts">
@@ -79,10 +77,6 @@ import Done from "@/components/Modal/Footers/Done.vue";
 export default defineComponent({
   name: "ModalDialog",
   props: {
-    show: {
-      type: Boolean,
-      default: false,
-    },
     hideCloseIcon: {
       type: Boolean,
       default: false,
@@ -109,10 +103,7 @@ export default defineComponent({
     XIcon,
   },
   setup(props, { emit }) {
-    const showModal = ref(false);
-
     const closeModal = () => {
-      showModal.value = false;
       emit("close");
     };
 
@@ -126,17 +117,8 @@ export default defineComponent({
       document.addEventListener("keydown", onEscape);
     });
 
-    watch(
-      () => props.show,
-      (show) => {
-        showModal.value = show;
-      }
-    );
-
     return {
-      closeModal,
-
-      showModal,
+      closeModal
     };
   },
 });
