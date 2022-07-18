@@ -7,19 +7,19 @@
 
                 <!-- Icon -->
                 <div class="flex justify-center">
-                    <IconUpload :image="activeVault?.icon" @image-data="handleImageData" />
+                    <IconUpload :image="icon" @image-data="handleImageData" />
                 </div>
                
                 <!-- Name -->
                 <div class="space-y-1">
                     <p class="font-bold text-sm">Name</p>
-                    <b-input type="text" v-model="name" :placeholder="activeVaultName" />
+                    <b-input type="text" v-model="name" />
                 </div>
                
                 <!-- Description -->
                 <div class="space-y-1">
                     <p class="font-bold text-sm">Description</p>
-                    <textarea v-model="description" :placeholder="activeVault?.description" rows="4" placeholder="A description of what you'll store in this vault" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2" />
+                    <textarea v-model="description" rows="4" placeholder="A description of what you'll store in this vault" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2" />
                 </div>
             </div>
         </template>
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
 import type { IVault } from "@/class/vault";
@@ -57,10 +57,9 @@ export default defineComponent({
         const activeVault = computed(() => vaultStore.getActiveVault);
         const activeVaultName = computed(() => vaultStore.getActiveVault?.name);
         
-        const name = ref("");
-        const description = ref("");
-
-        const icon = ref("");
+        const name = ref(activeVault.value?.name ? activeVault.value?.name : "");
+        const description = ref(activeVault.value?.description ? activeVault.value?.description : "");
+        const icon = ref(activeVault.value?.icon ? activeVault.value?.icon : "");
         const removeIcon = ref(false);
 
         // Function to handle re-encryption of vault data with updated name
@@ -79,18 +78,6 @@ export default defineComponent({
                 if (removeIcon.value === true) {
                     // Remove the icon entirely
                     icon.value = "";
-                }
-                else if (!removeIcon.value && icon.value !== activeVault.icon) {
-                    // Set a new icon as its different
-                    icon.value = icon.value;
-                }
-                else if (!removeIcon.value && activeVault.icon) {
-                    // Stick with the existing icon
-                    icon.value = activeVault.icon;
-                }   
-                else {
-                    // The uploaded icon doesn't need to change
-                    icon.value = icon.value;
                 }
 
                 // Reset removeIcon value
