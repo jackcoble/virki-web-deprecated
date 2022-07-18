@@ -22,6 +22,14 @@ export default defineConfig({
     }
   },
   server: {
-    host: true
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://0.0.0.0:5001/',
+        rewrite: path => path.replace('/api', ''),
+        changeOrigin: true,
+        secure: false
+      }
+    }
   }
 })
