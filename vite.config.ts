@@ -2,17 +2,26 @@ import { fileURLToPath, URL } from 'url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { VitePWA } from "vite-plugin-pwa"
+import { VitePWA, type ManifestOptions } from "vite-plugin-pwa"
+
+// PWA Manifest
+const pwa_manifest = {
+  name: "Authoriser",
+  description: "Secure your two-factor authentication tokens with Authoriser.",
+  orientation: "portrait",
+  display: "standalone",
+  start_url: "/"
+} as ManifestOptions;
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      registerType: "prompt",
-      workbox: {
-        clientsClaim: true,
-        skipWaiting: true
+      manifest: pwa_manifest,
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true
       }
     })
   ],
