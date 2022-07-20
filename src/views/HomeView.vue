@@ -77,6 +77,7 @@ import vaultService from "@/service/api/vaultService";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { useTokenStore } from "@/stores/tokenStore";
 import useToken from "@/composables/useToken";
+import type { IVault } from "@/class/vault";
 
 export default defineComponent({
   name: "HomeView",
@@ -152,7 +153,33 @@ export default defineComponent({
         */
         if (!!applicationStore.isOnline) {
           try {
-            await vaultService.GetVaults();
+            await vaultService.GetVaults().then(res => {
+              const vaults = res.data as IVault[];
+
+              vaults.forEach(async v => {
+                // Decrypt the vault
+                const decryptedVault = await vault.decryptFromVaultObject(v);
+
+                // If a vault in the response is newer than one our device.
+                const currentUnixMicroseconds = Math.floor(Date.now() * 1000);
+                if (v.offline && v.offline < currentUnixMicroseconds) {
+                  // Change out the vault in IndexedDB and Pinia for this one
+                  vault.addVaultToDB(v);
+                  vaultStore.add(decryptedVault);
+                }
+                
+                // Otherwise if our timestamp is newer, update the API
+                else if (v.offline && currentUnixMicroseconds > v.offline ) {
+                  console.log("TODO: Should replace the vault on the server...")
+                }
+
+                // Otherwise if we make it here, just add the vault as normal
+                else {
+                  vault.addVaultToDB(v);
+                  vaultStore.add(decryptedVault)
+                }
+              })
+            })
           } catch (e) {
             if (e.response && e.response.data) {
               toaster.error(e.response.data.error);
