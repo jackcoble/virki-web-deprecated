@@ -6,7 +6,7 @@ interface IVault {
     name: string;
     description?: string;
     icon?: string;
-    offline: boolean | number // If device is offline, this should be a timestamp of when it went offline in UNIX time (ms)
+    offline?:  number // If device is offline, this should be a timestamp of when it went offline in UNIX time (ms)
     created: number;
 }
 
@@ -52,8 +52,6 @@ class Vault extends Account {
         const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
         if (offline === true) {
             vaultDetails.offline = currentUnixMilliseconds;
-        } else {
-            vaultDetails.offline = false;
         }
 
         // Set the created time as current UNIX time if not already set

@@ -72,10 +72,8 @@ class Token extends Account {
         const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
         if (offline === true) {
             encryptedToken.offline = currentUnixMilliseconds;
-        } else {
-            encryptedToken.offline = false;
         }
-
+        
         // Set the created time as current UNIX time if not already set
         if (!encryptedToken.created) {
             encryptedToken.created = currentUnixMilliseconds;
