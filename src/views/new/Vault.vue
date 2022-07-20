@@ -40,6 +40,7 @@ import { useRouter } from "vue-router";
 import useVault from "@/composables/useVault";
 import type { IVault } from "@/class/vault";
 import { useApplicationStore } from "@/stores/appStore";
+import vaultService from "@/service/api/vaultService";
 
 export default defineComponent({
     name: "NewVault",
@@ -132,6 +133,12 @@ export default defineComponent({
                         // Send to API...
                         // TODO
                         console.log("Send encrypted vault to API!")
+
+                        try {
+                            await vaultService.CreateVault(encryptedVault);
+                        } catch (e) {
+                            toaster.error(e.response.data);
+                        }
                     }
 
                     // Decrypt the vault we just created, and then set the active vault + add to store
@@ -145,6 +152,7 @@ export default defineComponent({
 
                 
             } catch (e) {
+                console.log(e)
                 return toaster.error("There was an error creating your vault.");
             } finally {
                 isLoading.value = false;

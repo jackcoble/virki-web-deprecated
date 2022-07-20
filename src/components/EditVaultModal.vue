@@ -35,6 +35,7 @@ import useAccount from "@/composables/useAccount";
 import useVault from "@/composables/useVault";
 import { useApplicationStore } from "@/stores/appStore";
 import IconUpload from "./IconUpload.vue";
+import vaultService from "@/service/api/vaultService";
 
 export default defineComponent({
     name: "EditVaultModal",
@@ -92,9 +93,18 @@ export default defineComponent({
                 const encryptedActiveVault = await vault?.createEncryptedVaultObject(modifiedVault, !applicationStore.isOnline);
                 await vault?.saveToDB(encryptedActiveVault!);
 
+                const encryptedVaultDuplicate = { ...encryptedActiveVault } as IVault;
+
                 // Decrypt it and then update in vault store
                 const decryptedActiveVault = await vault?.decryptFromVaultObject(encryptedActiveVault!);
                 vaultStore.add(decryptedActiveVault!);
+
+                // Push to API
+                try {
+                    await vaultService.UpdateVault(encryptedVaultDuplicate);
+                } catch (e) {
+                    console.log("UPDATE ERROR:", e.response.data)
+                }
             }
         }
 
