@@ -12,7 +12,7 @@ export default {
     },
 
     DeleteVault(vaultId: string): Promise<AxiosResponse> {
-        return api.delete(`/v1/vault/${vaultId}`)
+        return api.delete(`/v1/vault?id=${vaultId}`)
     },
 
     GetVaults(): Promise<AxiosResponse> {
