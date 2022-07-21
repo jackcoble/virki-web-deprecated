@@ -8,14 +8,17 @@
 
         <div class="flex-row">
           <!-- Refresh vault button -->
-          <button v-if="isOnline" class="rounded-full p-1 text-purple-800" :class="isRefreshingVault || isSyncing ? 'animate-reverse-spin' : ''"
-            @click="refreshVault" :disabled="isRefreshingVault || isSyncing">
+          <button v-if="isOnline" class="rounded-full p-1 text-purple-800"
+            :class="isRefreshingVault || isSyncing ? 'animate-reverse-spin' : ''" @click="refreshVault"
+            :disabled="isRefreshingVault || isSyncing">
             <RefreshIcon class="w-6 h-6" />
           </button>
 
           <!-- Disconnected from cloud alert -->
-          <OfflineAlertModal :show="showOfflineAlertModal" @close="showOfflineAlertModal = false" @done="showOfflineAlertModal = false" />
-          <button v-if="!isOnline" class="rounded-full p-1 text-red-400" @click="showOfflineAlertModal = !showOfflineAlertModal">
+          <OfflineAlertModal :show="showOfflineAlertModal" @close="showOfflineAlertModal = false"
+            @done="showOfflineAlertModal = false" />
+          <button v-if="!isOnline" class="rounded-full p-1 text-red-400"
+            @click="showOfflineAlertModal = !showOfflineAlertModal">
             <StatusOfflineIcon class="w-6 h-6" />
           </button>
         </div>
@@ -47,7 +50,9 @@
         <div v-else class="mt-48 items-center justify-items-center text-gray-400 mx-auto space-y-3">
           <EmojiSadIcon class="w-24 mx-auto" />
           <p class="text-sm text-center">
-            You don't have any tokens in your <span class="font-semibold text-gray-800">{{ vaultStore.getActiveVault?.name }}</span> vault.
+            You don't have any tokens in your <span class="font-semibold text-gray-800">{{
+                vaultStore.getActiveVault?.name
+            }}</span> vault.
           </p>
         </div>
       </div>
@@ -88,7 +93,7 @@ export default defineComponent({
     EmojiSadIcon,
     StatusOfflineIcon,
     OfflineAlertModal
-},
+  },
   setup() {
     const emitter = useEmitter();
     const account = useAccount();
@@ -139,8 +144,9 @@ export default defineComponent({
           const decryptedVault = await vault.decryptFromVaultObject(v);
           vaultStore.add(decryptedVault);
         });
+      }
 
-        /*
+      /*
           If we're online make a request to our API for a more up-to-date
           list of vaults, and handle any conflicts as necessary.
           
@@ -151,43 +157,27 @@ export default defineComponent({
           In the other case, if our timestamp is newer than the one returned to us,
           update the API with our modified vault data.
         */
-        if (!!applicationStore.isOnline) {
-          try {
-            await vaultService.GetVaults().then(res => {
-              const vaults = res.data as IVault[];
+      if (!!applicationStore.isOnline) {
+        try {
+          await vaultService.GetVaults().then(res => {
+            const vaults = res.data as IVault[];
 
-              vaults.forEach(async v => {
-                // Decrypt the vault
-                const decryptedVault = await vault.decryptFromVaultObject(v);
+            vaults.forEach(async v => {
+              // Decrypt the vault
+              const decryptedVault = await vault.decryptFromVaultObject(v);
 
-                // If a vault in the response is newer than one our device.
-                const currentUnixMicroseconds = Math.floor(Date.now() * 1000);
-                if (v.offline && v.offline < currentUnixMicroseconds) {
-                  // Change out the vault in IndexedDB and Pinia for this one
-                  await vault.saveToDB(v);
-                  vaultStore.add(decryptedVault);
-                }
-                
-                // Otherwise if our timestamp is newer, update the API
-                else if (v.offline && currentUnixMicroseconds > v.offline ) {
-                  console.log("TODO: Should replace the vault on the server...")
-                }
-
-                // Otherwise if we make it here, just add the vault as normal
-                else {
-                  await vault.saveToDB(v);
-                  vaultStore.add(decryptedVault)
-                }
-              })
+              // Add to IDB and Pinia
+              await vault.saveToDB(v);
+              vaultStore.add(decryptedVault)
             })
-          } catch (e) {
-            if (e.response && e.response.data) {
-              toaster.error(e.response.data.error);
-            }
-
-            // Something else has gone wrong
-            toaster.error("Unknown error has occurred syncing vaults!");
+          })
+        } catch (e) {
+          if (e.response && e.response.data) {
+            toaster.error(e.response.data.error);
           }
+
+          // Something else has gone wrong
+          toaster.error("Unknown error has occurred syncing vaults!");
         }
       }
 
