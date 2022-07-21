@@ -106,51 +106,38 @@ export default defineComponent({
                 return toaster.error("Account has not been initialised.");
             }
 
+            // Do the same but for vault
+            if (!vault) {
+                return toaster.error("Vault has not been initialised.");
+            }
+
             isLoading.value = true;
 
             try {
                 // Prepare a payload as to what the data should look in decrypted format...
                 // Description and Icon are optional so set them later if available
                 const vaultDetails = {
-                    name: name.value
+                    name: name.value,
+                    description: description.value ? description.value : null,
+                    icon: uploadedIcon.value ? uploadedIcon.value : null
                 } as IVault;
-
-                if (description.value.trim().length > 0) {
-                    vaultDetails.description = description.value;
-                }
-
-                if (uploadedIcon.value.trim().length > 0) {
-                    vaultDetails.icon = uploadedIcon.value;
-                }
                         
                 // Now that we have the vault payload prepared, we can encrypt it and
                 // save to IndexedDB, and submit to our API (if we're online).
-                const encryptedVault = await vault?.createEncryptedVaultObject(vaultDetails, !applicationStore.isOnline);
-                if (encryptedVault) {
-                    await vault?.saveToDB(encryptedVault);
+                const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, !applicationStore.isOnline);
+                await vault.saveToDB(encryptedVault);
 
-                    if (applicationStore.isOnline) {
-                        // Send to API...
-                        // TODO
-                        console.log("Send encrypted vault to API!")
-
-                        try {
-                            await vaultService.CreateVault(encryptedVault);
-                        } catch (e) {
-                            toaster.error(e.response.data);
-                        }
-                    }
-
-                    // Decrypt the vault we just created, and then set the active vault + add to store
-                    const decryptedVault = await vault?.decryptFromVaultObject(encryptedVault);
-                    vaultStore.setActiveVault(decryptedVault!.v_id);
-                    vaultStore.add(decryptedVault!)
-
-                    // Push to Index
-                    router.push("/");
+                if (!!applicationStore.isOnline) {
+                    await vaultService.CreateVault(encryptedVault);
                 }
 
-                
+                // Decrypt the vault we just created, and then set the active vault + add to store
+                const decryptedVault = await vault.decryptFromVaultObject(encryptedVault);
+                vaultStore.setActiveVault(decryptedVault.v_id);
+                vaultStore.add(decryptedVault)
+
+                // Push to Index
+                router.push("/");                
             } catch (e) {
                 console.log(e)
                 return toaster.error("There was an error creating your vault.");
