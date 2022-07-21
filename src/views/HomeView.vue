@@ -164,7 +164,7 @@ export default defineComponent({
                 const currentUnixMicroseconds = Math.floor(Date.now() * 1000);
                 if (v.offline && v.offline < currentUnixMicroseconds) {
                   // Change out the vault in IndexedDB and Pinia for this one
-                  vault.addVaultToDB(v);
+                  await vault.saveToDB(v);
                   vaultStore.add(decryptedVault);
                 }
                 
@@ -175,7 +175,7 @@ export default defineComponent({
 
                 // Otherwise if we make it here, just add the vault as normal
                 else {
-                  vault.addVaultToDB(v);
+                  await vault.saveToDB(v);
                   vaultStore.add(decryptedVault)
                 }
               })
