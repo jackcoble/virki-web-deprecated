@@ -6,7 +6,7 @@ interface IVault {
     name: string;
     description?: string;
     icon?: string;
-    offline?:  number // If device is offline, this should be a timestamp of when it went offline in UNIX time (ms)
+    modified:  number // If device is offline, this modified value will still be updated and then checked when the device is online again
     created: number;
 }
 
@@ -51,10 +51,10 @@ class Vault extends Account {
             encryptedVault.icon = await this.encryptData(vault.icon);
         }
        
-        // If device is offline, set the offline timestamp as current device UNIX time (microseconds)
+        // If device is offline, set the modified timestamp as current device UNIX time (microseconds)
         const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
         if (offline) {
-            encryptedVault.offline = currentUnixMilliseconds;
+            encryptedVault.modified = currentUnixMilliseconds;
         }
 
         // Set the created time as current UNIX time if not already set
