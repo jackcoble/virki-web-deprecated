@@ -113,6 +113,14 @@ class Vault extends Account {
     }
 
     /**
+     * Deletes an encrypted vault from IndexedDB.
+     * @param vaultId 
+     */
+    async deleteFromDB(vaultId: string): Promise<void> {
+        await this.authoriserDB.vaults.delete(vaultId);
+    }
+
+    /**
      * Fetches an array of all the encrypted vaults we have stored locally.
      * @returns 
      */
