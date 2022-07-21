@@ -1,6 +1,6 @@
 import type { IVault } from "@/class/vault";
 import { api } from "@/service/api/api";
-import type { Axios, AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 
 export default {
     CreateVault(vault: IVault): Promise<AxiosResponse> {
@@ -9,6 +9,10 @@ export default {
 
     UpdateVault(vault: IVault): Promise<AxiosResponse> {
         return api.put("/v1/vault", vault);
+    },
+
+    DeleteVault(vaultId: string): Promise<AxiosResponse> {
+        return api.delete(`/v1/vault/${vaultId}`)
     },
 
     GetVaults(): Promise<AxiosResponse> {
