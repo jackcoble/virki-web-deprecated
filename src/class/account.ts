@@ -1,6 +1,6 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
 import { createMessage, decrypt, encrypt, readMessage, type Config } from "openpgp";
-import { AuthoriserDB, type IVaultDB } from "@/class/db";
+import { AuthoriserDB } from "@/class/db";
 
 const MASTER_KEY_BITS_LENGTH = 1024;
 const OPENPGP_CONFIG = {
@@ -195,40 +195,6 @@ export class Account {
         })
 
         return Promise.resolve(decryptedData.data.toString())
-    }
-
-    /**
-     * Insert a user to IndexedDB for offline-key storage
-     * @param email 
-     * @param encryptedMasterKey 
-     */
-    async insertUserToDB(email: string, encryptedMasterKey: string): Promise<any> {
-        await this.authoriserDB.accounts.add({
-            account: email,
-            encryptedMasterKey: encryptedMasterKey
-        });
-    }
-
-    /**
-     * Insert an encrypted vault payload to IndexedDB so we can use offline.
-     * @param vault 
-     */
-    async addVaultToDB(vault: IVaultDB): Promise<any> {
-        await this.authoriserDB.vaults.put({
-            id: vault.id,
-            uid: vault.uid,
-            data: vault.data,
-            created: vault.created
-        });
-    }
-
-    /**
-     * Fetches an array of all the vaults we have locally.
-     * @returns 
-     */
-    async getVaultsFromDB(): Promise<IVaultDB[]> {
-        const vaults = await this.authoriserDB.vaults.toArray();
-        return vaults;
     }
 }
 
