@@ -21,45 +21,48 @@ class Vault extends Account {
      * @param offline 
      * @returns 
      */
-    async createEncryptedVaultObject(vaultDetails: IVault, offline?: boolean): Promise<IVault> {
+    async createEncryptedVaultObject(vault: IVault, offline?: boolean): Promise<IVault> {
+        // Create a new object that will contain our encrypted data
+        const encryptedVault = {} as IVault;
+
         // Generate a UUID (v4), remove hyphens and prepend 'v' to indicate vault, and append with EncryptionType to
         // indicate the type of encryption we are using.
         // Only do this though if the vault doesn't have an ID already present.
-        if (!vaultDetails.v_id) {
+        if (!vault.v_id) {
             let vaultId = window.crypto.randomUUID();
             vaultId = vaultId.replace(/-/g, "");
             vaultId = `v-${vaultId}-v${EncryptionType.OPENPGP}`;
 
-            vaultDetails.v_id = vaultId;
+            encryptedVault.v_id = vaultId;
         }
 
         // Now that we've got an ID set, we can start to encrypt some elements of a vault individually
         // - Name
         // - Description
         // - Icon
-        vaultDetails.name = await this.encryptData(vaultDetails.name);
+        encryptedVault.name = await this.encryptData(vault.name);
 
-        // Check that description and icon aren't empty or length is zero
-        if (vaultDetails.description && vaultDetails.description.trim().length > 0) {
-            vaultDetails.description = await this.encryptData(vaultDetails.description);
+        // Check vault description and icon aren't empty or length is zero
+        if (vault.description && vault.description.trim().length > 0) {
+            encryptedVault.description = await this.encryptData(vault.description);
         }
 
-        if (vaultDetails.icon && vaultDetails.icon.trim().length > 0) {
-            vaultDetails.icon = await this.encryptData(vaultDetails.icon);
+        if (vault.icon && vault.icon.trim().length > 0) {
+            encryptedVault.icon = await this.encryptData(vault.icon);
         }
        
         // If device is offline, set the offline timestamp as current device UNIX time (microseconds)
         const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
-        if (offline === true) {
-            vaultDetails.offline = currentUnixMilliseconds;
+        if (offline) {
+            encryptedVault.offline = currentUnixMilliseconds;
         }
 
         // Set the created time as current UNIX time if not already set
-        if (!vaultDetails.created) {
-            vaultDetails.created = currentUnixMilliseconds;
+        if (!vault.created) {
+            encryptedVault.created = currentUnixMilliseconds;
         }
 
-        return Promise.resolve(vaultDetails);
+        return Promise.resolve(encryptedVault);
     }
 
     /**
