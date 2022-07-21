@@ -51,11 +51,9 @@ class Vault extends Account {
             encryptedVault.icon = await this.encryptData(vault.icon);
         }
        
-        // If device is offline, set the modified timestamp as current device UNIX time (microseconds)
+        // Update or set the modified timestamp as current device UNIX time (microseconds)
         const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
-        if (offline) {
-            encryptedVault.modified = currentUnixMilliseconds;
-        }
+        encryptedVault.modified = currentUnixMilliseconds;
 
         // Set the created time as current UNIX time if not already set
         if (!vault.created) {
