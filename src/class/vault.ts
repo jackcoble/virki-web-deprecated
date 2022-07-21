@@ -23,7 +23,7 @@ class Vault extends Account {
      */
     async createEncryptedVaultObject(vault: IVault, offline?: boolean): Promise<IVault> {
         // Create a new object that will contain our encrypted data
-        const encryptedVault = {} as IVault;
+        const encryptedVault = Object.assign({}, vault);
 
         // Generate a UUID (v4), remove hyphens and prepend 'v' to indicate vault, and append with EncryptionType to
         // indicate the type of encryption we are using.
