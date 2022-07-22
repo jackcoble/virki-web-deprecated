@@ -38,6 +38,11 @@ export const useVaultStore = defineStore({
             }
         },
 
+        // Remove the vault from state
+        remove(vaultId: string) {
+            this.vaults = this.vaults.filter(v => v.v_id !== vaultId);
+        },
+
         setActiveVault(id: string) {
             this.activeVaultId = id;
             localStorage.setItem("lastActiveVault", id)
