@@ -6,7 +6,7 @@
         </button>
 
         <div class="container p-4 mx-auto space-y-3">
-            <h2 class="text-2xl font-semibold text-gray-900">Settings ⚙️</h2>
+            <h2 class="text-2xl font-semibold text-gray-900">Settings</h2>
 
             <!-- Explanation text -->
             <p class="text-sm text-gray-700">Here you can make changes to your Authoriser account settings. Beware that
@@ -24,6 +24,12 @@
                 <router-link to="/settings/security" class="flex flex-row items-middle p-3 border rounded">
                     <ShieldCheckIcon class="w-5 mr-1" />
                     <span class="text-sm font-medium">Security</span>
+                </router-link>
+
+                <!-- Manage vaults -->
+                <router-link to="/settings/vaults" class="flex flex-row items-middle p-3 border rounded">
+                    <CollectionIcon class="w-5 mr-1" />
+                    <span class="text-sm font-medium">Manage Vaults</span>
                 </router-link>
 
                 <!-- Preferences -->
@@ -45,8 +51,7 @@
 
             <!-- Deauthorise sessions -->
             <DeauthoriseModal :show="showDeauthoriseSessionModal" @close="showDeauthoriseSessionModal = false" />
-            <b-button classType="danger"
-                @click="showDeauthoriseSessionModal = !showDeauthoriseSessionModal">
+            <b-button classType="danger" @click="showDeauthoriseSessionModal = !showDeauthoriseSessionModal">
                 De-authorise sessions
             </b-button>
 
@@ -61,7 +66,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 
-import { UserIcon, ShieldCheckIcon, AdjustmentsIcon, StarIcon } from "@heroicons/vue/outline"
+import { UserIcon, ShieldCheckIcon, AdjustmentsIcon, StarIcon, CollectionIcon } from "@heroicons/vue/outline"
 
 // Custom components
 import DeauthoriseModal from "@/components/DeauthoriseModal.vue";
@@ -75,7 +80,8 @@ export default defineComponent({
         UserIcon,
         ShieldCheckIcon,
         AdjustmentsIcon,
-        StarIcon
+        StarIcon,
+        CollectionIcon
     },
     setup() {
         const accountData = ref({});

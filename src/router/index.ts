@@ -10,6 +10,7 @@ import Advanced from "@/views/new/Advanced.vue"
 import Settings from "@/views/Settings.vue"
 import SettingsSecurity from "@/views/settings/Security.vue";
 import SettingsPreferences from "@/views/settings/Preferences.vue";
+import SettingsVaults from "@/views/settings/Vaults.vue";
 import Lock from "@/views/Lock.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
@@ -100,6 +101,15 @@ const router = createRouter({
       path: "/settings/preferences",
       name: "settingsPreferences",
       component: SettingsPreferences,
+      meta: {
+        authRequired: true,
+        showTabMenu: true
+      }
+    },
+    {
+      path: "/settings/vaults",
+      name: "settingsVaults",
+      component: SettingsVaults,
       meta: {
         authRequired: true,
         showTabMenu: true
