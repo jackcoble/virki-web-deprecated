@@ -40,14 +40,14 @@
                             </div>
                         </div>
 
-                        <p class="text-sm font-semibold">
+                        <!-- Explainer text -->
+                        <p class="text-sm font-semibold text-center">
                             Enter '{{ selectedVault.name }}' and then confirm vault deletion by pressing "OK".
                         </p>
+                        <p class="text-sm text-center">This vault, and all of the tokens stored inside it, will be permanently deleted.</p>
 
-                        <p class="text-sm">This vault '{{ selectedVault.name }}' and its tokens will be permanently
-                            deleted.</p>
-
-                        <b-input type="text" :placeholder="selectedVault.name"></b-input>
+                        <!-- Input to capture name -->
+                        <b-input type="text" :placeholder="selectedVault.name" v-model="vaultNameConfirmation"></b-input>
                     </div>
                 </template>
             </BaseModal>
@@ -80,8 +80,9 @@ export default defineComponent({
         // Refs to track what modal to show
         const showDeleteVaultModal = ref(false);
 
-        // Selected vault
+        // Selected vault and name confirmation
         const selectedVault = ref();
+        const vaultNameConfirmation = ref("");
 
         // Capture the Vault ID so we can fetch its data and show the modal
         const deleteVaultModal = (id: string) => {
@@ -98,6 +99,11 @@ export default defineComponent({
         const handleDeleteVault = async () => {
             if (!selectedVault.value.v_id) {
                 return;
+            }
+
+            // Check that the names match
+            if (vaultNameConfirmation.value !== selectedVault.value.name) {
+                return toaster.error("Vault name provided is incorrect!");
             }
 
             // Delete locally first
@@ -128,6 +134,7 @@ export default defineComponent({
             vaultStore,
             selectedVault,
             showDeleteVaultModal,
+            vaultNameConfirmation,
 
             deleteVaultModal,
             handleDeleteVault
