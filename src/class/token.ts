@@ -3,9 +3,9 @@ import * as OTPAuth from 'otpauth';
 
 // Enums for Algorithm and Type
 enum TokenAlgorithm {
-    SHA1 = 0,
-    SHA256,
-    SHA512
+    "SHA-1" = 0,
+    "SHA-256",
+    "SHA-512"
 }
 
 enum TokenType {
@@ -138,6 +138,11 @@ class Token extends Account {
         period: number,
         algorithm?: TokenAlgorithm
     ) {
+        // If there is no algorithm provided, default to SHA-1
+        if (!algorithm) {
+            algorithm = TokenAlgorithm["SHA-1"];
+        }
+
         // Authoriser only supports TOTP generation at the moment,
         // due to being reliant upon the otpauth library. When we have the
         // chance, implement the algorithms ourselves.
@@ -145,7 +150,7 @@ class Token extends Account {
             case TokenType.TOTP:
                 const totp = new OTPAuth.TOTP({
                     secret: secret,
-                    algorithm: "SHA1",
+                    algorithm: TokenAlgorithm[algorithm],
                     digits: digits,
                     period: period
                 });
