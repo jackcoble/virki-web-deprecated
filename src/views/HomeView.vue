@@ -2,11 +2,11 @@
   <div class="h-screen bg-gray-50">
 
     <div class="container mx-auto p-4 space-y-3">
-      <div class="flex justify-between">
+      <div class="flex justify-between items-center">
         <!-- Vault selection dropdown -->
         <VaultSelector />
 
-        <div class="flex-row">
+        <div class="flex flex-col">
           <!-- Refresh vault button -->
           <button v-if="isOnline" class="rounded-full p-1 text-purple-800"
             :class="isRefreshingVault || isSyncing ? 'animate-reverse-spin' : ''" @click="refreshVault"
