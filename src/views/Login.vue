@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { Account } from "@/class/account";
+import { Account, type IAccount } from "@/class/account";
 import useToaster from "@/composables/useToaster";
 import authentication from "@/service/api/authentication";
 import user from "@/service/api/user";
@@ -46,6 +46,7 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { Crypto } from "@/class/crypto";
+import useAuthoriserDB from "@/composables/useAuthoriserDB";
 
 export default defineComponent({
     name: "Login",
@@ -62,6 +63,7 @@ export default defineComponent({
         const router = useRouter();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
+        const authoriserDB = useAuthoriserDB();
         const toaster = useToaster();
         const account = new Account("", "");
 
@@ -95,7 +97,11 @@ export default defineComponent({
                     const masterPublicKey = res.data.encrypted_master_keypair.public_key;
 
                     const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterPrivateKey, await Crypto.fromBase64(extended.key));
-                    encryptionKeyStore.setMasterKeyPair(decryptedMasterPrivateKey, masterPublicKey);
+                    encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), masterPublicKey);
+
+                    // Set the active user and save account to IndexedDB
+                    authenticationStore.setActiveAccount(res.data.uid);
+                    await authoriserDB.insertAccount(res.data as IAccount);
                 }
 
                 // Push to Index
