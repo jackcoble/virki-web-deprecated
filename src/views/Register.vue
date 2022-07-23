@@ -62,12 +62,10 @@
 </template>
 
 <script lang="ts">
-import { Account } from "@/class/account";
+import { Account, type IAccount } from "@/class/account";
+import { Crypto } from "@/class/crypto";
 import useToaster from "@/composables/useToaster";
-import type { IRegisterAccount } from "@/models/account";
-import type { EncryptedVault } from "@/models/vault";
 import authentication from "@/service/api/authentication";
-import vault from "@/service/api/vaultService";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
@@ -98,7 +96,6 @@ export default defineComponent({
             - Password confirmation matches password
             - Password hint doesn't contain the master password
             - Minimum password length of 12 characters
-            - Password length
             */
             if (confirmPassword.value !== password.value) {
                 return toaster.error("Passwords do not match!")
@@ -115,77 +112,51 @@ export default defineComponent({
             // Made it to the derivation stage of the account, so set isLoading value
             isLoading.value = true;
 
-            // Account initialisation
-            // Derive a stretched (more secure) password for the user
-            const account = new Account();
-            const pPassword = await account.deriveStretchedPassword(password.value);
+            // Randomly generate a master keypair and initialise the Account class
+            const masterKeyPair = await Crypto.generateKeyPair();
+            const account = new Account(masterKeyPair.privateKey, masterKeyPair.publicKey);
 
-            // Generate and set the master key used for symmetric operations
-            const masterKey = account.generateMasterKey();
-            account.setMasterKey(masterKey);
-            encryptionKeyStore.setMasterKey(masterKey);
+            // Stretch the password into a stronger key and use it to encrypt the master private key
+            const stretched = await account.deriveStretchedPassword(password.value);
+            const encryptedMasterPrivateKey = await Crypto.encrypt(
+                await Crypto.fromBase64(masterKeyPair.privateKey),
+                await Crypto.fromBase64(stretched.key)
+            );
 
-            // Encrypt the master key
-            const encryptedMasterKey = await account.encryptMasterKey(pPassword.key);
+            // Derive a SHA-256 hash of the stretched password (used for authentication)
+            const passwordHash = await Crypto.sha256hash(await Crypto.fromBase64(stretched.key));
 
-            // Generate a SHA-256 hash of the stretched key as we'll store this on the server for authentication
-            const stretchedKeyBytes = new TextEncoder().encode(pPassword.key);
-            const stretchedKeyHashBytes = await window.crypto.subtle.digest("SHA-256", stretchedKeyBytes);
+            // We have all the data we need for now, so construct an account payload that will be sent to the API
+            const accountPayload: IAccount = {
+                email: email.value,
+                name: name.value,
+                password: {
+                    hash: passwordHash,
+                    salt: stretched.salt
+                },
+                encrypted_master_keypair: {
+                    private_key: encryptedMasterPrivateKey,
+                    public_key: masterKeyPair.publicKey
+                }
+            }
 
+            if (passwordHint.value) {
+                accountPayload.password.hint = passwordHint.value;
+            }
+
+            // Send account payload to API
             try {
-                // Construct an account payload to be sent to the server
-                const accountPayload: IRegisterAccount = {
-                    email: email.value,
-                    name: name.value,
-                    password: {
-                        hash: Buffer.from(stretchedKeyHashBytes).toString("base64"),
-                        salt: pPassword.salt
-                    },
-                    encrypted_master_key: encryptedMasterKey
-                }
-
-                if (passwordHint.value) {
-                    accountPayload.password.hint = passwordHint.value;
-                }
-
-                // Send account payload to server and set the access/refresh tokens we get back
-                const res = await authentication.RegisterAccount(accountPayload);
-                if (res.data) {
-                    const accessToken = res.data.access_token;
-                    const refreshToken = res.data.refresh_token;
-
-                    if (accessToken && refreshToken) {
-                        authenticationStore.setAccessToken(accessToken);
-                        authenticationStore.setRefreshToken(refreshToken);
-                    }
-                }
+                await authentication.RegisterAccount(accountPayload).then(res => {
+                    authenticationStore.setAccessToken(res.data.access_token);
+                    authenticationStore.setRefreshToken(res.data.refresh_token);
+                })
             } catch (e) {
-                return toaster.error(e.response.data.error);
+                return toaster.error(e.response.data.error)
             } finally {
                 isLoading.value = false;
             }
 
-            // Now that user has been authenticated, we can create a Vault for them.
-            // A vault contains all the token entries for a user.
-            // If the user wishes, they can have multiple vaults (this is/will be a premium feature).
-            // The users default vault will be called "Personal 🔒", and is encrypted as expected.
-            try {
-                const encryptedVault: EncryptedVault = {
-                    name: "Personal 🔒",
-                    description: "My personal 2FA vault."
-                }
-
-                const vaultString = JSON.stringify(encryptedVault);
-                const encryptedVaultString = await account.encryptData(vaultString);
-
-                // Send the encrypted Vault string to the API
-                const res = await vault.CreateVault(encryptedVaultString);
-                console.log(res.data);
-            } catch (e) {
-                return toaster.error(e);
-            }
-
-            // Push to main page
+            // Push to index
             router.push("/");
         }
 
