@@ -36,6 +36,8 @@ import useVault from "@/composables/useVault";
 import { useApplicationStore } from "@/stores/appStore";
 import IconUpload from "./IconUpload.vue";
 import vaultService from "@/service/api/vaultService";
+import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
+import useAuthoriserDB from "@/composables/useAuthoriserDB";
 
 export default defineComponent({
     name: "EditVaultModal",
@@ -53,7 +55,9 @@ export default defineComponent({
         const vault = useVault();
 
         const applicationStore = useApplicationStore();
+        const encryptionKeyStore = useEncryptionKeyStore();
         const vaultStore = useVaultStore();
+        const authoriserDB = useAuthoriserDB();
 
         const activeVault = computed(() => vaultStore.getActiveVault);
         const activeVaultName = computed(() => vaultStore.getActiveVault?.name);
@@ -90,13 +94,14 @@ export default defineComponent({
                 modifiedVault.icon = icon.value;
 
                 // Re-encrypt the active vault with the new data, and save it to IndexedDB
-                const encryptedActiveVault = await vault?.createEncryptedVaultObject(modifiedVault, !applicationStore.isOnline);
-                await vault?.saveToDB(encryptedActiveVault!);
+                const keypair = encryptionKeyStore.getMasterKeyPair;
+                const encryptedActiveVault = await vault?.createEncryptedVaultObject(modifiedVault, keypair.privateKey, keypair.publicKey);
+                await authoriserDB.insertVault(encryptedActiveVault!);
 
                 const encryptedVaultDuplicate = { ...encryptedActiveVault } as IVault;
 
                 // Decrypt it and then update in vault store
-                const decryptedActiveVault = await vault?.decryptFromVaultObject(encryptedActiveVault!);
+                const decryptedActiveVault = await vault?.decryptFromVaultObject(encryptedActiveVault!, keypair.privateKey, keypair.publicKey);
                 vaultStore.add(decryptedActiveVault!);
 
                 // Push to API
