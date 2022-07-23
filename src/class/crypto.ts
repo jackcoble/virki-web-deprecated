@@ -52,7 +52,7 @@ export class Crypto {
      * Decrypts and returns data when provided with a cipher string and decryption key.
      * @param cipherString - "Cipher" string containing necessary data for a successful decryption.
      * @param key - Symmetric key used for encryption.
-     * @returns{string} - Decrypted data.
+     * @returns {string} - Decrypted data.
      */
     static async decrypt(cipherString: string, key: Uint8Array): Promise<string> {
         await sodium.ready;
@@ -71,6 +71,18 @@ export class Crypto {
         );
 
         return Promise.resolve(await this.toBase64(decryptedData));
+    }
+
+    /**
+     * Return a SHA-256 hash of provided data.
+     * @param input - Data to be hashed
+     * @returns {string}
+     */
+    static async sha256hash(input: Uint8Array): Promise<string> {
+        const hash = await window.crypto.subtle.digest("SHA-256", input);
+        const hashBuffer = Buffer.from(hash);
+
+        return await this.toBase64(hashBuffer);
     }
 
     /**
