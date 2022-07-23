@@ -52,9 +52,9 @@ export class Crypto {
      * Decrypts and returns data when provided with a cipher string and decryption key.
      * @param cipherString - "Cipher" string containing necessary data for a successful decryption.
      * @param key - Symmetric key used for encryption.
-     * @returns {string} - Decrypted data.
+     * @returns {Uint8Array} - Decrypted data.
      */
-    static async decrypt(cipherString: string, key: Uint8Array): Promise<string> {
+    static async decrypt(cipherString: string, key: Uint8Array): Promise<Uint8Array> {
         await sodium.ready;
 
         // Parse the "cipher" string and decrypt it
@@ -70,7 +70,7 @@ export class Crypto {
             key
         );
 
-        return Promise.resolve(await this.toBase64(decryptedData));
+        return Promise.resolve(decryptedData);
     }
 
     /**
