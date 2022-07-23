@@ -3,13 +3,21 @@ enum EncryptionType {
     XCHACHA20_POLY1305 = 1
 }
 
+// Interface representing the parsed format of a "cipher"
+interface ICipher {
+    type: number;
+    ciphertext: string;
+    nonce: string;
+    mac?: string;
+}
+
 class Cipher {
     /**
      * Parses a "cipher" string into a usable object.
      * @param cipherString 
      * @returns {object}
      */
-    static parseCipherString(cipherString: string): Promise<any> {
+    static parseCipherString(cipherString: string): Promise<ICipher> {
         /*
             A "cipher" string typically follows this format
             EncryptionType.CipherText|Nonce|MAC
@@ -31,7 +39,7 @@ class Cipher {
 
         switch (encryptionType) {
             case EncryptionType.XCHACHA20_POLY1305:
-                const cipher = {
+                const cipher: ICipher = {
                     type: EncryptionType.XCHACHA20_POLY1305,
                     ciphertext: cipherSplit[0],
                     nonce: cipherSplit[1],
