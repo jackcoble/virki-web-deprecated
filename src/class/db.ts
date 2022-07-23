@@ -45,6 +45,15 @@ class AuthoriserDB extends Dexie {
     }
 
     /**
+     * Retrieves an array of all encrypted vaults in IndexedDB.
+     * @returns {IVault[]}
+     */
+    async getVaults(): Promise<IVault[]> {
+        const vaults = await this.vaults.toArray();
+        return Promise.resolve(vaults);
+    }
+
+    /**
      * Removes an encrypted vault from IndexedDB by its ID.
      * @param id - Vault ID to be deleted.
      * @returns {void}
