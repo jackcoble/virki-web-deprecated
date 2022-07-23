@@ -1,4 +1,5 @@
-import { Account, EncryptionType } from "./account";
+import { EncryptionType } from "./cipher";
+import { Crypto } from "./crypto";
 
 // Details we expected the encrypted vault payload to have when decrypted
 interface IVault {
@@ -6,22 +7,27 @@ interface IVault {
     name: string;
     description?: string;
     icon?: string;
+    key: string;
     modified:  number // If device is offline, this modified value will still be updated and then checked when the device is online again
     created: number;
 }
 
-class Vault extends Account {
-    constructor(masterKey: string) {
-        super(masterKey);
+class Vault {
+    private masterKeyPair: any;
+    
+    constructor(masterPrivateKey: string, masterPublicKey: string) {
+        this.masterKeyPair = {
+            privateKey: masterPrivateKey,
+            publicKey: masterPublicKey
+        }
     }
 
     /**
      * Creates an encrypted vault object that can be used to submit to our API.
-     * @param vaultDetails 
-     * @param offline 
-     * @returns 
+     * @param vault
+     * @returns {IVault}
      */
-    async createEncryptedVaultObject(vault: IVault, offline?: boolean): Promise<IVault> {
+    async createEncryptedVaultObject(vault: IVault): Promise<IVault> {
         // Create a new object that will contain our encrypted data
         const encryptedVault = Object.assign({}, vault);
 
@@ -31,24 +37,29 @@ class Vault extends Account {
         if (!vault.v_id) {
             let vaultId = window.crypto.randomUUID();
             vaultId = vaultId.replace(/-/g, "");
-            vaultId = `v-${vaultId}-v${EncryptionType.OPENPGP}`;
+            vaultId = `v-${vaultId}-v${EncryptionType.XCHACHA20_POLY1305}`;
 
             encryptedVault.v_id = vaultId;
         }
 
-        // Now that we've got an ID set, we can start to encrypt some elements of a vault individually
+        // Generate and set a symmetric encryption key, to be used for all items in a vault.
+        const encryptionKey = await Crypto.generateSymmetricEncryptionKey();
+        const encryptionKeyBuffer = await Crypto.fromBase64(encryptionKey);
+        encryptedVault.key = encryptionKey;
+
+        // Now that we've got an ID and encryption key set, we can start to encrypt some elements of a vault individually
         // - Name
         // - Description
         // - Icon
-        encryptedVault.name = await this.encryptData(vault.name);
+        encryptedVault.name = await Crypto.encrypt(await Crypto.fromString(vault.name), encryptionKeyBuffer);
 
         // Check vault description and icon aren't empty or length is zero
         if (vault.description && vault.description.trim().length > 0) {
-            encryptedVault.description = await this.encryptData(vault.description);
+            encryptedVault.description = await Crypto.encrypt(await Crypto.fromString(vault.description), encryptionKeyBuffer);
         }
 
         if (vault.icon && vault.icon.trim().length > 0) {
-            encryptedVault.icon = await this.encryptData(vault.icon);
+            encryptedVault.icon = await Crypto.encrypt(await Crypto.fromString(vault.icon), encryptionKeyBuffer);
         }
        
         // Update or set the modified timestamp as current device UNIX time (microseconds)
