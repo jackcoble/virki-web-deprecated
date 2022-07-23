@@ -83,6 +83,7 @@ import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { useTokenStore } from "@/stores/tokenStore";
 import useToken from "@/composables/useToken";
 import type { IVault } from "@/class/vault";
+import { AuthoriserDB } from "@/class/db";
 
 export default defineComponent({
   name: "HomeView",
@@ -102,6 +103,7 @@ export default defineComponent({
     const toaster = useToaster();
 
     const applicationStore = useApplicationStore();
+    const encryptionKeyStore = useEncryptionKeyStore();
     const vaultStore = useVaultStore();
     const tokenStore = useTokenStore();
 
@@ -133,15 +135,19 @@ export default defineComponent({
         return;
       }
 
+      // Just some preparation
+      const db = new AuthoriserDB();
+      const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
+
       // Let's start with an initial load. If the vault store is empty,
       // we are going to assume that the page has just been loaded/refreshed, so populate that first!
       // As Authoriser is offline-first, we can attempt to populate with some entries from IndexedDB
       // before making a request to our API for updated entries.
       if (vaultStore.getVaults.length === 0) {
         // Fetch vaults from IndexedDB, decrypt them and set in store
-        const vaults = await vault.getAllFromDB();
+        const vaults = await db.getVaults();
         vaults.forEach(async v => {
-          const decryptedVault = await vault.decryptFromVaultObject(v);
+          const decryptedVault = await vault.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
           vaultStore.add(decryptedVault);
         });
       }
@@ -189,9 +195,6 @@ export default defineComponent({
           tokenStore.add(decryptedToken!);
         });
       }
-
-      // TESTING: Ed25519
-      await account.generateEd25519Keypair()
 
       // Fire off initial countdown event
       emitCountdownEvent();
