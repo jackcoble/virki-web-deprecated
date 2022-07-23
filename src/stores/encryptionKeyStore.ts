@@ -5,16 +5,20 @@ export const useEncryptionKeyStore = defineStore({
   state: () => ({
     masterPasswordStretched: localStorage.getItem("stretched_password") || "",
     encryptedMasterKey: localStorage.getItem("encrypted_master_key") || "",
-    masterKey: ""
+    masterKeyPair: {
+      privateKey: "",
+      publicKey: ""
+    }
   }),
   getters: {
-    getMasterKey: (state) => state.masterKey,
+    getMasterKeyPair: (state) => state.masterKeyPair,
     getStretchedPassword: (state) => state.masterPasswordStretched,
     getEncryptedMasterKey: (state) => state.encryptedMasterKey
   },
   actions: {
-    setMasterKey (masterKey: string) {
-      this.masterKey = masterKey;
+    setMasterKeyPair (privateKey: string, publicKey: string) {
+      this.masterKeyPair.privateKey = privateKey;
+      this.masterKeyPair.publicKey = publicKey;
     },
 
     // Use this for keeping stretched password just in memory or localStorage
@@ -35,7 +39,8 @@ export const useEncryptionKeyStore = defineStore({
 
     clear() {
       this.masterPasswordStretched = "";
-      this.masterKey = "";
+      this.masterKeyPair.privateKey = "";
+      this.masterKeyPair.publicKey = "";
       this.encryptedMasterKey = "";
 
       localStorage.removeItem("stretched_password");
