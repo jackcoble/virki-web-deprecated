@@ -1,0 +1,54 @@
+// Enum representing the different encryption types available to us
+enum EncryptionType {
+    XCHACHA20_POLY1305 = 0
+}
+
+class Cipher {
+    /**
+     * Parses a "cipher" string into a usable object.
+     * @param cipherString 
+     * @returns {object}
+     */
+    static parseCipherString(cipherString: string): Promise<any> {
+        /*
+            A "cipher" string typically follows this format
+            EncryptionType.CipherText|Nonce|MAC
+
+            We want to parse a "cipher" string and return the contents
+            of it in an object.
+        */
+
+        // Split the "cipher" string by the period character, so we can validate the EncryptionType.
+        const encryptionType = parseInt(cipherString.split(".")[0]);
+        if (encryptionType !in EncryptionType) {
+            return Promise.reject("Encryption type is invalid!");
+        }
+
+        // Depending on the EncryptionType, a "cipher" string may be formatted differently,
+        // possibly due to additional options being required for that encryption algorithm.
+        // So depending on the algorithm, we can parse it accordingly.
+        const cipherSplit = cipherString.split(".")[1].split("/");
+
+        switch (encryptionType) {
+            case EncryptionType.XCHACHA20_POLY1305:
+                const cipher = {
+                    ciphertext: cipherSplit[0],
+                    nonce: cipherSplit[1],
+                    mac: cipherSplit[2]
+                }
+
+                return Promise.resolve(cipher);
+        
+            default:
+                return Promise.reject("Unexpected error parsing cipher string!")
+        }
+    }
+}
+
+export {
+    Cipher
+}
+
+export type {
+    EncryptionType
+}
