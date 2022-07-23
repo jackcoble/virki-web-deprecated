@@ -20,7 +20,7 @@ class Cipher {
 
         // Split the "cipher" string by the period character, so we can validate the EncryptionType.
         const encryptionType = parseInt(cipherString.split(".")[0]);
-        if (encryptionType !in EncryptionType) {
+        if (!Object.values(EncryptionType).includes(encryptionType)) {
             return Promise.reject("Encryption type is invalid!");
         }
 
@@ -54,7 +54,7 @@ class Cipher {
      */
     static serialiseCipherString(encryptionType: EncryptionType, cipherText: string, nonce: string, mac: string): Promise<string> {
         // Validate the encryptionType against the enum.
-        if (encryptionType !in EncryptionType) {
+        if (!Object.values(EncryptionType).includes(encryptionType)) {
             return Promise.reject("Encryption type is invalid!");
         }
 
