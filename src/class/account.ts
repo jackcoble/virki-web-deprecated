@@ -1,31 +1,28 @@
-import { createMessage, decrypt, encrypt, readMessage, type Config } from "openpgp";
-import { AuthoriserDB } from "@/class/db";
 import * as sodium from "libsodium-wrappers";
 import { Crypto } from "./crypto";
 
-const MASTER_KEY_BITS_LENGTH = 1024;
-const OPENPGP_CONFIG = {
-    showComment: true,
-    showVersion: true
-} as Config;
-
-enum EncryptionType {
-    OPENPGP = 1,
-    XCHACHA20POLY1305
-};
+export interface IAccount {
+    email: string;
+    name: string;
+    password: {
+        hash: string;
+        salt: string;
+        hint?: string;
+    }
+    encrypted_master_keypair: {
+        private_key: string;
+        public_key: string;
+    }
+}
 
 export class Account {
-    private masterKey: string;
-    private authoriserDB: AuthoriserDB;
-
-    constructor(masterKey?: string) {
-        if (masterKey) {
-            this.masterKey = masterKey;
+    private masterKeyPair: any;
+    
+    constructor(masterPrivateKey: string, masterPublicKey: string) {
+        this.masterKeyPair = {
+            privateKey: masterPrivateKey,
+            publicKey: masterPublicKey
         }
-
-        // Initialise DB
-        const db = new AuthoriserDB();
-        this.authoriserDB = db;
     }
 
     /**
@@ -40,18 +37,12 @@ export class Account {
         }
 
         // Generate salt if not provided as parameter
-        let saltBuffer = new Uint8Array(16);
-        if (!salt) {
-            saltBuffer = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
-        } else {
-            // Otherwise convert provided Salt string into Buffer format
-            saltBuffer = await Crypto.fromBase64(salt);
-        }
+        let saltBuffer = salt ? await Crypto.fromBase64(salt) : sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
 
         // Derive stretched key using Sodium and Argon2ID
-        const key = sodium.crypto_pwhash(sodium.crypto_secretbox_KEYBYTES, password, saltBuffer, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE, sodium.crypto_pwhash_ALG_DEFAULT, "base64");
+        const key = sodium.crypto_pwhash(sodium.crypto_secretbox_KEYBYTES, password, saltBuffer, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE, sodium.crypto_pwhash_ALG_DEFAULT);
         const keyPayload = {
-            key: key,
+            key: await Crypto.toBase64(key),
             salt: await Crypto.toBase64(saltBuffer)
         }
 
@@ -74,142 +65,4 @@ export class Account {
 
         return stretchedKeyHashEncoded;
     }
-
-    /**
-     * Set the master key for an account
-     * @param masterKey 
-     */
-    setMasterKey(masterKey: string) {
-        this.masterKey = masterKey;
-    }
-
-    /**
-     * Generates an X25519 keypair used for asymmetric cryptographic operations
-     * @returns {sodium.StringKeyPair}
-     */
-    async generateKeyPair(): Promise<sodium.StringKeyPair> {
-        await sodium.ready;
-
-        const keypair = sodium.crypto_box_keypair("base64");
-        return Promise.resolve(keypair);
-    }
-
-    /**
-     * Generates a "master key" which is used for OpenPGP encryption of string data
-     */
-    generateMasterKey(): string {
-        // 1024-bit master symmetric key 
-        const masterKey = window.crypto.getRandomValues(new Uint8Array(MASTER_KEY_BITS_LENGTH));
-        const masterKeyString = Buffer.from(masterKey).toString("base64");
-
-        return masterKeyString;
-    }
-
-    /**
-     * Encrypts the master symmetric key with the users stretched password. Returned payload should contain the encrypted master key
-     * @param stretchedKey - Base64 encoded version of the stretched password.
-     */
-    async encryptMasterKey(stretchedKey: string): Promise<string> {
-        const message = await createMessage({
-            text: this.masterKey
-        });
-
-        const encryptedMasterKey = await encrypt({
-            message,
-            passwords: [stretchedKey],
-            format: "armored",
-            config: OPENPGP_CONFIG
-        });
-
-        return encryptedMasterKey.toString();
-    }
-
-    /**
-     * Decrypts and returns the master key
-     * @param password - user raw password
-     * @param salt - salt that was used to stretch the user password
-     * @param encryptedMasterKey - OpenPGP armored message
-     */
-    async decryptMasterKey(password: string, salt: string, encryptedMasterKey: string): Promise<string> {
-        try {
-            // First derive stretched password.
-            const stretchedKey = await this.deriveStretchedPassword(password, salt);
-
-            // Now that we have the stretched key, we can use it to decrypt the PGP message
-            const encryptedMessage = await readMessage({
-                armoredMessage: encryptedMasterKey,
-            });
-
-            const decryptedMasterKey = await decrypt({
-                message: encryptedMessage,
-                passwords: [stretchedKey.key]
-            })
-
-            return Promise.resolve(decryptedMasterKey.data.toString())
-        } catch (e) {
-            return Promise.reject("Could not decrypt master key, please check your password and try again!");
-        }
-    }
-
-    /**
-     * Decrypt an encrypted master key with the users stretched (Argon2) password
-     * @param stretchedKey 
-     * @param encryptedMasterKey 
-     * @returns {string} - Decrypted master key
-     */
-    async decryptMasterKeyWithStretchedPassword(stretchedKey: string, encryptedMasterKey: string): Promise<string> {
-        try {
-            const encryptedMessage = await readMessage({
-                armoredMessage: encryptedMasterKey,
-            });
-
-            const decryptedMasterKey = await decrypt({
-                message: encryptedMessage,
-                passwords: [stretchedKey]
-            })
-
-            return Promise.resolve(decryptedMasterKey.data.toString())
-        } catch (e) {
-            return Promise.reject("Could not decrypt master key, please check your password and try again!");
-        }
-    }
-
-    /**
-     * Encrypts string data and returns an OpenPGP message
-     * @param data
-     * @returns {string}
-     */
-    async encryptData(data: string): Promise<string> {
-        const message = await createMessage({
-            text: data
-        });
-
-        const encryptedData = await encrypt({
-            message,
-            passwords: [this.masterKey],
-            format: "armored",
-            config: OPENPGP_CONFIG
-        });
-
-        return encryptedData.toString();
-    }
-
-    /**
-     * Decrypts an OpenPGP message with the master key
-     * @param message 
-     */
-    async decryptData(message: string): Promise<string> {
-        const encryptedMessage = await readMessage({
-            armoredMessage: message,
-        });
-
-        const decryptedData= await decrypt({
-            message: encryptedMessage,
-            passwords: [this.masterKey]
-        })
-
-        return Promise.resolve(decryptedData.data.toString())
-    }
 }
-
-export { EncryptionType }
