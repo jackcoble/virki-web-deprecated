@@ -45,7 +45,7 @@ import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { computed } from "@vue/reactivity";
 import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { LockClosedIcon, LockOpenIcon, LogoutIcon } from "@heroicons/vue/outline";
 import { useApplicationStore } from "@/stores/appStore";
 import useAuthoriserDB from "@/composables/useAuthoriserDB";
@@ -61,6 +61,7 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter();
+        const route = useRoute();
         const toaster = useToaster();
 
         const acc = useAccount();
@@ -117,8 +118,13 @@ export default defineComponent({
 
             isLoading.value = false;
 
-            // Push to index
-            router.push("/")
+            // Check for query in parameter or push to index
+            const redirect = route.query.redirect as string;
+            if (redirect) {
+                router.push({ path: redirect });
+            } else {
+                router.push("/")
+            }
         }
 
         // Function to log out user

@@ -150,9 +150,12 @@ router.beforeEach(async (to, from, next) => {
     // If we don't have an encrypted master key (at the very least, then prompt for a login)
 
     // Otherwise if we have no master key, stretched password, but have the encrypted master key, we can prompt for
-    // an unlock
+    // an unlock and then redirect the user if necessary
     if (!encryptionKeyStore.getMasterKeyPair.privateKey && !encryptionKeyStore.getStretchedPassword) {
-      return next({ path: "/lock" })
+      return next({ 
+        path: "/lock",
+        query: { redirect: to.fullPath }
+      })
     }
   }
 
