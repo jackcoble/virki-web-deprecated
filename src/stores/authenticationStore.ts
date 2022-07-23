@@ -16,7 +16,8 @@ export const useAuthenticationStore = defineStore({
     getPasswordSalt: (state) => state.password_salt,
     getAccessToken: (state) => state.access_token,
     getRefreshToken: (state) => state.refresh_token,
-    getLastActiveTimestamp: (state) => state.lastActiveTimestamp
+    getLastActiveTimestamp: (state) => state.lastActiveTimestamp,
+    getActiveAccount: (state) => state.activeAccount
   },
   actions: {
     setEmail(email: string) {
