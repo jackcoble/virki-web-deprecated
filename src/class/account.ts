@@ -53,7 +53,7 @@ export class Account {
             key: key,
             salt: sodium.to_base64(saltBuffer, sodium.base64_variants.ORIGINAL)
         }
-
+        
         return keyPayload;
     }
 
@@ -83,6 +83,17 @@ export class Account {
     }
 
     /**
+     * Generates an X25519 keypair used for asymmetric cryptographic operations
+     * @returns {sodium.StringKeyPair}
+     */
+    async generateKeyPair(): Promise<sodium.StringKeyPair> {
+        await sodium.ready;
+
+        const keypair = sodium.crypto_box_keypair("base64");
+        return Promise.resolve(keypair);
+    }
+
+    /**
      * Generates a "master key" which is used for OpenPGP encryption of string data
      */
     generateMasterKey(): string {
@@ -94,7 +105,8 @@ export class Account {
     }
 
     /**
-     * Encrypts the master key with the users stretched password. Returned payload should contain the encrypted master key
+     * Encrypts the master symmetric key with the users stretched password. Returned payload should contain the encrypted master key
+     * @param stretchedKey - Base64 encoded version of the stretched password.
      */
     async encryptMasterKey(stretchedKey: string): Promise<string> {
         const message = await createMessage({
