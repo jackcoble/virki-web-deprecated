@@ -97,9 +97,9 @@ export class Crypto {
      * @param cipherString 
      * @param privateKey 
      * @param publicKey 
-     * @returns {string}
+     * @returns {Uint8Array}
      */
-    static async decryptAsymmetric(cipherString: string, privateKey: Uint8Array, publicKey: Uint8Array): Promise<string> {
+    static async decryptAsymmetric(cipherString: string, privateKey: Uint8Array, publicKey: Uint8Array): Promise<Uint8Array> {
         await sodium.ready;
 
         // Parse the "cipher" string
@@ -117,7 +117,7 @@ export class Crypto {
             privateKey
         );
 
-        return Promise.resolve(await this.toBase64(decryptedData))
+        return Promise.resolve(decryptedData)
     }
 
     /**
