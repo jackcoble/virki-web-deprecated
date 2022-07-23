@@ -1,7 +1,7 @@
 import * as sodium from "libsodium-wrappers";
 import { Crypto } from "./crypto";
 
-export interface IAccount {
+interface IAccount {
     email: string;
     name: string;
     password: {
@@ -65,4 +65,8 @@ export class Account {
 
         return stretchedKeyHashEncoded;
     }
+}
+
+export type {
+    IAccount
 }
