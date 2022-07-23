@@ -42,9 +42,9 @@ class Vault {
             encryptedVault.v_id = vaultId;
         }
 
-        // Generate a symmetric encryption key, to be used for all items in a vault.
+        // Generate a symmetric encryption key if we don't have one already, to be used for all items in a vault.
         // We want to encrypt this key with the users master keypair
-        const encryptionKey = await Crypto.generateSymmetricEncryptionKey();
+        const encryptionKey = vault.key || await Crypto.generateSymmetricEncryptionKey();
         const encryptionKeyBuffer = await Crypto.fromBase64(encryptionKey);
 
         const encryptedVaultKey = await Crypto.encryptAsymmetric(
