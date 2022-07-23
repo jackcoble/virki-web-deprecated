@@ -1,6 +1,6 @@
 // Enum representing the different encryption types available to us
 enum EncryptionType {
-    XCHACHA20_POLY1305 = 0
+    XCHACHA20_POLY1305 = 1
 }
 
 class Cipher {
@@ -27,7 +27,7 @@ class Cipher {
         // Depending on the EncryptionType, a "cipher" string may be formatted differently,
         // possibly due to additional options being required for that encryption algorithm.
         // So depending on the algorithm, we can parse it accordingly.
-        const cipherSplit = cipherString.split(".")[1].split("/");
+        const cipherSplit = cipherString.split(".")[1].split("|");
 
         switch (encryptionType) {
             case EncryptionType.XCHACHA20_POLY1305:
@@ -41,6 +41,32 @@ class Cipher {
         
             default:
                 return Promise.reject("Unexpected error parsing cipher string!")
+        }
+    }
+
+    /**
+     * Serialise a "cipher" string to represent encrypted data.
+     * @param encryptionType
+     * @param cipherText 
+     * @param nonce 
+     * @param mac 
+     * @returns {string}
+     */
+    static serialiseCipherString(encryptionType: EncryptionType, cipherText: string, nonce: string, mac: string): Promise<string> {
+        // Validate the encryptionType against the enum.
+        if (encryptionType !in EncryptionType) {
+            return Promise.reject("Encryption type is invalid!");
+        }
+
+        switch (encryptionType) {
+            case EncryptionType.XCHACHA20_POLY1305:
+                // XChaCha20-Poly1305 ciphers must be represented in the following format:
+                // 1.CipherText|Nonce|MAC
+                const cipherString = `${EncryptionType.XCHACHA20_POLY1305}.${cipherText}|${nonce}|${mac}`;
+                return Promise.resolve(cipherString);
+        
+            default:
+                return Promise.reject("Unexpected error serialising cipher string!");
         }
     }
 }
