@@ -49,4 +49,34 @@ export class Crypto {
         await sodium.ready;
         return sodium.from_base64(input, sodium.base64_variants.ORIGINAL);
     }
+
+    /**
+     * Converts string input into Uint8Array
+     * @param input 
+     * @returns {Uint8Array}
+     */
+    static async fromString(input: string): Promise<Uint8Array> {
+        await sodium.ready;
+        return sodium.from_string(input);
+    }
+
+    /**
+     * Converts Base64 encoded string into a hexadecimal string.
+     * @param input 
+     * @returns {string}
+     */
+    static async toHex(input: string): Promise<string> {
+        await sodium.ready;
+        return sodium.to_hex(await this.fromBase64(input));
+    }
+
+    /**
+     * Converts hexadecimal string into a Base64 encoded string.
+     * @param input 
+     * @returns {string}
+     */
+    static async fromHex(input: string): Promise<string> {
+        await sodium.ready;
+        return await this.toBase64(sodium.from_hex(input));
+    }
 }
