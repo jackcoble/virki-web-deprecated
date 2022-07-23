@@ -8,7 +8,8 @@ export const useAuthenticationStore = defineStore({
     password_salt: localStorage.getItem("password_salt") || null,
     access_token: localStorage.getItem("access_token") || null,
     refresh_token: localStorage.getItem("refresh_token") || null,
-    lastActiveTimestamp: getUnixTime(new Date())
+    lastActiveTimestamp: getUnixTime(new Date()),
+    activeAccount: localStorage.getItem("active_account") || null
   }),
   getters: {
     getEmail: (state) => state.email,
@@ -40,6 +41,11 @@ export const useAuthenticationStore = defineStore({
 
     setLastActiveTimestamp(timestamp: number) {
         this.lastActiveTimestamp = timestamp;
+    },
+
+    setActiveAccount(accountId: string) {
+      this.activeAccount = accountId;
+      localStorage.setItem("active_account", accountId);
     },
 
     clear() {
