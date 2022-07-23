@@ -1,10 +1,10 @@
 import { api } from "@/service/api/api";
 
 import type { AxiosResponse } from "axios";
-import type { IRegisterAccount } from "@/models/account";
+import type { IAccount } from "@/class/account";
 
 export default {
-    RegisterAccount(payload: IRegisterAccount): Promise<AxiosResponse> {
+    RegisterAccount(payload: IAccount): Promise<AxiosResponse> {
         return api.post("/v1/auth/register", payload)
     },
 
