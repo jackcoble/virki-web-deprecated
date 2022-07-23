@@ -93,6 +93,34 @@ export class Crypto {
     }
 
     /**
+     * Decrypt data from a "cipher" string using a keypair.
+     * @param cipherString 
+     * @param privateKey 
+     * @param publicKey 
+     * @returns {string}
+     */
+    static async decryptAsymmetric(cipherString: string, privateKey: Uint8Array, publicKey: Uint8Array): Promise<string> {
+        await sodium.ready;
+
+        // Parse the "cipher" string
+        const cipher = await Cipher.parseCipherString(cipherString);
+        if (!cipher.mac) {
+            return Promise.reject("Cipher string does not have authentication tag!");
+        }
+
+        // Decrypt the data and return as string
+        const decryptedData = sodium.crypto_box_open_detached(
+            await this.fromBase64(cipher.ciphertext),
+            await this.fromBase64(cipher.mac),
+            await this.fromBase64(cipher.nonce),
+            publicKey,
+            privateKey
+        );
+
+        return Promise.resolve(await this.toBase64(decryptedData))
+    }
+
+    /**
      * Return a SHA-256 hash of provided data.
      * @param input - Data to be hashed
      * @returns {string}
