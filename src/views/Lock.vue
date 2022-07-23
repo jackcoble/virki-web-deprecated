@@ -48,6 +48,9 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { LockClosedIcon, LockOpenIcon, LogoutIcon } from "@heroicons/vue/outline";
 import { useApplicationStore } from "@/stores/appStore";
+import useAuthoriserDB from "@/composables/useAuthoriserDB";
+import { Crypto } from "@/class/crypto";
+import useAccount from "@/composables/useAccount";
 
 export default defineComponent({
     name: "Lock",
@@ -60,9 +63,11 @@ export default defineComponent({
         const router = useRouter();
         const toaster = useToaster();
 
+        const acc = useAccount();
         const applicationStore = useApplicationStore();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
+        const authoriserDB = useAuthoriserDB();
 
         const isOnline = computed(() => applicationStore.isOnline);
         const email = computed(() => authenticationStore.getEmail);
@@ -70,20 +75,20 @@ export default defineComponent({
         const password = ref("");
         const isLoading = ref(false);
 
-        const account = new Account();
-
         // Function to unlock vault
         const unlockVault = async () => {
             isLoading.value = true;
 
-            // Decrypting the master key and then setting it in memory again
+            // Decrypting the master keypair private key and setting it our store.
             try {
-                const salt = authenticationStore.getPasswordSalt;
-                const encryptedMasterKey = encryptionKeyStore.getEncryptedMasterKey;
-                if (salt && encryptedMasterKey) {
-                    const masterKey = await account.decryptMasterKey(password.value, salt, encryptedMasterKey)
-                    encryptionKeyStore.setMasterKey(masterKey);
-                }
+                const activeAccount = authenticationStore.getActiveAccount;
+                const account = await authoriserDB.getAccount(activeAccount!);
+
+                // Stretch the password
+                const extended = await acc?.deriveStretchedPassword(password.value, account.password.salt);
+
+                const decryptedMasterPrivateKey = await Crypto.decrypt(account.encrypted_master_keypair.private_key, await Crypto.fromBase64(extended.key));
+                encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), account.encrypted_master_keypair.public_key);
             } catch (e) {
                 isLoading.value = false;
 
