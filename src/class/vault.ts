@@ -97,6 +97,8 @@ class Vault {
             publicKeyBuffer
         );
 
+        decryptedVault.key = await Crypto.toBase64(vaultKey);
+
         // Name
         const name = await Crypto.decrypt(vault.name, vaultKey);
         decryptedVault.name = await Crypto.toText(name);
