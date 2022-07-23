@@ -41,6 +41,7 @@ import useVault from "@/composables/useVault";
 import type { IVault } from "@/class/vault";
 import { useApplicationStore } from "@/stores/appStore";
 import vaultService from "@/service/api/vaultService";
+import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 
 export default defineComponent({
     name: "NewVault",
@@ -55,6 +56,7 @@ export default defineComponent({
         const router = useRouter();
 
         const applicationStore = useApplicationStore();
+        const encryptionKeyStore = useEncryptionKeyStore();
         const vaultStore = useVaultStore();
 
         const iconInput = ref();
@@ -124,7 +126,9 @@ export default defineComponent({
                         
                 // Now that we have the vault payload prepared, we can encrypt it and
                 // save to IndexedDB, and submit to our API (if we're online).
-                const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, !applicationStore.isOnline);
+                const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
+                const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, masterKeyPair.privateKey, masterKeyPair.publicKey);
+
                 await vault.saveToDB(encryptedVault);
 
                 if (!!applicationStore.isOnline) {
