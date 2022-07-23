@@ -129,12 +129,6 @@ router.beforeEach(async (to, from, next) => {
 
     // If the stretched master password is set, but master key isn't present
     // then decrypt encrypted master key with stretched password
-    if (encryptionKeyStore.getStretchedPassword && !encryptionKeyStore.getMasterKey) {
-      const account = useAccount();
-      const masterKey = await account.decryptMasterKeyWithStretchedPassword(encryptionKeyStore.getStretchedPassword, encryptionKeyStore.getEncryptedMasterKey);
-
-      encryptionKeyStore.setMasterKey(masterKey);
-    }
 
     // If we don't have an encrypted master key (at the very least, then prompt for a login)
     if (!encryptionKeyStore.getEncryptedMasterKey) {
@@ -143,7 +137,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Otherwise if we have no master key, stretched password, but have the encrypted master key, we can prompt for
     // an unlock
-    if (!encryptionKeyStore.getMasterKey && !encryptionKeyStore.getStretchedPassword && encryptionKeyStore.getEncryptedMasterKey) {
+    if (!encryptionKeyStore.getMasterKeyPair && !encryptionKeyStore.getStretchedPassword && encryptionKeyStore.getEncryptedMasterKey) {
       return next({ path: "/lock" })
     }
   }
