@@ -21,19 +21,19 @@ const buttons = ref([
         label: "Tokens",
         route: "/",
         icon: ClockIcon,
-        classes: "h-6"
+        classes: "h-5"
     },
     {
         label: "Tags",
         route: "/tags",
         icon: TagIcon,
-        classes: "h-6"
+        classes: "h-5"
     },
     {
         label: "Settings",
         route: "/settings",
         icon: CogIcon,
-        classes: "h-6"
+        classes: "h-5"
     }
 ])
 </script>
