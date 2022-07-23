@@ -22,6 +22,15 @@ export class Crypto {
     }
 
     /**
+     * Generates a random key used for symmetric encryption.
+     * @returns {string}
+     */
+    static async generateSymmetricEncryptionKey(): Promise<string> {
+        await sodium.ready;
+        return await this.toBase64(sodium.crypto_kdf_keygen())
+    }
+
+    /**
      * Converts Uint8Array to Base64 string.
      * @param input 
      * @returns {string}
