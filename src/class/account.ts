@@ -2,6 +2,7 @@ import * as sodium from "libsodium-wrappers";
 import { Crypto } from "./crypto";
 
 interface IAccount {
+    uid?: string;
     email: string;
     name: string;
     password: {
