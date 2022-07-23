@@ -37,12 +37,11 @@ export class Crypto {
      * @param key - Encryption key to be used.
      * @returns {string} - "Cipher" string.
      */
-    static async encrypt(data: Uint8Array, key?: Uint8Array): Promise<string> {
+    static async encrypt(data: Uint8Array, key: Uint8Array): Promise<string> {
         await sodium.ready;
 
-        const uintkey = key || sodium.crypto_secretbox_keygen();
         const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
-        const box = sodium.crypto_secretbox_detached(data, nonce, uintkey);
+        const box = sodium.crypto_secretbox_detached(data, nonce, key);
 
         // Serialise the data into a cipherstring
         const cipherString = Cipher.serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, await this.toBase64(box.cipher), await this.toBase64(nonce), await this.toBase64(box.mac));
