@@ -45,6 +45,7 @@ import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
+import { Crypto } from "@/class/crypto";
 
 export default defineComponent({
     name: "Login",
@@ -62,7 +63,7 @@ export default defineComponent({
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
         const toaster = useToaster();
-        const account = new Account();
+        const account = new Account("", "");
 
         // Handle user login
         const handleSignIn = async () => {
@@ -71,20 +72,34 @@ export default defineComponent({
             // Using the email address, request carry out a pre-login check for salt.
             // If we can, extend the password using it
             try {
-                let salt;
                 let res = await authentication.PreLogin(email.value);
-                salt = res.data.password_salt;
+                const salt: string = res.data.password_salt;
 
-                const extendedKeyHash = await account.deriveHashedStretchedPassword(password.value, salt);
+                // Extend the password with the provided salt and create a SHA-256 hash
+                const extended = await account.deriveStretchedPassword(password.value, salt);
+                const passwordHash = await Crypto.sha256hash(await Crypto.fromBase64(extended.key));
 
                 // Attempt to login and set access/refresh tokens in store
-                res = await authentication.Login(email.value, extendedKeyHash);
+                res = await authentication.Login(email.value, passwordHash);
                 if (res.data && res.data.access_token && res.data.refresh_token) {
                     authenticationStore.setEmail(email.value);
                     authenticationStore.setPasswordSalt(salt);
                     authenticationStore.setAccessToken(res.data.access_token);
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
+
+                // Fetch encrypted user account and decrypt the master keypair with the stretched password
+                res = await user.GetAccount();
+                if (res.data) {
+                    const encryptedMasterPrivateKey = res.data.encrypted_master_keypair.private_key;
+                    const masterPublicKey = res.data.encrypted_master_keypair.public_key;
+
+                    const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterPrivateKey, await Crypto.fromBase64(extended.key));
+                    encryptionKeyStore.setMasterKeyPair(decryptedMasterPrivateKey, masterPublicKey);
+                }
+
+                // Push to Index
+                router.push("/");
             } catch (e) {
                 isLoading.value = false;
 
@@ -95,25 +110,6 @@ export default defineComponent({
                     toaster.error("An unknown error has occurred.");
                     return;
                 }
-            }
-
-            // Now onto the actual authentication request
-            try {
-                // Fetch encrypted user account and decrypt it
-                const res = await user.GetAccount();
-                if (res.data) {
-                    const masterKey = await account.decryptMasterKey(password.value, res.data.password.salt, res.data.encrypted_master_key);
-
-                    // Set some things in the encryption key store
-                    encryptionKeyStore.setMasterKey(masterKey);
-                    encryptionKeyStore.setEncryptedMasterKey(res.data.encrypted_master_key);
-                }
-
-                // Push to Index
-                router.push("/");
-            } catch (e) {
-                toaster.error(e);
-                return;
             } finally {
                 isLoading.value = false;
             }
