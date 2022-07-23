@@ -190,6 +190,9 @@ export default defineComponent({
         });
       }
 
+      // TESTING: Ed25519
+      await account.generateEd25519Keypair()
+
       // Fire off initial countdown event
       emitCountdownEvent();
 

@@ -1,6 +1,7 @@
 import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
 import { createMessage, decrypt, encrypt, readMessage, type Config } from "openpgp";
 import { AuthoriserDB } from "@/class/db";
+import * as sodium from "libsodium-wrappers";
 
 const MASTER_KEY_BITS_LENGTH = 1024;
 const OPENPGP_CONFIG = {
@@ -9,7 +10,8 @@ const OPENPGP_CONFIG = {
 } as Config;
 
 enum EncryptionType {
-    OPENPGP = 1
+    OPENPGP = 1,
+    XCHACHA20POLY1305
 };
 
 export class Account {
@@ -195,6 +197,46 @@ export class Account {
         })
 
         return Promise.resolve(decryptedData.data.toString())
+    }
+
+    async generateEd25519Keypair(): Promise<any> {
+        await sodium.ready;
+
+        // Encrypt using XChaCha20-Poly1305 with a symmetric key
+        const key = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
+        const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_IETF_NPUBBYTES);
+        console.log("Key:", sodium.to_base64(key));
+        console.log("Nonce:", sodium.to_base64(nonce));
+
+        const d = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt_detached("hello world!", null, null, nonce, key, "base64");
+
+        // Generate an cipher string.
+        // Format encryptionType|ciphertext|nonce|mac
+        const cipherString = `${EncryptionType.XCHACHA20POLY1305}.${d.ciphertext}|${sodium.to_base64(nonce)}|${d.mac}`;
+        console.log("Cipher string:", cipherString);
+
+        // Parse the cipher string
+        const splitCipherString = cipherString.split(".");
+
+        // Decrypt depending on encryptiontype
+        switch (parseInt(splitCipherString[0])) {
+            case 2:
+                // XChaCha20-Poly1305
+                // Split up the encryption data
+                const encryptionData = splitCipherString[1].split("|");
+                const ciphertext = sodium.from_base64(encryptionData[0]);
+                const nonce = sodium.from_base64(encryptionData[1]);
+                const mac = sodium.from_base64(encryptionData[2]);
+
+                // Decrypt the message
+                const message = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt_detached(null, ciphertext, mac, null, nonce, key, "text");
+                console.log(message);
+
+                break;
+        
+            default:
+                break;
+        }
     }
 }
 
