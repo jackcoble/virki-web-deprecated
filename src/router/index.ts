@@ -16,6 +16,7 @@ import Lock from "@/views/Lock.vue"
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 import useAccount from '@/composables/useAccount'
 import { Crypto } from '@/class/crypto'
+import useAuthoriserDB from '@/composables/useAuthoriserDB'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -121,9 +122,17 @@ const router = createRouter({
 
 // On specified, check that user is authenticated by checking for presence of "master key"
 router.beforeEach(async (to, from, next) => {
+  const authoriserDB = useAuthoriserDB();
   const encryptionKeyStore = useEncryptionKeyStore();
   
   if (to.matched.some(route => route.meta.authRequired)) {
+    // If we don't have any accounts at all on this device, redirect to login
+    try {
+      await authoriserDB.getAccount();
+    } catch (e) {
+      return next({ path: "/login" });
+    }
+
     // We want to make sure that we have everything prepared in our store.
     // If not, prepare it!
     await encryptionKeyStore.initialise();
