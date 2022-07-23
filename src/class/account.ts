@@ -1,4 +1,3 @@
-import { hash, ArgonType } from "argon2-browser/dist/argon2-bundled.min.js";
 import { createMessage, decrypt, encrypt, readMessage, type Config } from "openpgp";
 import { AuthoriserDB } from "@/class/db";
 import * as sodium from "libsodium-wrappers";
@@ -32,27 +31,27 @@ export class Account {
      * Stretch user password with Argon2
      */
     async deriveStretchedPassword(password: string, salt?: string): Promise<any> {
-        let saltBuffer = new Uint8Array(16);
+        await sodium.ready;
 
-        // Generate salt if not provided as parameter
-        if (!salt) {
-            saltBuffer = window.crypto.getRandomValues(new Uint8Array(16));
-        } else {
-            // Otherwise convert provided Salt string into Buffer format
-            saltBuffer = Buffer.from(salt, "base64");
+        // Default algorithm can change in future, so added this in as a safeguard.
+        if (sodium.crypto_pwhash_ALG_DEFAULT !== sodium.crypto_pwhash_ALG_ARGON2ID13) {
+            return Promise.reject("Mismatch with expected password hashing algorithm!");
         }
 
-        const stretchedKey = await hash({
-            pass: password,
-            salt: saltBuffer,
-            type: ArgonType.Argon2id,
-            hashLen: 64
-        });
+        // Generate salt if not provided as parameter
+        let saltBuffer = new Uint8Array(16);
+        if (!salt) {
+            saltBuffer = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
+        } else {
+            // Otherwise convert provided Salt string into Buffer format
+            saltBuffer = sodium.from_base64(salt, sodium.base64_variants.ORIGINAL);
+        }
 
-        // Convert stretched key from hexadecimal into Base64
+        // Derive stretched key using Sodium and Argon2ID
+        const key = sodium.crypto_pwhash(sodium.crypto_secretbox_KEYBYTES, password, saltBuffer, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE, sodium.crypto_pwhash_ALG_DEFAULT, "base64");
         const keyPayload = {
-            key: Buffer.from(stretchedKey.hashHex, "hex").toString('base64'),
-            salt: Buffer.from(saltBuffer).toString("base64")
+            key: key,
+            salt: sodium.to_base64(saltBuffer, sodium.base64_variants.ORIGINAL)
         }
 
         return keyPayload;
