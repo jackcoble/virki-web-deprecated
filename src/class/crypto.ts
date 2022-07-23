@@ -1,6 +1,26 @@
 import * as sodium from "libsodium-wrappers";
 
+// Structure of an X25519 keypair
+interface KeyPair {
+    publicKey: string;
+    privateKey: string;
+}
+
 export class Crypto {
+    /**
+     * Generates a random X25519 keypair encoded in Base64 format.
+     * @returns {KeyPair}
+     */
+    static async generateKeyPair(): Promise<KeyPair> {
+        await sodium.ready;
+        const keyPair = sodium.crypto_box_keypair();
+
+        return {
+            publicKey: await this.toBase64(keyPair.publicKey),
+            privateKey: await this.toBase64(keyPair.privateKey)
+        }
+    }
+
     /**
      * Converts Uint8Array to Base64 string.
      * @param input 
