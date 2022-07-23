@@ -32,7 +32,7 @@ export class Crypto {
     }
 
     /**
-     * 
+     * Encrypts data using a symmetric key and returns a "cipher" string.
      * @param data - Uint8Array format data to be encrypted.
      * @param key - Encryption key to be used.
      * @returns {string} - "Cipher" string.
@@ -46,6 +46,31 @@ export class Crypto {
         // Serialise the data into a cipherstring
         const cipherString = Cipher.serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, await this.toBase64(box.cipher), await this.toBase64(nonce), await this.toBase64(box.mac));
         return Promise.resolve(cipherString);
+    }
+
+    /**
+     * Decrypts and returns data when provided with a cipher string and decryption key.
+     * @param cipherString - "Cipher" string containing necessary data for a successful decryption.
+     * @param key - Symmetric key used for encryption.
+     * @returns{string} - Decrypted data.
+     */
+    static async decrypt(cipherString: string, key: Uint8Array): Promise<string> {
+        await sodium.ready;
+
+        // Parse the "cipher" string and decrypt it
+        const cipher = await Cipher.parseCipherString(cipherString);
+        if (!cipher.mac) {
+            return Promise.reject("Cipher string does not have authentication tag!");
+        }
+        
+        const decryptedData = sodium.crypto_secretbox_open_detached(
+            await this.fromBase64(cipher.ciphertext),
+            await this.fromBase64(cipher.mac),
+            await this.fromBase64(cipher.nonce),
+            key
+        );
+
+        return Promise.resolve(await this.toBase64(decryptedData));
     }
 
     /**
