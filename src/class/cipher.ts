@@ -32,6 +32,7 @@ class Cipher {
         switch (encryptionType) {
             case EncryptionType.XCHACHA20_POLY1305:
                 const cipher = {
+                    type: EncryptionType.XCHACHA20_POLY1305,
                     ciphertext: cipherSplit[0],
                     nonce: cipherSplit[1],
                     mac: cipherSplit[2]
