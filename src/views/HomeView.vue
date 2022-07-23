@@ -84,6 +84,7 @@ import { useTokenStore } from "@/stores/tokenStore";
 import useToken from "@/composables/useToken";
 import type { IVault } from "@/class/vault";
 import { AuthoriserDB } from "@/class/db";
+import useAuthoriserDB from "@/composables/useAuthoriserDB";
 
 export default defineComponent({
   name: "HomeView",
@@ -101,6 +102,7 @@ export default defineComponent({
     const vault = useVault();
     const token = useToken();
     const toaster = useToaster();
+    const authoriserDB = useAuthoriserDB();
 
     const applicationStore = useApplicationStore();
     const encryptionKeyStore = useEncryptionKeyStore();
@@ -170,10 +172,10 @@ export default defineComponent({
 
             vaults.forEach(async v => {
               // Decrypt the vault
-              const decryptedVault = await vault.decryptFromVaultObject(v);
+              const decryptedVault = await vault.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
 
               // Add to IDB and Pinia
-              await vault.saveToDB(v);
+              await authoriserDB.insertVault(v);
               vaultStore.add(decryptedVault)
             })
           })
