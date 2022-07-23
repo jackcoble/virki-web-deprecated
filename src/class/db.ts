@@ -1,16 +1,10 @@
 import Dexie, { type Table } from "dexie";
+import type { IAccount } from "./account";
 import type { IToken } from "./token";
 import type { IVault } from "./vault";
 
-// Interface for Dexie table
-interface IAccountDB {
-    id?: number;
-    account: string;
-    encryptedMasterKey: string;
-}
-
 class AuthoriserDB extends Dexie {
-    private accounts!: Table<IAccountDB>;
+    private accounts!: Table<IAccount>;
     private vaults!: Table<IVault>;
     private tokens!: Table<IToken>
 
@@ -20,12 +14,51 @@ class AuthoriserDB extends Dexie {
     constructor() {
         super("authoriser");
         this.version(1).stores({
-            accounts: "++id, account, encryptedMasterKey",
+            accounts: "uid, email, name, *password, *encrypted_master_keypair",
             vaults: "v_id, name, description, icon, key, modified, created",
             tokens: "t_id, v_id, issuer, account, secret, icon, algorithm, type, duration, digits, offline, created, modified"
         })
     }
 
+    // ========
+    // Accounts
+    // ========
+    /**
+     * Inserts an account into IndexedDB for persistence.
+     * @param account 
+     */
+    async insertAccount(account: IAccount): Promise<void> {
+        await this.accounts.put(account);
+    }
+
+    /**
+     * Retrieve an account from IndexedDB
+     * @param uid - Optional UID parameter to fetch specific account.
+     * @returns {IAccount}
+     */
+    async getAccount(uid?: string): Promise<IAccount> {
+        // If we've been provided with a UID, do a lookup for that specific account
+        if (uid) {
+            const account = await this.accounts.get(uid);
+            if (account) {
+                return Promise.resolve(account);
+            }
+
+            return Promise.reject("No account for the provided UID was found!");
+        }
+
+        // Otherwise just get the first account
+        const firstAccount = await this.accounts.toCollection().first();
+        if (firstAccount) {
+            return Promise.resolve(firstAccount);
+        }
+
+        return Promise.reject("No accounts were found on this device!");
+    }
+
+    // ======
+    // Vaults
+    // ======
     /**
      * Insert an encrypted vault into IndexedDB for persistence.
      * @param vault - Encrypted vault object.
