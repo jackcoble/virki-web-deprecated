@@ -63,6 +63,7 @@ import BaseModal from "../../components/Modal/BaseModal.vue";
 import useVault from "@/composables/useVault";
 import useToaster from "@/composables/useToaster";
 import vaultService from "@/service/api/vaultService";
+import useAuthoriserDB from "@/composables/useAuthoriserDB";
 
 export default defineComponent({
     name: "SettingsVaults",
@@ -75,6 +76,7 @@ export default defineComponent({
     setup() {
         const vault = useVault();
         const vaultStore = useVaultStore();
+        const authoriserDB = useAuthoriserDB();
         const toaster = useToaster();
 
         // Refs to track what modal to show
@@ -108,7 +110,7 @@ export default defineComponent({
 
             // Delete locally first
             try {
-                await vault?.deleteFromDB(selectedVault.value.v_id);
+                await authoriserDB.removeVault(selectedVault.value.v_id);
             } catch (e) {
                 console.log("Error deleting from IDB:", e);
                 toaster.error("There was an error removing vault from this device!");
