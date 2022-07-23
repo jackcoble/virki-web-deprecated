@@ -181,4 +181,14 @@ export class Crypto {
         await sodium.ready;
         return await this.toBase64(sodium.from_hex(input));
     }
+
+    /**
+     * Converts Uint8Array to a text string.
+     * @param input 
+     * @returns {string}
+     */
+    static async toText(input: Uint8Array): Promise<string> {
+        await sodium.ready;
+        return sodium.to_string(input);
+    }
 }
