@@ -74,6 +74,25 @@ export class Crypto {
     }
 
     /**
+     * Encrypt and authenticate data using keypair, and return cipher string.
+     * @param data 
+     * @param privateKey 
+     * @param publicKey 
+     * @returns {string}
+     */
+    static async encryptAsymmetric(data: Uint8Array, privateKey: Uint8Array, publicKey: Uint8Array): Promise<string> {
+        await sodium.ready;
+
+        // Encrypt and authenticate with keypair
+        const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
+        const box = sodium.crypto_box_detached(data, nonce, publicKey, privateKey);
+
+        // Serialise into "cipher" string
+        const cipherString = await Cipher.serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, await this.toBase64(box.ciphertext), await this.toBase64(nonce), await this.toBase64(box.mac));
+        return Promise.resolve(cipherString);
+    }
+
+    /**
      * Return a SHA-256 hash of provided data.
      * @param input - Data to be hashed
      * @returns {string}
