@@ -1,3 +1,4 @@
+import { AuthoriserDB } from '@/class/db';
 import { defineStore } from 'pinia'
 
 export const useEncryptionKeyStore = defineStore({
@@ -16,6 +17,18 @@ export const useEncryptionKeyStore = defineStore({
     getEncryptedMasterKey: (state) => state.encryptedMasterKey
   },
   actions: {
+    async initialise() {
+      const database = new AuthoriserDB();
+      
+      // We want to fetch the account encrypted master key,
+      // and decrypt it if we can!
+      const account = await database.getAccount();
+      if (account) {
+        this.encryptedMasterKey = account.encrypted_master_keypair.private_key;
+        this.masterKeyPair.publicKey = account.encrypted_master_keypair.public_key;
+      }
+    },
+
     setMasterKeyPair (privateKey: string, publicKey: string) {
       this.masterKeyPair.privateKey = privateKey;
       this.masterKeyPair.publicKey = publicKey;
