@@ -85,38 +85,42 @@ class Vault {
      * Decrypts an encrypted vault object
      * @param vault 
      */
-    async decryptFromVaultObject(vault: IVault): Promise<IVault> {
+    async decryptFromVaultObject(vault: IVault, privateKey: string, publicKey: string): Promise<IVault> {
         const decryptedVault = Object.assign({}, vault);
 
-        // We first need to parse the v_id (Vault ID) as it contains some information such as the encryption type we want to use.
-        // At the moment we only use OpenPGP.js, but it's good to future-proof ourselves!
-        const splitVaultID = vault.v_id.split("-");
-        const encryptionType = parseInt(splitVaultID[2].substring(1));
+        // Decrypt the "vault key"
+        const privateKeyBuffer = await Crypto.fromBase64(privateKey);
+        const publicKeyBuffer = await Crypto.fromBase64(publicKey);
+        const vaultKey = await Crypto.decryptAsymmetric(
+            vault.key,
+            privateKeyBuffer,
+            publicKeyBuffer
+        );
+        const vaultKeyBuffer = await Crypto.fromBase64(vaultKey);
 
-        if (encryptionType) {
-            switch (encryptionType) {
-                // Decrypt using OpenPGP.js
-                case EncryptionType.OPENPGP:
-                    // The properties we are mainly interested in are Name, Description and Icon    
-                    decryptedVault.name = await this.decryptData(vault.name);
+        // Name
+        decryptedVault.name = await Crypto.decrypt(
+            vault.name,
+            vaultKeyBuffer
+        );
 
-                    if (vault.description) {
-                        decryptedVault.description = await this.decryptData(vault.description);
-                    }
-
-                    if (vault.icon) {
-                        decryptedVault.icon = await this.decryptData(vault.icon);
-                    }
-
-                    return Promise.resolve(decryptedVault);
-            
-                // We have no other encryption types, so something went wrong here...
-                default:
-                    return Promise.reject("Encryption type is not supported!");
-            }
-        } else {
-            return Promise.reject("Could not determine encryption type!")
+        // Description
+        if (vault.description) {
+            decryptedVault.description = await Crypto.decrypt(
+                vault.description,
+                vaultKeyBuffer
+            );
         }
+
+        // Icon
+        if (vault.icon) {
+            decryptedVault.icon = await Crypto.decrypt(
+                vault.icon,
+                vaultKeyBuffer
+            );
+        }
+
+        return Promise.resolve(decryptedVault);
     }
 
     // IndexedDB Methods
