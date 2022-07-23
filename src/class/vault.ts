@@ -96,28 +96,21 @@ class Vault {
             privateKeyBuffer,
             publicKeyBuffer
         );
-        const vaultKeyBuffer = await Crypto.fromBase64(vaultKey);
 
         // Name
-        decryptedVault.name = await Crypto.decrypt(
-            vault.name,
-            vaultKeyBuffer
-        );
+        const name = await Crypto.decrypt(vault.name, vaultKey);
+        decryptedVault.name = await Crypto.toText(name);
 
         // Description
         if (vault.description) {
-            decryptedVault.description = await Crypto.decrypt(
-                vault.description,
-                vaultKeyBuffer
-            );
+            const description = await Crypto.decrypt(vault.description, vaultKey);
+            decryptedVault.description = await Crypto.toText(description);
         }
 
         // Icon
         if (vault.icon) {
-            decryptedVault.icon = await Crypto.decrypt(
-                vault.icon,
-                vaultKeyBuffer
-            );
+            const icon = await Crypto.decrypt(vault.icon, vaultKey);
+            decryptedVault.icon = await Crypto.toText(icon);
         }
 
         return Promise.resolve(decryptedVault);
