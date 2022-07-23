@@ -27,7 +27,7 @@ class Vault {
      * @param vault
      * @returns {IVault}
      */
-    async createEncryptedVaultObject(vault: IVault): Promise<IVault> {
+    async createEncryptedVaultObject(vault: IVault, privateKey: string, publicKey: string): Promise<IVault> {
         // Create a new object that will contain our encrypted data
         const encryptedVault = Object.assign({}, vault);
 
@@ -37,15 +37,22 @@ class Vault {
         if (!vault.v_id) {
             let vaultId = window.crypto.randomUUID();
             vaultId = vaultId.replace(/-/g, "");
-            vaultId = `v-${vaultId}-v${EncryptionType.XCHACHA20_POLY1305}`;
+            vaultId = `v-${vaultId}`;
 
             encryptedVault.v_id = vaultId;
         }
 
-        // Generate and set a symmetric encryption key, to be used for all items in a vault.
+        // Generate a symmetric encryption key, to be used for all items in a vault.
+        // We want to encrypt this key with the users master keypair
         const encryptionKey = await Crypto.generateSymmetricEncryptionKey();
         const encryptionKeyBuffer = await Crypto.fromBase64(encryptionKey);
-        encryptedVault.key = encryptionKey;
+
+        const encryptedVaultKey = await Crypto.encryptAsymmetric(
+            await Crypto.fromBase64(encryptionKey),
+            await Crypto.fromBase64(privateKey),
+            await Crypto.fromBase64(publicKey)
+        );
+        encryptedVault.key = encryptedVaultKey;
 
         // Now that we've got an ID and encryption key set, we can start to encrypt some elements of a vault individually
         // - Name
