@@ -72,9 +72,6 @@ class Cipher {
 }
 
 export {
-    Cipher
-}
-
-export type {
+    Cipher,
     EncryptionType
 }
