@@ -167,8 +167,17 @@ export default defineComponent({
         */
       if (!!applicationStore.isOnline) {
         try {
-          await vaultService.GetVaults().then(res => {
+          await vaultService.GetVaults().then(async res => {
             const vaults = res.data as IVault[];
+            const offlineVaults = await db.getVaults();
+
+            // Iterate through the offline vaults and check if we have any vaults that aren't on the server.
+            offlineVaults.forEach(async ov => {
+              if (!vaults.find(v => v.v_id === ov.v_id)) {
+                console.log(`Cannot find ${ov.v_id} on server, so adding...`)
+                await vaultService.CreateVault(ov);
+              }
+            })
 
             vaults.forEach(async v => {
               // Decrypt the vault
