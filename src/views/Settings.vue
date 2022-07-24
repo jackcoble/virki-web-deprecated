@@ -1,10 +1,5 @@
 <template>
     <div class="h-screen bg-gray-50">
-        <!-- Email verification warning -->
-        <button class="bg-yellow-400 text-yellow-900 p-3 text-center text-sm w-full" v-if="!accountData.email_verified">
-            Your email hasn't been verified. Click here to send a verification email.
-        </button>
-
         <div class="container p-4 mx-auto space-y-3">
             <h2 class="text-2xl font-semibold text-gray-900">Settings</h2>
 
