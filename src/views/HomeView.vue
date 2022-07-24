@@ -219,15 +219,21 @@ export default defineComponent({
           }
         })
 
-        // We can upload any new vaults which were created offline
+        // We can upload any vaults which were created/modified offline
         vaultsToUpload.forEach(async vaultId => {
           const offlineVault = offlineVaults.find(v => v.v_id === vaultId);
           if (!offlineVault) {
             return;
           }
 
-          // Create the vault server-side
-          await vaultService.CreateVault(offlineVault);
+          // Update rather than create
+          if (onlineVaultIDs.includes(vaultId)) {
+            await vaultService.UpdateVault(offlineVault);
+          }
+          else {
+            // Create new vault entirely
+            await vaultService.CreateVault(offlineVault);
+          }
 
           // Delete the offline property, save in IDB
           delete offlineVault.offline;
