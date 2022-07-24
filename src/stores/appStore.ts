@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 export const useApplicationStore = defineStore({
     id: 'application',
     state: () => ({
-        online: navigator.onLine,
+        online: false,
         syncing: false,
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10" // 10 minute default inactivity timeout
     }),

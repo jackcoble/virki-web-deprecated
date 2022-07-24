@@ -6,6 +6,7 @@ import { fromUnixTime, getUnixTime, sub } from "date-fns";
 import { useAuthenticationStore } from './stores/authenticationStore';
 import { onMounted, onUnmounted } from 'vue';
 import { useApplicationStore } from './stores/appStore';
+import system from './service/api/system';
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -38,8 +39,25 @@ window.addEventListener("offline", (event) => {
   }
 })
 
+// Carry out a health check
+const doHealthCheck = async () => {
+  try {
+    await system.Status();
+    applicationStore.setOnline(true);
+  } catch (e) {
+    if (!e.response) {
+      applicationStore.setOnline(false);
+    }
+  }
+}
+
 let inactivityInterval: NodeJS.Timer;
-onMounted(() => {
+let healthCheckInterval: NodeJS.Timer;
+
+onMounted(async () => {
+  // Do a health check beforehand
+  await doHealthCheck()
+
   // Create an interval to check that page hasn't been inactive
   inactivityInterval = setInterval(() => {
     const inactivityLimit = applicationStore.getInactivityTimeout;
@@ -60,10 +78,16 @@ onMounted(() => {
       }
     }
   }, 1000);
+
+  // Create an interval to check API health/status every 10 seconds
+  healthCheckInterval = setInterval(async () => {
+    await doHealthCheck()
+  }, 10 * 1000)
 })
 
 onUnmounted(() => {
   clearInterval(inactivityInterval)
+  clearInterval(healthCheckInterval)
 })
 </script>
 
