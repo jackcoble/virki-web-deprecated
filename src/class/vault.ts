@@ -1,4 +1,3 @@
-import { EncryptionType } from "./cipher";
 import { Crypto } from "./crypto";
 
 // Details we expected the encrypted vault payload to have when decrypted
@@ -8,6 +7,7 @@ interface IVault {
     description?: string;
     icon?: string;
     key: string;
+    delete?: boolean;
     modified:  number // If device is offline, this modified value will still be updated and then checked when the device is online again
     created: number;
 }
