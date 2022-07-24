@@ -209,6 +209,13 @@ export default defineComponent({
         await loadVaults();
       }
 
+      // Handle reconnections by syncing
+      emitter.on("sync", async () => {
+        applicationStore.setSyncing(true);
+        await loadVaults();
+        applicationStore.setSyncing(false);
+      })
+
       // Fire off initial countdown event
       emitCountdownEvent();
 

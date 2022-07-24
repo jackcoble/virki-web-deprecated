@@ -7,9 +7,11 @@ import { useAuthenticationStore } from './stores/authenticationStore';
 import { onMounted, onUnmounted } from 'vue';
 import { useApplicationStore } from './stores/appStore';
 import system from './service/api/system';
+import useEmitter from './composables/useEmitter';
 
 const router = useRouter();
 const currentRoute = useRoute();
+const emitter = useEmitter();
 
 const applicationStore = useApplicationStore();
 const authenticationStore = useAuthenticationStore();
@@ -25,11 +27,7 @@ window.addEventListener("online", (event) => {
   if (event) {
     applicationStore.setOnline(true);
 
-    // Simulate syncing for 2 seconds after reconnect
-    applicationStore.setSyncing(true);
-    setTimeout(() => {
-      applicationStore.setSyncing(false);
-    }, 2000)
+    emitter.emit("sync");
   }
 })
 
