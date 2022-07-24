@@ -98,9 +98,7 @@ export default defineComponent({
   },
   setup() {
     const emitter = useEmitter();
-    const account = useAccount();
     const vault = useVault();
-    const token = useToken();
     const toaster = useToaster();
     const authoriserDB = useAuthoriserDB();
 
@@ -117,56 +115,29 @@ export default defineComponent({
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
-      // Simulate loading be encrypting/decrypting items 50 times
       isRefreshingVault.value = true;
 
-      for (let i = 0; i < 50; i++) {
-        const encrypted = await account?.encryptData("Hello world!");
-        const decrypted = await account?.decryptData(encrypted!);
-
-        console.log("Decrypted data:", decrypted)
-      }
+      await loadVaults()
 
       isRefreshingVault.value = false;
     }
 
-    let interval: any;
+    /*
+      If we're online make a request to our API for a more up-to-date
+      list of vaults, and handle any conflicts as necessary.
+      
+      Should the "offline" timestamp from the API be newer
+      than the one on this device, we want to discard our local changes and replace with the more
+      up to date one vault.
 
-    onMounted(async () => {
-      if (!vault) {
-        return;
-      }
-
-      // Just some preparation
+      In the other case, if our timestamp is newer than the one returned to us,
+      update the API with our modified vault data.
+    */
+    const loadVaults = async () => {
       const db = new AuthoriserDB();
       const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
 
-      // Let's start with an initial load. If the vault store is empty,
-      // we are going to assume that the page has just been loaded/refreshed, so populate that first!
-      // As Authoriser is offline-first, we can attempt to populate with some entries from IndexedDB
-      // before making a request to our API for updated entries.
-      if (vaultStore.getVaults.length === 0) {
-        // Fetch vaults from IndexedDB, decrypt them and set in store
-        const vaults = await db.getVaults();
-        vaults.forEach(async v => {
-          const decryptedVault = await vault.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
-          vaultStore.add(decryptedVault);
-        });
-      }
-
-      /*
-          If we're online make a request to our API for a more up-to-date
-          list of vaults, and handle any conflicts as necessary.
-          
-          Should the "offline" timestamp from the API be newer
-          than the one on this device, we want to discard our local changes and replace with the more
-          up to date one vault.
-
-          In the other case, if our timestamp is newer than the one returned to us,
-          update the API with our modified vault data.
-        */
-      if (!!applicationStore.isOnline) {
-        try {
+      try {
           await vaultService.GetVaults().then(async res => {
             const vaults = res.data as IVault[];
             const offlineVaults = await db.getVaults();
@@ -198,11 +169,11 @@ export default defineComponent({
 
             vaults.forEach(async v => {
               // Decrypt the vault
-              const decryptedVault = await vault.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
+              const decryptedVault = await vault?.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
 
               // Add to IDB and Pinia
               await authoriserDB.insertVault(v);
-              vaultStore.add(decryptedVault)
+              vaultStore.add(decryptedVault!)
             })
           })
         } catch (e) {
@@ -213,15 +184,29 @@ export default defineComponent({
           // Something else has gone wrong
           toaster.error("Unknown error has occurred syncing vaults!");
         }
+    }
+
+    let interval: any;
+
+    onMounted(async () => {
+      // Let's start with an initial load. If the vault store is empty,
+      // we are going to assume that the page has just been loaded/refreshed, so populate that first!
+      // As Authoriser is offline-first, we can attempt to populate with some entries from IndexedDB
+      // before making a request to our API for updated entries.
+      if (vaultStore.getVaults.length === 0) {
+        const db = new AuthoriserDB();
+        const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
+
+        // Fetch vaults from IndexedDB, decrypt them and set in store
+        const vaults = await db.getVaults();
+        vaults.forEach(async v => {
+          const decryptedVault = await vault?.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
+          vaultStore.add(decryptedVault!);
+        });
       }
 
-      // Lets do the same as above, but for token entries instead!
-      if (tokenStore.getTokens.length === 0) {
-        const tokens = await token?.getTokensInDB();
-        tokens?.forEach(async t => {
-          const decryptedToken = await token?.decryptToken(t);
-          tokenStore.add(decryptedToken!);
-        });
+      if (!!applicationStore.isOnline) {
+        await loadVaults();
       }
 
       // Fire off initial countdown event
