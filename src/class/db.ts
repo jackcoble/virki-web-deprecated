@@ -40,11 +40,7 @@ class AuthoriserDB extends Dexie {
         // If we've been provided with a UID, do a lookup for that specific account
         if (uid) {
             const account = await this.accounts.get(uid);
-            if (account) {
-                return Promise.resolve(account);
-            }
-
-            return Promise.reject("No account for the provided UID was found!");
+            return Promise.resolve(account);
         }
 
         // Otherwise just get the first account
