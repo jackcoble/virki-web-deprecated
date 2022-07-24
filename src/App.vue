@@ -6,7 +6,6 @@ import { fromUnixTime, getUnixTime, sub } from "date-fns";
 import { useAuthenticationStore } from './stores/authenticationStore';
 import { onMounted, onUnmounted } from 'vue';
 import { useApplicationStore } from './stores/appStore';
-import useToaster from './composables/useToaster';
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -61,10 +60,10 @@ onMounted(() => {
       }
     }
   }, 1000);
+})
 
-  onUnmounted(() => {
-    clearInterval(inactivityInterval)
-  })
+onUnmounted(() => {
+  clearInterval(inactivityInterval)
 })
 </script>
 
