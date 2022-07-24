@@ -146,6 +146,12 @@ export default defineComponent({
         if (v.offline) {
           vaultsToUpload.push(v.v_id);
         }
+
+        // Decrypt and set it for now
+        const decrypted = await vault?.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
+        if (decrypted) {
+          vaultStore.add(decrypted);
+        }
       });
 
       // If we're online, fetch a list an update to date list of all vaults,
