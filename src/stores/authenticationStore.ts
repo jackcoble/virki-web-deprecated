@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import { getUnixTime } from "date-fns";
+import useAuthoriserDB from '@/composables/useAuthoriserDB';
 
 export const useAuthenticationStore = defineStore({
   id: 'authentication',
   state: () => ({
-    email: localStorage.getItem("email") || null,
-    password_salt: localStorage.getItem("password_salt") || null,
+    email: "",
+    password_salt: "",
     access_token: localStorage.getItem("access_token") || null,
     refresh_token: localStorage.getItem("refresh_token") || null,
     lastActiveTimestamp: getUnixTime(new Date()),
@@ -20,14 +21,24 @@ export const useAuthenticationStore = defineStore({
     getActiveAccount: (state) => state.activeAccount
   },
   actions: {
+    async initialise() {
+      const authoriserDB = useAuthoriserDB();
+      const account = await authoriserDB.getAccount(this.getActiveAccount!);
+      if (!account) {
+        return;
+      }
+
+      // Set the password salt and email
+      this.setPasswordSalt(account.password.salt);
+      this.setEmail(account.email);
+    },
+
     setEmail(email: string) {
-        this.email = email;
-        localStorage.setItem("email", email);
+        this.email = email
     },
 
     setPasswordSalt(salt: string) {
         this.password_salt = salt;
-        localStorage.setItem("password_salt", salt);
     },
 
     setAccessToken(accessToken: string) {
@@ -50,8 +61,8 @@ export const useAuthenticationStore = defineStore({
     },
 
     clear() {
-        this.email = null;
-        this.password_salt = null;
+        this.email = "";
+        this.password_salt = "";
         this.access_token = null;
         this.refresh_token = null;
 
