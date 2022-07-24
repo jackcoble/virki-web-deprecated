@@ -172,10 +172,27 @@ export default defineComponent({
             const offlineVaults = await db.getVaults();
 
             // Iterate through the offline vaults and check if we have any vaults that aren't on the server.
+            // And also check for modifications
             offlineVaults.forEach(async ov => {
               if (!vaults.find(v => v.v_id === ov.v_id)) {
                 console.log(`Cannot find ${ov.v_id} on server, so adding...`)
                 await vaultService.CreateVault(ov);
+              }
+
+              const vaultToCheck = vaults.find(vc => vc.v_id === ov.v_id);
+              if (vaultToCheck) {
+                // Do some timestamp comparisons
+                // If the timestamp we're checking in the response is newer than the offline vault,
+                // discord our offline copy and replace with the new one
+                if (vaultToCheck.modified > ov.modified) {
+                  await db.insertVault(vaultToCheck);
+                }
+
+                // Otherwise if the offline timestamp is newer than the one returned in the response,
+                // update the vault
+                else if (ov.modified > vaultToCheck.modified) {
+                  await vaultService.UpdateVault(ov);
+                }
               }
             })
 
