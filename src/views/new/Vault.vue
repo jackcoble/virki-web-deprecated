@@ -39,9 +39,11 @@ import { useVaultStore } from "@/stores/vaultStore";
 import { useRouter } from "vue-router";
 import useVault from "@/composables/useVault";
 import type { IVault } from "@/class/vault";
+import { AuthoriserDB } from "@/class/db";
 import { useApplicationStore } from "@/stores/appStore";
 import vaultService from "@/service/api/vaultService";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
+import useAuthoriserDB from "@/composables/useAuthoriserDB";
 
 export default defineComponent({
     name: "NewVault",
@@ -51,6 +53,7 @@ export default defineComponent({
     setup() {
         const account = useAccount();
         const vault = useVault();
+        const authoriserDB = useAuthoriserDB();
 
         const toaster = useToaster();
         const router = useRouter();
@@ -128,15 +131,14 @@ export default defineComponent({
                 // save to IndexedDB, and submit to our API (if we're online).
                 const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
                 const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, masterKeyPair.privateKey, masterKeyPair.publicKey);
-
-                await vault.saveToDB(encryptedVault);
+                await authoriserDB.insertVault(encryptedVault);
 
                 if (!!applicationStore.isOnline) {
                     await vaultService.CreateVault(encryptedVault);
                 }
 
                 // Decrypt the vault we just created, and then set the active vault + add to store
-                const decryptedVault = await vault.decryptFromVaultObject(encryptedVault);
+                const decryptedVault = await vault.decryptFromVaultObject(encryptedVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
                 vaultStore.setActiveVault(decryptedVault.v_id);
                 vaultStore.add(decryptedVault)
 
