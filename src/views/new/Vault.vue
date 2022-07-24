@@ -133,7 +133,10 @@ export default defineComponent({
                 const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, masterKeyPair.privateKey, masterKeyPair.publicKey);
                 await authoriserDB.insertVault(encryptedVault);
 
-                if (!!applicationStore.isOnline) {
+                if (!applicationStore.isOnline && !encryptedVault.offline) {
+                    const currentUnixMicroseconds = Math.floor(Date.now() * 1000);
+                    encryptedVault.offline = currentUnixMicroseconds;
+                } else {
                     await vaultService.CreateVault(encryptedVault);
                 }
 

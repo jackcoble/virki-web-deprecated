@@ -96,6 +96,13 @@ export default defineComponent({
                 // Re-encrypt the active vault with the new data, and save it to IndexedDB
                 const keypair = encryptionKeyStore.getMasterKeyPair;
                 const encryptedActiveVault = await vault?.createEncryptedVaultObject(modifiedVault, keypair.privateKey, keypair.publicKey);
+
+                // Set the offline timestamp if device is offline and doesn't have a timestamp
+                if (!applicationStore.isOnline && encryptedActiveVault && !encryptedActiveVault.offline) {
+                    const currentUnixMicroseconds = Math.floor(Date.now() * 1000);
+                    encryptedActiveVault.offline = currentUnixMicroseconds;
+                }
+
                 await authoriserDB.insertVault(encryptedActiveVault!);
 
                 const encryptedVaultDuplicate = { ...encryptedActiveVault } as IVault;
@@ -105,10 +112,12 @@ export default defineComponent({
                 vaultStore.add(decryptedActiveVault!);
 
                 // Push to API
-                try {
-                    await vaultService.UpdateVault(encryptedVaultDuplicate);
-                } catch (e) {
-                    console.log("UPDATE ERROR:", e.response.data)
+                if (applicationStore.isOnline) {
+                    try {
+                        await vaultService.UpdateVault(encryptedVaultDuplicate);
+                    } catch (e) {
+                        console.log("UPDATE ERROR:", e.response.data)
+                    }
                 }
             }
         }

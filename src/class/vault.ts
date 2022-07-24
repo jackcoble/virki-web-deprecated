@@ -8,7 +8,8 @@ interface IVault {
     description?: string;
     icon?: string;
     key: string;
-    modified:  number // If device is offline, this modified value will still be updated and then checked when the device is online again
+    offline?: number; // If device is offline, this modified value will still be updated and then checked when the device is online again
+    modified:  number;
     created: number;
 }
 
