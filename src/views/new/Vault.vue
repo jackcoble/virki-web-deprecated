@@ -139,6 +139,8 @@ export default defineComponent({
                 } else {
                     await vaultService.CreateVault(encryptedVault);
                 }
+                
+                await authoriserDB.insertVault(encryptedVault);
 
                 // Decrypt the vault we just created, and then set the active vault + add to store
                 const decryptedVault = await vault.decryptFromVaultObject(encryptedVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
