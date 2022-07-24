@@ -36,7 +36,7 @@ class AuthoriserDB extends Dexie {
      * @param uid - Optional UID parameter to fetch specific account.
      * @returns {IAccount}
      */
-    async getAccount(uid?: string): Promise<IAccount> {
+    async getAccount(uid?: string): Promise<IAccount | undefined> {
         // If we've been provided with a UID, do a lookup for that specific account
         if (uid) {
             const account = await this.accounts.get(uid);
@@ -49,11 +49,7 @@ class AuthoriserDB extends Dexie {
 
         // Otherwise just get the first account
         const firstAccount = await this.accounts.toCollection().first();
-        if (firstAccount) {
-            return Promise.resolve(firstAccount);
-        }
-
-        return Promise.reject("No accounts were found on this device!");
+        return Promise.resolve(firstAccount);
     }
 
     // ======
