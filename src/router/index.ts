@@ -17,6 +17,7 @@ import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 import useAccount from '@/composables/useAccount'
 import { Crypto } from '@/class/crypto'
 import useAuthoriserDB from '@/composables/useAuthoriserDB'
+import { useAuthenticationStore } from '@/stores/authenticationStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -123,35 +124,26 @@ const router = createRouter({
 // On specified, check that user is authenticated by checking for presence of "master key"
 router.beforeEach(async (to, from, next) => {
   const authoriserDB = useAuthoriserDB();
+  const authenticationStore = useAuthenticationStore();
   const encryptionKeyStore = useEncryptionKeyStore();
+
+  // Initialise the stores if possible, regardless of the route we're on.
+  const account = await authoriserDB.getAccount();
+  if (account) {
+    await authenticationStore.initialise();
+    await encryptionKeyStore.initialise();
+  }
   
   if (to.matched.some(route => route.meta.authRequired)) {
-    // If we don't have any accounts at all on this device, redirect to login
-    try {
-      await authoriserDB.getAccount();
-    } catch (e) {
-      return next({ path: "/login" });
-    }
-
-    // We want to make sure that we have everything prepared in our store.
-    // If not, prepare it!
-    await encryptionKeyStore.initialise();
-
-    // Check that we have all of the following stored in state:
-    // - Stretched master password
-    // - Encrypted master key
-
     // If the stretched master password is set, but master private key isn't present
     // then decrypt encrypted master private key with stretched password
     if (encryptionKeyStore.getStretchedPassword && !encryptionKeyStore.getMasterKeyPair.privateKey) {
       console.log("Need to decrypt master keypair...")
     }
 
-    // If we don't have an encrypted master key (at the very least, then prompt for a login)
-
-    // Otherwise if we have no master key, stretched password, but have the encrypted master key, we can prompt for
+    // If we have no master private key or stretched password, but have the encrypted master key, we can prompt for
     // an unlock and then redirect the user if necessary.
-    if (!encryptionKeyStore.getMasterKeyPair.privateKey && !encryptionKeyStore.getStretchedPassword) {
+    if (!encryptionKeyStore.getMasterKeyPair.privateKey && !encryptionKeyStore.getStretchedPassword && encryptionKeyStore.getEncryptedMasterKey) {
       // Make sure we aren't going to "index" (it just looks cleaner)
       if (to.fullPath !== "/") {
         return next({
@@ -161,6 +153,11 @@ router.beforeEach(async (to, from, next) => {
       } else {
         return next({ path: "/lock" });
       }
+    }
+
+    // If we don't have an encrypted master key (at the very least, then prompt for a login)
+    if (!encryptionKeyStore.getMasterKeyPair.privateKey) {
+      return next({ path: "/login" });
     }
   }
 
