@@ -5,7 +5,7 @@
                 <StatusOfflineIcon class="w-16 h-16 mx-auto text-red-400 p-3.5 rounded-full bg-gray-100" />
                 <h1 class="text-xl text-center">Your device is offline!</h1>
                 <p class="text-sm">
-                    Don't worry though - any changes you make will be synced back to our servers when you're connected again!
+                    We've disabled the features which require internet functionality, but any changes you make will be encrypted and synced when you're back online again.
                 </p>
             </div>
         </template>
