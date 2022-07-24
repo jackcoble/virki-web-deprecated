@@ -19,7 +19,7 @@
 
                         <p class="font-medium text-gray-700 select-none flex-1">{{ vault.name }}</p>
 
-                        <b-button classType="danger" class="px-2 py-1.5 w-auto" @click="deleteVaultModal(vault.v_id)">
+                        <b-button classType="danger" class="px-2 py-1.5 w-auto" @click="deleteVaultModal(vault.v_id)" :disabled="!isOnline">
                             <TrashIcon class="w-4" />
                         </b-button>
                     </div>
@@ -56,14 +56,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useVaultStore } from "@/stores/vaultStore";
 import { TrashIcon, PhotographIcon, ClockIcon } from "@heroicons/vue/outline";
 import BaseModal from "../../components/Modal/BaseModal.vue";
-import useVault from "@/composables/useVault";
 import useToaster from "@/composables/useToaster";
 import vaultService from "@/service/api/vaultService";
 import useAuthoriserDB from "@/composables/useAuthoriserDB";
+import { useApplicationStore } from "@/stores/appStore";
 
 export default defineComponent({
     name: "SettingsVaults",
@@ -74,10 +74,12 @@ export default defineComponent({
         ClockIcon
     },
     setup() {
-        const vault = useVault();
+        const applicationStore = useApplicationStore();
         const vaultStore = useVaultStore();
         const authoriserDB = useAuthoriserDB();
         const toaster = useToaster();
+
+        const isOnline = computed(() => applicationStore.isOnline);
 
         // Refs to track what modal to show
         const showDeleteVaultModal = ref(false);
@@ -137,6 +139,7 @@ export default defineComponent({
             selectedVault,
             showDeleteVaultModal,
             vaultNameConfirmation,
+            isOnline,
 
             deleteVaultModal,
             handleDeleteVault
