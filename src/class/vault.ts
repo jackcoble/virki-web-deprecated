@@ -8,6 +8,7 @@ interface IVault {
     description?: string;
     icon?: string;
     key: string;
+    deletion?: boolean; // Mark for deletion is on this device only (used in offline mode)
     modified:  number // If device is offline, this modified value will still be updated and then checked when the device is online again
     created: number;
 }
@@ -27,7 +28,7 @@ class Vault {
      * @param vault
      * @returns {IVault}
      */
-    async createEncryptedVaultObject(vault: IVault, privateKey: string, publicKey: string): Promise<IVault> {
+    async createEncryptedVaultObject(vault: IVault, privateKey: string, publicKey: string, remove?: boolean): Promise<IVault> {
         // Create a new object that will contain our encrypted data
         const encryptedVault = Object.assign({}, vault);
 
@@ -76,6 +77,11 @@ class Vault {
         // Set the created time as current UNIX time if not already set
         if (!vault.created) {
             encryptedVault.created = currentUnixMilliseconds;
+        }
+
+        // Mark for deletion (if necessary)
+        if (remove) {
+            encryptedVault.deletion = remove;
         }
 
         return Promise.resolve(encryptedVault);
