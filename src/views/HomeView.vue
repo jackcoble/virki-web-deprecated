@@ -135,110 +135,76 @@ export default defineComponent({
       const db = new AuthoriserDB();
       const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
 
-      try {
-          await vaultService.GetVaults().then(async res => {
-            // We can go through and compare the "online" vaults compared to the ones we have on this device.
-            const vaults = res.data as IVault[] || [];
-            const offlineVaults = await db.getVaults();
+      // Fetch a list of "online" vaults
+      const res = await vaultService.GetVaults();
+      const onlineVaults = res.data as IVault[] || [];
 
-            // We'll start off by iterating through the vaults on this device, and uploading any which contain an
-            // offline timestamp, as these should be prioritised.
-            if (offlineVaults && offlineVaults.length > 0) {
-              offlineVaults.forEach(async offlineVault => {
-                if (offlineVault.offline) {
-                  try {
-                    await vaultService.CreateVault(offlineVault);
-                  } catch (e) {
-                    console.log("Error uploading vault created offline onto API server...");
-                    return;
-                  }
+      // We can go through and compare the "online" vaults compared to the ones we have on this device.
+      // We'll start off by iterating through the vaults on this device, and uploading any which contain an
+      // offline timestamp, as these should be prioritised.
+      const offlineVaults = await db.getVaults();
+      offlineVaults.forEach(async offlineVault => {
+        if (offlineVault.offline) {
+          try {
+            await vaultService.CreateVault(offlineVault);
 
-                  // If we've uploaded it, then we can remove the "offline" property and update the version on this device
-                  // and in the response.
-                  delete offlineVault.offline;
-                  await db.insertVault(offlineVault);
-                  vaults.push(offlineVault);
-                }
+            // If we've uploaded it, then we can remove the "offline" property and update the version on this device
+            // and add it to the list of online vaults.
+            delete offlineVault.offline;
+            await db.insertVault(offlineVault);
+            onlineVaults.push(offlineVault);
+          } catch (e) {
+            console.log("Error uploading vault created offline onto API server...");
+            return;
+          }
+        }
 
-                // Next, we should actually focus on syncing modifications or deletions to our vaults.
-                // We'll start with deletions first as they are easiest. If a vault isn't present in the response,
-                // but is on our device, and not marked with a "offline" property, assume its been deleted for good!
-                const onlineVault = vaults.find(v => v.v_id === offlineVault.v_id && !offlineVault.offline);
-                if (!onlineVault) {
-                  console.log("Vault has been deleted from server:", offlineVault.v_id)
-                  await db.removeVault(offlineVault.v_id);
-                  vaultStore.remove(offlineVault.v_id);
-                }
+        // Next, we should actually focus on syncing modifications or deletions to our vaults.
+        // We'll start with deletions first as they are easiest. If we have a vault on our device which
+        // isn't present in the response - it is safe to assume it's been deleted.
+        const onlineVault = onlineVaults.find(o => o.v_id === offlineVault.v_id);
+        if (!onlineVault) {
+          await db.removeVault(offlineVault.v_id);
+          vaultStore.remove(offlineVault.v_id);
+        }
+      });
 
-                if (onlineVault) {
-                  // Lastly we can handle modifications. If our modified timestamp is newer than the one
-                  // in the response, the changes on this device take priority.
-                  if (offlineVault.modified > onlineVault.modified) {
-                    console.log("Our local vault is newer, so uploading changes for:", offlineVault.v_id);
-                    await vaultService.UpdateVault(offlineVault);
-                  }
-                
-                  // If the modified timestamp on this device is older, then the changes in the response take priority,
-                  // and any modifications on this device are discarded.
-                  else if (offlineVault.modified < onlineVault.modified) {
-                    console.log("Online vault is newer, so discarding local changes for:", offlineVault.v_id);
-                    await db.insertVault(onlineVault);
-
-                    // We then need to decrypt the vault and update it in the Vault store too.
-                    const decryptedOnlineVault = await vault?.decryptFromVaultObject(onlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
-                    if (decryptedOnlineVault) {
-                      vaultStore.add(decryptedOnlineVault);
-                    }
-                  }
-                }
-              })
-            }
-
-            else {
-              // Otherwise assume the local vaults don't exist and do a full sync.
-              await vaultService.GetVaults().then(async res => {
-                const vaults = res.data as IVault[] || [];
-
-                vaults.forEach(async v => {
-                  // Insert to IndexedDB
-                  await db.insertVault(v);
-
-                  // Decrypt and insert to store
-                  const decryptedVault = await vault?.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
-                  vaultStore.add(decryptedVault!);
-                })
-              })
-            }
-          })
-        } catch (e) {
-          if (e.response && e.response.data) {
-            toaster.error(e.response.data.error);
+      // We can then iterate through the vaults in the API response and determine if any changes need to be made/discarded locally
+      onlineVaults.forEach(async onlineVault => {
+        // We should have an equivalent offline vault now, so look it up for us to compare
+        const offlineVault = offlineVaults.find(v => v.v_id === onlineVault.v_id);
+        if (offlineVault) {
+          // Now we can move onto sync modifications. If a modified timestamp on the offline vault is newer
+          // than the one online, update the vault contents via the API.
+          if (offlineVault.modified > onlineVault.modified) {
+            await vaultService.UpdateVault(offlineVault);
           }
 
-          // Something else has gone wrong
-          toaster.error("Unknown error has occurred syncing vaults!");
+          // Otherwise if the online vault has changes newer than our offline vault,
+          // discard any local modifications, and update IDB and the store.
+          if (offlineVault.modified < onlineVault.modified) {
+            const decryptedOnlineVault = await vault?.decryptFromVaultObject(onlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
+            if (decryptedOnlineVault) {
+              await db.insertVault(onlineVault);
+              vaultStore.add(decryptedOnlineVault);
+            }
+          }
         }
+
+        else {
+          // If we get tis far, we can just decrypt and add the vault to IDB + Store like normal
+          await db.insertVault(onlineVault);
+          const decryptedOnlineVault = await vault?.decryptFromVaultObject(onlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
+          if (decryptedOnlineVault) {
+            vaultStore.add(decryptedOnlineVault);
+          }
+        }
+      })
     }
 
     let interval: any;
 
     onMounted(async () => {
-      // Let's start with an initial load. If the vault store is empty,
-      // we are going to assume that the page has just been loaded/refreshed, so populate that first!
-      // As Authoriser is offline-first, we can attempt to populate with some entries from IndexedDB
-      // before making a request to our API for updated entries.
-      if (vaultStore.getVaults.length === 0) {
-        const db = new AuthoriserDB();
-        const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
-
-        // Fetch vaults from IndexedDB, decrypt them and set in store
-        const vaults = await db.getVaults();
-        vaults.forEach(async v => {
-          const decryptedVault = await vault?.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
-          vaultStore.add(decryptedVault!);
-        });
-      }
-
       if (!!applicationStore.isOnline) {
         await loadVaults();
       }
