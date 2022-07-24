@@ -139,7 +139,6 @@ export default defineComponent({
       // If we have a vault that hasn't been uploaded yet (contains the "offline" timestamp property),
       // then add its Vault ID to the vaultsToUpload array.
       const vaultsToUpload: string[] = [];
-      const decryptedOfflineVaults: IVault[] = [];
 
       const offlineVaults = await db.getVaults();
       offlineVaults.forEach(async v => {
@@ -147,10 +146,6 @@ export default defineComponent({
         if (v.offline) {
           vaultsToUpload.push(v.v_id);
         }
-
-        // We can then proceed to decrypt the vault and push to the decryptedOfflineVaults array.
-        const decryptedVault = await vault?.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
-        decryptedOfflineVaults.push(decryptedVault!);
       });
 
       // If we're online, fetch a list an update to date list of all vaults,
@@ -184,31 +179,47 @@ export default defineComponent({
         // We have made it this far, so we can begin to handle modifications.
         // Go through the online vaults and compare them against our offline ones.
         onlineVaults.forEach(async onlineVault => {
-          // Find the associated offline vault
-          const offlineVault = offlineVaults.find(o => o.v_id === onlineVault.v_id);
+          // Find the associated offline vault. If we don't have it, then assume the vault is new
+          // and skip handling modifications
+          let offlineVault = offlineVaults.find(o => o.v_id === onlineVault.v_id);
           if (!offlineVault) {
-            return;
-          }
+            console.log("Inserting and decrypting new vault on device:", onlineVault.v_id);
 
-          // Make sure we aren't comparing against an offline vault
-          if (offlineVault.offline) {
-            return;
-          }
+            // Decrypt the online vault
+            const decrypted = await vault?.decryptFromVaultObject(onlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
+            if (decrypted) {
+              await db.insertVault(onlineVault);
+              vaultStore.add(decrypted);
+            }
+          } else {
+            // Make sure we aren't comparing against an offline vault
+            if (offlineVault.offline) {
+              return;
+            }
 
-          // If the modified timestamp on the online vault is newer than the offline,
-          // discard our local changes
-          if (onlineVault.modified > offlineVault.modified) {
-            await db.insertVault(onlineVault);
-          }
+            // If the modified timestamp on the online vault is newer than the offline,
+            // discard our local changes, decrypt and set in store
+            if (onlineVault.modified > offlineVault.modified) {
+              console.log("Discarding local vault due to newer changes:", onlineVault.v_id);
+              await db.insertVault(onlineVault);
 
-          // If the modified timestamp on the online timestamp is less than the offline,
-          // assume local modifications have been made, so sync!
-          if (onlineVault.modified < offlineVault.modified) {
-            await vaultService.UpdateVault(offlineVault);
+              const decrypted = await vault?.decryptFromVaultObject(onlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
+              if (decrypted) {
+                vaultStore.add(decrypted);
+              }
+            }
+
+            // If the modified timestamp on the online timestamp is less than the offline,
+            // assume local modifications have been made, so sync!
+            if (onlineVault.modified < offlineVault.modified) {
+              console.log("Updating online vault due to being outdated:", onlineVault.v_id);
+              await vaultService.UpdateVault(offlineVault);
+            }
+
           }
         })
 
-        // Lastly, we can upload any new vaults which were created offline
+        // We can upload any new vaults which were created offline
         vaultsToUpload.forEach(async vaultId => {
           const offlineVault = offlineVaults.find(v => v.v_id === vaultId);
           if (!offlineVault) {
