@@ -1,6 +1,5 @@
 import type { Vault } from "@/models/vault";
 import PouchDB from "pouchdb-browser";
-import type { IVault } from "./vault";
 
 export class Database {
     private localDB: PouchDB.Database;
@@ -8,7 +7,6 @@ export class Database {
 
     constructor(access_token: string, remote_url: string) {
         this.localDB = new PouchDB("authoriserDB");
-
         this.remoteDB = new PouchDB(remote_url, {
             fetch: function(url, opts) {
                 opts.headers.set("Authorization", `Bearer ${access_token}`);
