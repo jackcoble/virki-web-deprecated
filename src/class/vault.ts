@@ -1,17 +1,6 @@
 import { EncryptionType } from "./cipher";
 import { Crypto } from "./crypto";
-
-// Details we expected the encrypted vault payload to have when decrypted
-interface IVault {
-    v_id: string;
-    name: string;
-    description?: string;
-    icon?: string;
-    key: string;
-    offline?: number; // If device is offline, this modified value will still be updated and then checked when the device is online again
-    modified:  number;
-    created: number;
-}
+import type { Vault as VaultModel } from "@/models/vault";
 
 class Vault {
     private masterKeyPair: any;
@@ -26,21 +15,21 @@ class Vault {
     /**
      * Creates an encrypted vault object that can be used to submit to our API.
      * @param vault
-     * @returns {IVault}
+     * @returns {VaultModel}
      */
-    async createEncryptedVaultObject(vault: IVault, privateKey: string, publicKey: string): Promise<IVault> {
+    async createEncryptedVaultObject(vault: VaultModel, privateKey: string, publicKey: string): Promise<VaultModel> {
         // Create a new object that will contain our encrypted data
         const encryptedVault = Object.assign({}, vault);
 
         // Generate a UUID (v4), remove hyphens and prepend 'v' to indicate vault, and append with EncryptionType to
         // indicate the type of encryption we are using.
         // Only do this though if the vault doesn't have an ID already present.
-        if (!vault.v_id) {
+        if (!vault._id) {
             let vaultId = window.crypto.randomUUID();
             vaultId = vaultId.replace(/-/g, "");
-            vaultId = `v-${vaultId}`;
+            vaultId = `vault:${vaultId}`;
 
-            encryptedVault.v_id = vaultId;
+            encryptedVault._id = vaultId;
         }
 
         // Generate a symmetric encryption key if we don't have one already, to be used for all items in a vault.
@@ -70,8 +59,8 @@ class Vault {
             encryptedVault.icon = await Crypto.encrypt(await Crypto.fromString(vault.icon), encryptionKeyBuffer);
         }
        
-        // Update or set the modified timestamp as current device UNIX time (microseconds)
-        const currentUnixMilliseconds = Math.floor(Date.now() * 1000);
+        // Update or set the modified timestamp as current device UNIX time (milliseconds)
+        const currentUnixMilliseconds = Math.floor(Date.now());
         encryptedVault.modified = currentUnixMilliseconds;
 
         // Set the created time as current UNIX time if not already set
@@ -83,10 +72,13 @@ class Vault {
     }
 
     /**
-     * Decrypts an encrypted vault object
+     * Returns decrypted vault from object.
      * @param vault 
+     * @param privateKey 
+     * @param publicKey 
+     * @returns {VaultModel}
      */
-    async decryptFromVaultObject(vault: IVault, privateKey: string, publicKey: string): Promise<IVault> {
+    async decryptFromVaultObject(vault: VaultModel, privateKey: string, publicKey: string): Promise<VaultModel> {
         const decryptedVault = Object.assign({}, vault);
 
         // Decrypt the "vault key"
@@ -118,40 +110,8 @@ class Vault {
 
         return Promise.resolve(decryptedVault);
     }
-
-    // IndexedDB Methods
-    // =================
-
-    /**
-     * Insert an encrypted vault payload to IndexedDB so we can use offline.
-     * @param vault 
-     */
-     async saveToDB(vault: IVault): Promise<void> {
-        await this.authoriserDB.vaults.put(vault);
-    }
-
-    /**
-     * Deletes an encrypted vault from IndexedDB.
-     * @param vaultId 
-     */
-    async deleteFromDB(vaultId: string): Promise<void> {
-        await this.authoriserDB.vaults.delete(vaultId);
-    }
-
-    /**
-     * Fetches an array of all the encrypted vaults we have stored locally.
-     * @returns 
-     */
-    async getAllFromDB(): Promise<IVault[]> {
-        const vaults = await this.authoriserDB.vaults.toArray();
-        return vaults;
-    }
 }
 
 export {
     Vault
-}
-
-export type {
-    IVault
 }
