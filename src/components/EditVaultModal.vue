@@ -27,17 +27,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import BaseModal from "@/components/Modal/BaseModal.vue";
 import { useVaultStore } from "@/stores/vaultStore";
-import type { IVault } from "@/class/vault";
 import useAccount from "@/composables/useAccount";
 import useVault from "@/composables/useVault";
-import { useApplicationStore } from "@/stores/appStore";
 import IconUpload from "./IconUpload.vue";
-import vaultService from "@/service/api/vaultService";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
-import useAuthoriserDB from "@/composables/useAuthoriserDB";
+import usePouchDB from "@/composables/usePouchDB";
 
 export default defineComponent({
     name: "EditVaultModal",
@@ -54,10 +51,9 @@ export default defineComponent({
         const account = useAccount();
         const vault = useVault();
 
-        const applicationStore = useApplicationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
         const vaultStore = useVaultStore();
-        const authoriserDB = useAuthoriserDB();
+        const pouchDB = usePouchDB();
 
         const activeVault = computed(() => vaultStore.getActiveVault);
         const activeVaultName = computed(() => vaultStore.getActiveVault?.name);
@@ -67,9 +63,24 @@ export default defineComponent({
         const icon = ref(activeVault.value?.icon ? activeVault.value?.icon : "");
         const removeIcon = ref(false);
 
-        // Function to handle re-encryption of vault data with updated name
+        // Function to handle the "imageData" event from icon upload component
+        const handleImageData = (e: any) => {
+            // If the event is undefined, that means
+            // the image has been cleared, so we want to remove the icon from this vault.
+            if (!e) {
+                removeIcon.value = true;
+                icon.value = "";
+            }
+            else {
+                // Update icon from the string in the event
+                removeIcon.value = false;
+                icon.value = e;
+            }
+        }
+
+        // Function to handle re-encryption of vault data that has been updated
         const handleRename = async () => {
-            if (!account) {
+            if (!account || !vault) {
                 return;
             }
 
@@ -93,47 +104,14 @@ export default defineComponent({
                 modifiedVault.description = description.value;
                 modifiedVault.icon = icon.value;
 
-                // Re-encrypt the active vault with the new data, and save it to IndexedDB
+                // Re-encrypt the active vault with the new data, and save it in PouchDB.
                 const keypair = encryptionKeyStore.getMasterKeyPair;
-                const encryptedActiveVault = await vault?.createEncryptedVaultObject(modifiedVault, keypair.privateKey, keypair.publicKey);
-
-                // Set the offline timestamp if device is offline and doesn't have a timestamp
-                if (!applicationStore.isOnline && encryptedActiveVault && !encryptedActiveVault.offline) {
-                    const currentUnixMicroseconds = Math.floor(Date.now() * 1000);
-                    encryptedActiveVault.offline = currentUnixMicroseconds;
-                }
-
-                await authoriserDB.insertVault(encryptedActiveVault!);
-
-                const encryptedVaultDuplicate = { ...encryptedActiveVault } as IVault;
+                const encryptedActiveVault = await vault.createEncryptedVaultObject(modifiedVault, keypair.privateKey, keypair.publicKey);
+                await pouchDB.addVault(encryptedActiveVault);
 
                 // Decrypt it and then update in vault store
-                const decryptedActiveVault = await vault?.decryptFromVaultObject(encryptedActiveVault!, keypair.privateKey, keypair.publicKey);
-                vaultStore.add(decryptedActiveVault!);
-
-                // Push to API
-                if (applicationStore.isOnline) {
-                    try {
-                        await vaultService.UpdateVault(encryptedVaultDuplicate);
-                    } catch (e) {
-                        console.log("UPDATE ERROR:", e.response.data)
-                    }
-                }
-            }
-        }
-
-        // Function to handle the "imageData" event from icon upload component
-        const handleImageData = (e: any) => {
-            // If the event is undefined, that means
-            // the image has been cleared, so we want to remove the icon from this vault.
-            if (!e) {
-                removeIcon.value = true;
-                icon.value = "";
-            }
-            else {
-                // Update icon from the string in the event
-                removeIcon.value = false;
-                icon.value = e;
+                const decryptedActiveVault = await vault.decryptFromVaultObject(encryptedActiveVault, keypair.privateKey, keypair.publicKey);
+                vaultStore.add(decryptedActiveVault);
             }
         }
 
