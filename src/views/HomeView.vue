@@ -75,6 +75,8 @@ import { useApplicationStore } from "@/stores/appStore";
 import OfflineAlertModal from "../components/OfflineAlertModal.vue";
 import useToaster from "@/composables/useToaster";
 import usePouchDB from "@/composables/usePouchDB";
+import useVault from "@/composables/useVault";
+import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 
 export default defineComponent({
   name: "HomeView",
@@ -88,9 +90,11 @@ export default defineComponent({
   setup() {
     const emitter = useEmitter();
     const toaster = useToaster();
+    const vault = useVault();
     const pouchdb = usePouchDB();
 
     const applicationStore = useApplicationStore();
+    const encryptionKeyStore = useEncryptionKeyStore();
     const vaultStore = useVaultStore();
 
     // Computed values from store
@@ -107,9 +111,21 @@ export default defineComponent({
     let interval: any;
 
     onMounted(async () => {
-      // Carry out a sync before we fetch documents from the database.
-      await pouchdb.synchronise();
+      // Don't continue if no vault is set
+      if (!vault) {
+        return;
+      }
 
+      // Synchronise and create/update existing indexes if needed.
+      await pouchdb.synchronise();
+      await pouchdb.createIndexes();
+
+      // We can loop through the encrypted vaults, decrypt them and then set them in the store
+      const encryptedVaults = await pouchdb.getVaults();
+      encryptedVaults.forEach(async v => {
+        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.privateKey, encryptionKeyStore.getMasterKeyPair.publicKey);
+        vaultStore.add(decrypted)
+      })
 
       // Fire off initial countdown event
       emitCountdownEvent();
