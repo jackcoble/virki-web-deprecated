@@ -61,9 +61,8 @@ import { useVaultStore } from "@/stores/vaultStore";
 import { TrashIcon, PhotographIcon, ClockIcon } from "@heroicons/vue/outline";
 import BaseModal from "../../components/Modal/BaseModal.vue";
 import useToaster from "@/composables/useToaster";
-import vaultService from "@/service/api/vaultService";
-import useAuthoriserDB from "@/composables/useAuthoriserDB";
 import { useApplicationStore } from "@/stores/appStore";
+import usePouchDB from "@/composables/usePouchDB";
 
 export default defineComponent({
     name: "SettingsVaults",
@@ -76,7 +75,7 @@ export default defineComponent({
     setup() {
         const applicationStore = useApplicationStore();
         const vaultStore = useVaultStore();
-        const authoriserDB = useAuthoriserDB();
+        const pouchDB = usePouchDB();
         const toaster = useToaster();
 
         const isOnline = computed(() => applicationStore.isOnline);
@@ -110,25 +109,21 @@ export default defineComponent({
                 return toaster.error("Vault name provided is incorrect!");
             }
 
-            // Delete locally first
+            // Remove from PouchDB
             try {
-                await authoriserDB.removeVault(selectedVault.value._id);
+                await pouchDB.removeVault(selectedVault.value._id);
             } catch (e) {
-                console.log("Error deleting from IDB:", e);
+                console.log("Error deleting from PouchDB:", e);
                 toaster.error("There was an error removing vault from this device!");
 
                 return;
             }
 
-            // Delete from API
-            try {
-                await vaultService.DeleteVault(selectedVault.value._id);
-            } catch (e) {
-                return toaster.error(e.response.data.error);
-            }
-
             // Remove vault from store
             vaultStore.remove(selectedVault.value._id);
+
+            // Synchronise
+            await pouchDB.synchronise();
 
             // Hide modal
             showDeleteVaultModal.value = !showDeleteVaultModal.value;
