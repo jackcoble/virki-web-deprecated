@@ -42,8 +42,7 @@
       </div>
 
       <div class="flex flex-col">
-        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry.t_id">
-          <Entry :token="entry" />
+        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry">
           <div class="w-full border-t border-gray-300"></div>
         </div>
 
@@ -68,26 +67,18 @@
 import useEmitter from "@/composables/useEmitter";
 
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
-import Entry from "../components/Entry.vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
 import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import OfflineAlertModal from "../components/OfflineAlertModal.vue";
-import useVault from "@/composables/useVault";
 import useToaster from "@/composables/useToaster";
-import vaultService from "@/service/api/vaultService";
-import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
-import { useTokenStore } from "@/stores/tokenStore";
-import type { IVault } from "@/class/vault";
-import { AuthoriserDB } from "@/class/db";
-import useAuthoriserDB from "@/composables/useAuthoriserDB";
+import usePouchDB from "@/composables/usePouchDB";
 
 export default defineComponent({
   name: "HomeView",
   components: {
-    Entry,
     VaultSelector,
     RefreshIcon,
     EmojiSadIcon,
@@ -96,14 +87,11 @@ export default defineComponent({
   },
   setup() {
     const emitter = useEmitter();
-    const vault = useVault();
     const toaster = useToaster();
-    const authoriserDB = useAuthoriserDB();
+    const pouchdb = usePouchDB();
 
     const applicationStore = useApplicationStore();
-    const encryptionKeyStore = useEncryptionKeyStore();
     const vaultStore = useVaultStore();
-    const tokenStore = useTokenStore();
 
     // Computed values from store
     const isOnline = computed(() => applicationStore.isOnline);
@@ -114,157 +102,14 @@ export default defineComponent({
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
       isRefreshingVault.value = true;
-
-      await loadVaults()
-
-      isRefreshingVault.value = false;
-    }
-
-    /*
-      If we're online make a request to our API for a more up-to-date
-      list of vaults, and handle any conflicts as necessary.
-      
-      Should the "offline" timestamp from the API be newer
-      than the one on this device, we want to discard our local changes and replace with the more
-      up to date one vault.
-
-      In the other case, if our timestamp is newer than the one returned to us,
-      update the API with our modified vault data.
-    */
-    const loadVaults = async () => {
-      const db = new AuthoriserDB();
-      const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
-
-      // Iterate through and decrypt vaults local to this device first.
-      // If we have a vault that hasn't been uploaded yet (contains the "offline" timestamp property),
-      // then add its Vault ID to the vaultsToUpload array.
-      const vaultsToUpload: string[] = [];
-
-      const offlineVaults = await db.getVaults();
-      offlineVaults.forEach(async v => {
-        // Check if the encrypted vault needs to be added to the vaultsToUpload array
-        if (v.offline) {
-          vaultsToUpload.push(v.v_id);
-        }
-
-        // Decrypt and set it for now
-        const decrypted = await vault?.decryptFromVaultObject(v, masterKeyPair.privateKey, masterKeyPair.publicKey);
-        if (decrypted) {
-          vaultStore.add(decrypted);
-        }
-      });
-
-      // If we're online, fetch a list an update to date list of all vaults,
-      // and compare them to the ones already on this device.
-      if (applicationStore.isOnline === true) {
-        const res = await vaultService.GetVaults();
-        const onlineVaults = res.data as IVault[] || [];
-    
-        // When it comes to modifications, we will handle deletions first.
-        // If a vault is not present in the API response, but is locally,
-        // assume it has been deleted.
-        // Filter out vaults which we have offline, but not online, and make sure they
-        // aren't vaults which we have in the to be uploaded.
-        const offlineVaultIDs = offlineVaults.map(x => x.v_id);
-        const onlineVaultIDs = onlineVaults.map(x => x.v_id);
-
-        // If we have a vault ID that is in offline array, but not online, remove it
-        offlineVaultIDs.forEach(async offlineId => {
-          if (vaultsToUpload.includes(offlineId)) {
-            return;
-          }
-
-          if (!onlineVaultIDs.includes(offlineId)) {
-            console.log("Deleting local vault as it doesn't exist server side:", offlineId);
-
-            await db.removeVault(offlineId);
-            vaultStore.remove(offlineId);
-          }
-        })
-
-        // We have made it this far, so we can begin to handle modifications.
-        // Go through the online vaults and compare them against our offline ones.
-        onlineVaults.forEach(async onlineVault => {
-          // Find the associated offline vault. If we don't have it, then assume the vault is new
-          // and skip handling modifications
-          let offlineVault = offlineVaults.find(o => o.v_id === onlineVault.v_id);
-          if (!offlineVault) {
-            console.log("Inserting and decrypting new vault on device:", onlineVault.v_id);
-
-            // Decrypt the online vault
-            const decrypted = await vault?.decryptFromVaultObject(onlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
-            if (decrypted) {
-              await db.insertVault(onlineVault);
-              vaultStore.add(decrypted);
-            }
-          } else {
-            // Make sure we aren't comparing against an offline vault
-            if (offlineVault.offline) {
-              return;
-            }
-
-            // If the modified timestamp on the online vault is newer than the offline,
-            // discard our local changes, decrypt and set in store
-            if (onlineVault.modified > offlineVault.modified) {
-              console.log("Discarding local vault due to newer changes:", onlineVault.v_id);
-              await db.insertVault(onlineVault);
-
-              const decrypted = await vault?.decryptFromVaultObject(onlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
-              if (decrypted) {
-                vaultStore.add(decrypted);
-              }
-            }
-
-            // If the modified timestamp on the online timestamp is less than the offline,
-            // assume local modifications have been made, so sync!
-            if (onlineVault.modified < offlineVault.modified) {
-              console.log("Updating online vault due to being outdated:", onlineVault.v_id);
-              await vaultService.UpdateVault(offlineVault);
-            }
-
-          }
-        })
-
-        // We can upload any vaults which were created/modified offline
-        vaultsToUpload.forEach(async vaultId => {
-          const offlineVault = offlineVaults.find(v => v.v_id === vaultId);
-          if (!offlineVault) {
-            return;
-          }
-
-          // Update rather than create
-          if (onlineVaultIDs.includes(vaultId)) {
-            await vaultService.UpdateVault(offlineVault);
-          }
-          else {
-            // Create new vault entirely
-            await vaultService.CreateVault(offlineVault);
-          }
-
-          // Delete the offline property, save in IDB
-          delete offlineVault.offline;
-          await db.insertVault(offlineVault);
-
-          // Decrypt and add to store
-          const decrypted = await vault?.decryptFromVaultObject(offlineVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
-          if (decrypted) {
-            vaultStore.add(decrypted);
-          }
-        })
-      }
     }
 
     let interval: any;
 
     onMounted(async () => {
-      await loadVaults();
+      // Carry out a sync before we fetch documents from the database.
+      await pouchdb.synchronise();
 
-      // Handle reconnections by syncing
-      emitter.on("sync", async () => {
-        applicationStore.setSyncing(true);
-        await loadVaults();
-        applicationStore.setSyncing(false);
-      })
 
       // Fire off initial countdown event
       emitCountdownEvent();
@@ -289,7 +134,7 @@ export default defineComponent({
       emitter.emit("countdown", eventPayload);
     }
 
-    const entries = computed(() => tokenStore.getTokens);
+    const entries = ref([]);
 
     return {
       entries,
