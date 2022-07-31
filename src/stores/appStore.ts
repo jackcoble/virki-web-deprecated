@@ -6,11 +6,13 @@ export const useApplicationStore = defineStore({
     state: () => ({
         online: false,
         syncing: false,
+        sync_db: localStorage.getItem("sync_db") || "",
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10" // 10 minute default inactivity timeout
     }),
     getters: {
         isOnline: (state) => state.online,
         isSyncing: (state) => state.syncing,
+        getSyncDB: (state) => state.sync_db,
         getInactivityTimeout: (state) => parseInt(state.inactivityTimeout)
     },
     actions: {
@@ -25,6 +27,11 @@ export const useApplicationStore = defineStore({
 
         setSyncing(sync: boolean) {
             this.syncing = sync;
+        },
+
+        setSyncDB(database: string) {
+            this.sync_db = database;
+            localStorage.setItem("sync_db", database);
         }
     },
 })
