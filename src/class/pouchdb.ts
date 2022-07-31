@@ -1,5 +1,8 @@
 import type { Vault } from "@/models/vault";
 import PouchDB from "pouchdb-browser";
+import PouchDBFind from "pouchdb-find";
+
+PouchDB.plugin(PouchDBFind);
 
 export class Database {
     private localDB: PouchDB.Database;
