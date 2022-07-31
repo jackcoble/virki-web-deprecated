@@ -38,12 +38,12 @@ import useAccount from "@/composables/useAccount";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useRouter } from "vue-router";
 import useVault from "@/composables/useVault";
-import type { IVault } from "@/class/vault";
-import { AuthoriserDB } from "@/class/db";
 import { useApplicationStore } from "@/stores/appStore";
-import vaultService from "@/service/api/vaultService";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import useAuthoriserDB from "@/composables/useAuthoriserDB";
+import { useAuthenticationStore } from "@/stores/authenticationStore";
+import usePouchDB from "@/composables/usePouchDB";
+import type { Vault } from "@/models/vault";
 
 export default defineComponent({
     name: "NewVault",
@@ -59,8 +59,10 @@ export default defineComponent({
         const router = useRouter();
 
         const applicationStore = useApplicationStore();
+        const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
         const vaultStore = useVaultStore();
+        const pouchDB = usePouchDB();
 
         const iconInput = ref();
         const uploadedIcon = ref(""); // Stores Base64 encoded image/icon
@@ -125,32 +127,23 @@ export default defineComponent({
                     name: name.value,
                     description: description.value ? description.value : null,
                     icon: uploadedIcon.value ? uploadedIcon.value : null
-                } as IVault;
+                } as Vault;
                         
                 // Now that we have the vault payload prepared, we can encrypt it and
                 // save to IndexedDB, and submit to our API (if we're online).
                 const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
                 const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, masterKeyPair.privateKey, masterKeyPair.publicKey);
-                await authoriserDB.insertVault(encryptedVault);
-
-                if (!applicationStore.isOnline && !encryptedVault.offline) {
-                    const currentUnixMicroseconds = Math.floor(Date.now() * 1000);
-                    encryptedVault.offline = currentUnixMicroseconds;
-                } else {
-                    await vaultService.CreateVault(encryptedVault);
-                }
-                
-                await authoriserDB.insertVault(encryptedVault);
+                await pouchDB.addVault(encryptedVault)
 
                 // Decrypt the vault we just created, and then set the active vault + add to store
                 const decryptedVault = await vault.decryptFromVaultObject(encryptedVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
-                vaultStore.setActiveVault(decryptedVault.v_id);
+                vaultStore.setActiveVault(decryptedVault._id);
                 vaultStore.add(decryptedVault)
 
                 // Push to Index
                 router.push("/");                
             } catch (e) {
-                console.log(e)
+                console.error(e)
                 return toaster.error("There was an error creating your vault.");
             } finally {
                 isLoading.value = false;
