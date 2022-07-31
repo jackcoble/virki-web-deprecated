@@ -1,3 +1,4 @@
+import type { Vault } from "@/models/vault";
 import PouchDB from "pouchdb-browser";
 import type { IVault } from "./vault";
 
@@ -34,7 +35,7 @@ export class Database {
      * @param vault 
      * @returns {boolean}
      */
-    async addVault(vault: IVault): Promise<any> {
+    async addVault(vault: Vault): Promise<any> {
         try {
             const result = await this.localDB.put(vault);
         } catch (error) {
