@@ -45,6 +45,24 @@ export class Database {
     }
 
     /**
+     * Removes an encrypted vault from PouchDB.
+     * @param id - Vault ID to be removed from PouchDB.
+     * @returns 
+     */
+    async removeVault(id: string): Promise<any> {
+        try {
+            // Lookup the document by ID and remove it
+            const doc = await this.localDB.get(id);
+            if (doc) {
+                await this.localDB.remove(doc);
+                return Promise.resolve();
+            }
+        } catch (error) {
+            return Promise.reject(error);
+        } 
+    }
+
+    /**
      * Retrieves all encrypted vaults out of PouchDB.
      * @returns {Vault[]}
      */
