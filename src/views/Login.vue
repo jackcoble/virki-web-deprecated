@@ -47,6 +47,7 @@ import { useRouter } from "vue-router";
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { Crypto } from "@/class/crypto";
 import useAuthoriserDB from "@/composables/useAuthoriserDB";
+import { useApplicationStore } from "@/stores/appStore";
 
 export default defineComponent({
     name: "Login",
@@ -61,6 +62,7 @@ export default defineComponent({
         const isLoading = ref(false);
 
         const router = useRouter();
+        const applicationStore = useApplicationStore();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
         const authoriserDB = useAuthoriserDB();
@@ -98,6 +100,8 @@ export default defineComponent({
 
                     const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterPrivateKey, await Crypto.fromBase64(extended.key));
                     encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), masterPublicKey);
+
+                    applicationStore.setSyncDB(res.data.sync_db);
 
                     // Set the active user and save account to IndexedDB
                     authenticationStore.setActiveAccount(res.data.uid);
