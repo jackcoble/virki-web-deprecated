@@ -23,9 +23,9 @@
 
                 <fieldset class="h-52 w-full p-2 overflow-auto">
                     <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-                        <div v-for="(vault) in vaultStore.getVaults" :key="vault.v_id" class="relative flex items-start py-3 cursor-pointer" @click="selectedVault = vault.v_id">
+                        <div v-for="(vault) in vaultStore.getVaults" :key="vault._id" class="relative flex items-start py-3 cursor-pointer" @click="selectedVault = vault._id">
                             <div class="mr-3 flex items-center space-x-3 w-full text-sm">
-                                <input type="radio" class="h-4 w-4 border-gray-300" :checked="vault.v_id === selectedVault" />
+                                <input type="radio" class="h-4 w-4 border-gray-300" :checked="vault._id === selectedVault" />
 
                                 <div class="rounded-full bg-gray-200 border-2 border-gray-300">
                                     <div v-if="!vault.icon" class="w-8 h-8 p-1.5 bg-gray-200 rounded-full">

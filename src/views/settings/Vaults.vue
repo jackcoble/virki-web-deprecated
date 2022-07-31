@@ -8,7 +8,7 @@
 
             <!-- List of all vaults -->
             <div class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-                <div v-for="(vault) in vaultStore.getVaults" :key="vault.v_id" class="p-2.5">
+                <div v-for="(vault) in vaultStore.getVaults" :key="vault._id" class="p-2.5">
                     <div class="mr-3 flex flex-row items-center space-x-3 w-full text-sm">
                         <div class="rounded-full bg-gray-200 border-2 border-gray-300">
                             <div v-if="!vault.icon" class="w-8 h-8 p-1.5 bg-gray-200 rounded-full">
@@ -19,7 +19,7 @@
 
                         <p class="font-medium text-gray-700 select-none flex-1">{{ vault.name }}</p>
 
-                        <b-button classType="danger" class="px-2 py-1.5 w-auto" @click="deleteVaultModal(vault.v_id)" :disabled="!isOnline">
+                        <b-button classType="danger" class="px-2 py-1.5 w-auto" @click="deleteVaultModal(vault._id)" :disabled="!isOnline">
                             <TrashIcon class="w-4" />
                         </b-button>
                     </div>
@@ -90,7 +90,7 @@ export default defineComponent({
 
         // Capture the Vault ID so we can fetch its data and show the modal
         const deleteVaultModal = (id: string) => {
-            const vault = vaultStore.getVaults.find(v => v.v_id === id);
+            const vault = vaultStore.getVaults.find(v => v._id === id);
             if (!vault) {
                 return;
             }
@@ -101,7 +101,7 @@ export default defineComponent({
 
         // Handle vault deletion locally and via API
         const handleDeleteVault = async () => {
-            if (!selectedVault.value.v_id) {
+            if (!selectedVault.value._id) {
                 return;
             }
 
@@ -112,7 +112,7 @@ export default defineComponent({
 
             // Delete locally first
             try {
-                await authoriserDB.removeVault(selectedVault.value.v_id);
+                await authoriserDB.removeVault(selectedVault.value._id);
             } catch (e) {
                 console.log("Error deleting from IDB:", e);
                 toaster.error("There was an error removing vault from this device!");
@@ -122,13 +122,13 @@ export default defineComponent({
 
             // Delete from API
             try {
-                await vaultService.DeleteVault(selectedVault.value.v_id);
+                await vaultService.DeleteVault(selectedVault.value._id);
             } catch (e) {
                 return toaster.error(e.response.data.error);
             }
 
             // Remove vault from store
-            vaultStore.remove(selectedVault.value.v_id);
+            vaultStore.remove(selectedVault.value._id);
 
             // Hide modal
             showDeleteVaultModal.value = !showDeleteVaultModal.value;
