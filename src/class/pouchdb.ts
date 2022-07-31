@@ -45,6 +45,24 @@ export class Database {
     }
 
     /**
+     * Retrieves all encrypted vaults out of PouchDB.
+     * @returns {Vault[]}
+     */
+    async getVaults(): Promise<Vault[]> {
+        try {
+            const result = await this.localDB.find({
+                selector: { 
+                    type: "vault" 
+                }
+            })
+
+            return Promise.resolve(result.docs as Vault[]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    /**
      * Creates and maintains indexes for us to query on
      * @returns 
      */
