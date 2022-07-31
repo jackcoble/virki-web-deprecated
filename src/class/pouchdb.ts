@@ -5,9 +5,9 @@ export class Database {
     private localDB: PouchDB.Database;
     private remoteDB: PouchDB.Database;
 
-    constructor(access_token: string, remote_url: string) {
-        this.localDB = new PouchDB("authoriserDB");
-        this.remoteDB = new PouchDB(remote_url, {
+    constructor(access_token: string, database_name: string, remote_host: string) {
+        this.localDB = new PouchDB(database_name);
+        this.remoteDB = new PouchDB(`${remote_host}/${database_name}`, {
             fetch: function(url, opts) {
                 opts.headers.set("Authorization", `Bearer ${access_token}`);
                 return PouchDB.fetch(url, opts);
