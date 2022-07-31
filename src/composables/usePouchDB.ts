@@ -9,5 +9,5 @@ export default function usePouchDB () {
     const authenticationStore = useAuthenticationStore();
     const applicationStore = useApplicationStore();
     
-    return new Database(authenticationStore.getAccessToken!, `${REMOTE_HOST}/${applicationStore.getSyncDB}`)
+    return new Database(authenticationStore.getAccessToken!, applicationStore.getSyncDB, REMOTE_HOST)
 }
