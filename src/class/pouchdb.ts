@@ -40,4 +40,22 @@ export class Database {
             return Promise.reject(error);
         }
     }
+
+    /**
+     * Creates and maintains indexes for us to query on
+     * @returns 
+     */
+    async createIndexes(): Promise<any> {
+        try {
+            const result = await this.localDB.createIndex({
+                index: {
+                    fields: ["type"]
+                }
+            })
+
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
 }
