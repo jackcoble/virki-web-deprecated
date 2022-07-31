@@ -21,7 +21,7 @@ export class Database {
      */
     async synchronise(): Promise<any> {
         try {
-            await this.localDB.sync(this.remoteDB)
+            await PouchDB.sync(this.localDB, this.remoteDB);
             return Promise.resolve();
         } catch (error) {
             return Promise.reject(error)
