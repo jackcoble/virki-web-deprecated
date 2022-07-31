@@ -1,4 +1,4 @@
-import * as PouchDB from "pouchdb-browser";
+import PouchDB from "pouchdb-browser";
 import type { IVault } from "./vault";
 
 export class Database {
