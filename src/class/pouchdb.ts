@@ -17,6 +17,19 @@ export class Database {
     }
 
     /**
+     * Bi-directional sync between Local DB and Remote DB
+     * @returns 
+     */
+    async synchronise(): Promise<any> {
+        try {
+            await this.localDB.sync(this.remoteDB)
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+
+    /**
      * Inserts an encrypted vault into PouchDB.
      * @param vault 
      * @returns {boolean}
@@ -27,8 +40,5 @@ export class Database {
         } catch (error) {
             return Promise.reject(error);
         }
-
-        // Sync changes
-        await this.localDB.sync(this.remoteDB);
     }
 }
