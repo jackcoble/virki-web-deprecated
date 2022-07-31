@@ -1,4 +1,3 @@
-import { EncryptionType } from "./cipher";
 import { Crypto } from "./crypto";
 import type { Vault as VaultModel } from "@/models/vault";
 
@@ -18,6 +17,9 @@ class Vault {
      * @returns {VaultModel}
      */
     async createEncryptedVaultObject(vault: VaultModel, privateKey: string, publicKey: string): Promise<VaultModel> {
+        // We want to set the document type to "vault"
+        vault.type = "vault";
+
         // Create a new object that will contain our encrypted data
         const encryptedVault = Object.assign({}, vault);
 
