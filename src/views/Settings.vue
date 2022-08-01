@@ -27,6 +27,13 @@
                     <span class="text-sm font-medium">Manage Vaults</span>
                 </router-link>
 
+                <!-- Syncing -->
+                <router-link to="/settings/syncing" class="flex flex-row items-middle p-3 border rounded">
+                    <CloudUploadIcon class="w-5 mr-1" />
+                    <span class="text-sm font-medium">Syncing</span>
+                </router-link>
+
+
                 <!-- Preferences -->
                 <router-link to="/settings/preferences" class="flex flex-row items-middle p-3 border rounded">
                     <AdjustmentsIcon class="w-5 mr-1" />
@@ -49,11 +56,6 @@
             <b-button classType="danger" @click="showDeauthoriseSessionModal = !showDeauthoriseSessionModal">
                 De-authorise sessions
             </b-button>
-
-            <!-- Logout current user -->
-            <b-button classType="danger">
-                Logout
-            </b-button>
         </div>
     </div>
 </template>
@@ -61,7 +63,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 
-import { UserIcon, ShieldCheckIcon, AdjustmentsIcon, StarIcon, CollectionIcon } from "@heroicons/vue/outline"
+import { UserIcon, ShieldCheckIcon, AdjustmentsIcon, StarIcon, CollectionIcon, CloudUploadIcon } from "@heroicons/vue/outline"
 
 // Custom components
 import DeauthoriseModal from "@/components/DeauthoriseModal.vue";
@@ -76,7 +78,8 @@ export default defineComponent({
         ShieldCheckIcon,
         AdjustmentsIcon,
         StarIcon,
-        CollectionIcon
+        CollectionIcon,
+        CloudUploadIcon
     },
     setup() {
         const accountData = ref({});
