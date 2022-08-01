@@ -44,6 +44,11 @@ export const useApplicationStore = defineStore({
             localStorage.setItem("sync_db", database);
         },
 
+        setSyncURL(url: string) {
+            this.sync.url = url;
+            localStorage.setItem("sync_url", url);
+        },
+
         setSyncType(type: SYNC_TYPE) {
             const typeString = type.toString();
 
