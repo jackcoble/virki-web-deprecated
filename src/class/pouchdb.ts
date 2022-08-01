@@ -22,23 +22,30 @@ export class Database {
         this.syncType = sync_type;
 
         // If the CLOUD sync type is used, then we need to set a header on the remote database
-        if (SYNC_TYPE.CLOUD) {
-            // Make sure access token is provided
-            if (!access_token) {
-                throw new Error("No access token provided!");
-            }
-
-            this.remoteDB = new PouchDB(`${remote_url}/${database_name}`, {
-                fetch: function(url, opts) {
-                    opts.headers.set("Authorization", `Bearer ${access_token}`);
-                    return PouchDB.fetch(url, opts);
+        switch (this.syncType) {
+            // Syncing to Authorisers own cloud server
+            case SYNC_TYPE.CLOUD:
+                // Make sure access token is provided
+                if (!access_token) {
+                    throw new Error("No access token provided!");
                 }
-            });
-        }
 
-        // If the the CUSTOM sync type is used, then we can just initialise a remote DB with the remote_host string
-        if (SYNC_TYPE.CUSTOM) {
-            this.remoteDB = new PouchDB(remote_url);
+                this.remoteDB = new PouchDB(`${remote_url}/${database_name}`, {
+                    fetch: function(url, opts) {
+                        opts.headers.set("Authorization", `Bearer ${access_token}`);
+                        return PouchDB.fetch(url, opts);
+                    }
+                });
+
+                break;
+
+            // Syncing to a custom CouchDB server
+            case SYNC_TYPE.CUSTOM:
+                this.remoteDB = new PouchDB(remote_url);
+                break;
+        
+            default:
+                break;
         }
     }
 
