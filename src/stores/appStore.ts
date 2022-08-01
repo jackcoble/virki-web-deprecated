@@ -1,4 +1,4 @@
-import type { SYNC_TYPE } from '@/class/pouchdb';
+import { SYNC_TYPE } from '@/class/pouchdb';
 import { defineStore } from 'pinia'
 
 // General application state
@@ -8,7 +8,7 @@ export const useApplicationStore = defineStore({
         online: false,
         syncing: false,
         sync_db: localStorage.getItem("sync_db") || "",
-        sync_type: localStorage.getItem("sync_type") || "0", // Default to cloud if not present
+        sync_type: localStorage.getItem("sync_type") || SYNC_TYPE.CLOUD.toString(), // Default to cloud if not present
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10", // 10 minute default inactivity timeout
 
         sync: {
