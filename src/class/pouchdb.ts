@@ -54,6 +54,11 @@ export class Database {
      * @returns 
      */
     async synchronise(): Promise<any> {
+        // We do not sync if the SYNC_TYPE is local
+        if (this.syncType === SYNC_TYPE.LOCAL) {
+            return;
+        }
+        
         try {
             await PouchDB.sync(this.localDB, this.remoteDB);
             return Promise.resolve();
