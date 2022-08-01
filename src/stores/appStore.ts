@@ -8,11 +8,10 @@ export const useApplicationStore = defineStore({
         online: false,
         syncing: false,
         sync_db: localStorage.getItem("sync_db") || "",
-        sync_type: localStorage.getItem("sync_type") || SYNC_TYPE.CLOUD.toString(), // Default to cloud if not present
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10", // 10 minute default inactivity timeout
 
         sync: {
-            type: localStorage.getItem("sync_type") || "0", // Default to cloud if not present
+            type: localStorage.getItem("sync_type") || SYNC_TYPE.CLOUD.toString(), // Default to cloud if not present
             db: localStorage.getItem("sync_db") || "",
             url: localStorage.getItem("sync_url") || ""
         }
@@ -21,7 +20,7 @@ export const useApplicationStore = defineStore({
         isOnline: (state) => state.online,
         isSyncing: (state) => state.syncing,
         getSyncDB: (state) => state.sync_db,
-        getSyncType: (state) => parseInt(state.sync_type),
+        getSyncType: (state) => parseInt(state.sync.type),
         getSync: (state) => state.sync,
         getInactivityTimeout: (state) => parseInt(state.inactivityTimeout)
     },
