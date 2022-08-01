@@ -4,18 +4,42 @@ import PouchDBFind from "pouchdb-find";
 
 PouchDB.plugin(PouchDBFind);
 
+// Custom sync type
+export enum SYNC_TYPE {
+    LOCAL = 0, // Data remains on this device only
+    CLOUD, // Cloud-hosted CouchDB server
+    CUSTOM // Custom CouchDB server
+}
+
 export class Database {
+    private syncType: SYNC_TYPE;
     private localDB: PouchDB.Database;
     private remoteDB: PouchDB.Database;
 
-    constructor(access_token: string, database_name: string, remote_host: string) {
+    constructor(sync_type: SYNC_TYPE, database_name: string, remote_url: string, access_token?: string) {
+        // We are always going to initialise an "offline" database that is replicated to other sources.
         this.localDB = new PouchDB(database_name);
-        this.remoteDB = new PouchDB(`${remote_host}/${database_name}`, {
-            fetch: function(url, opts) {
-                opts.headers.set("Authorization", `Bearer ${access_token}`);
-                return PouchDB.fetch(url, opts);
+        this.syncType = sync_type;
+
+        // If the CLOUD sync type is used, then we need to set a header on the remote database
+        if (SYNC_TYPE.CLOUD) {
+            // Make sure access token is provided
+            if (!access_token) {
+                throw new Error("No access token provided!");
             }
-        });
+
+            this.remoteDB = new PouchDB(`${remote_url}/${database_name}`, {
+                fetch: function(url, opts) {
+                    opts.headers.set("Authorization", `Bearer ${access_token}`);
+                    return PouchDB.fetch(url, opts);
+                }
+            });
+        }
+
+        // If the the CUSTOM sync type is used, then we can just initialise a remote DB with the remote_host string
+        if (SYNC_TYPE.CUSTOM) {
+            this.remoteDB = new PouchDB(remote_url);
+        }
     }
 
     /**
