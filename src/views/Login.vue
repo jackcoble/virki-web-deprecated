@@ -92,7 +92,8 @@ export default defineComponent({
                     authenticationStore.setRefreshToken(res.data.refresh_token);
                 }
 
-                // Fetch encrypted user account and decrypt the master keypair with the stretched password
+                // Fetch encrypted user account and decrypt the master keypair with the stretched password.
+                // Whilst we are here we can set some application data in the store from the account response.
                 res = await user.GetAccount();
                 if (res.data) {
                     const encryptedMasterPrivateKey = res.data.encrypted_master_keypair.private_key;
@@ -101,7 +102,8 @@ export default defineComponent({
                     const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterPrivateKey, await Crypto.fromBase64(extended.key));
                     encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), masterPublicKey);
 
-                    applicationStore.setSyncDB(res.data.sync_db);
+                    applicationStore.setSyncDB(res.data.sync.db);
+                    applicationStore.setSyncURL(res.data.sync.url)
 
                     // Set the active user and save account to IndexedDB
                     authenticationStore.setActiveAccount(res.data.uid);
