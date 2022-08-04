@@ -105,8 +105,21 @@ export default defineComponent({
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
+      if (!vault) {
+        return;
+      }
+
       isRefreshingVault.value = true;
+
+      // Synchronise, fetch and decrypt vaults
       await pouchdb.synchronise();
+
+      const encryptedVaults = await pouchdb.getVaults();
+      encryptedVaults.forEach(async v => {
+        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.privateKey, encryptionKeyStore.getMasterKeyPair.publicKey);
+        vaultStore.add(decrypted)
+      })
+
       isRefreshingVault.value = false;
     }
 
