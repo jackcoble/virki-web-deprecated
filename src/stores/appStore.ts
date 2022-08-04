@@ -7,19 +7,17 @@ export const useApplicationStore = defineStore({
     state: () => ({
         online: false,
         syncing: false,
-        sync_db: localStorage.getItem("sync_db") || "",
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10", // 10 minute default inactivity timeout
 
         sync: {
             type: localStorage.getItem("sync_type") || SYNC_TYPE.CLOUD.toString(), // Default to cloud if not present
             db: localStorage.getItem("sync_db") || "",
-            url: localStorage.getItem("sync_url") || ""
+            url: localStorage.getItem("sync_url") || `${window.location.protocol}//${window.location.hostname}/v1/store` // Default to own service if not present
         }
     }),
     getters: {
         isOnline: (state) => state.online,
         isSyncing: (state) => state.syncing,
-        getSyncDB: (state) => state.sync_db,
         getSyncType: (state) => parseInt(state.sync.type),
         getSync: (state) => state.sync,
         getInactivityTimeout: (state) => parseInt(state.inactivityTimeout)
@@ -38,21 +36,22 @@ export const useApplicationStore = defineStore({
             this.syncing = sync;
         },
 
-        setSyncDB(database: string) {
-            this.sync.db = database;
-            localStorage.setItem("sync_db", database);
-        },
-
-        setSyncURL(url: string) {
-            this.sync.url = url;
-            localStorage.setItem("sync_url", url);
-        },
-
-        setSyncType(type: SYNC_TYPE) {
+        setSyncDetails(type: SYNC_TYPE, database: string, host?: string) {
+            // Sync type
             const typeString = type.toString();
 
             this.sync.type = typeString;
             localStorage.setItem("sync_type", typeString);
+
+            // Database
+            this.sync.db = database;
+            localStorage.setItem("sync_db", database);
+
+            // CouchDB host
+            if (host) {
+                this.sync.url = host;
+                localStorage.setItem("sync_url", host);
+            }
         }
     },
 })
