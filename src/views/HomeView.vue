@@ -106,6 +106,8 @@ export default defineComponent({
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
       isRefreshingVault.value = true;
+      await pouchdb.synchronise();
+      isRefreshingVault.value = false;
     }
 
     let interval: any;
