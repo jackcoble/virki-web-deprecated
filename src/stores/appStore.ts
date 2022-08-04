@@ -12,7 +12,7 @@ export const useApplicationStore = defineStore({
         sync: {
             type: localStorage.getItem("sync_type") || SYNC_TYPE.CLOUD.toString(), // Default to cloud if not present
             db: localStorage.getItem("sync_db") || "",
-            url: localStorage.getItem("sync_url") || `${window.location.protocol}//${window.location.hostname}/v1/store` // Default to own service if not present
+            url: localStorage.getItem("sync_url") || `${window.location.protocol}//${window.location.host}/api/v1/store` // Default to own service if not present
         }
     }),
     getters: {
