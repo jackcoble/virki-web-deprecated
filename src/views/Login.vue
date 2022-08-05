@@ -105,8 +105,7 @@ export default defineComponent({
 
                     applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, res.data.sync.db);
 
-                    // Set the active user and save account to IndexedDB
-                    authenticationStore.setActiveAccount(res.data.uid);
+                    // Save account to IndexedDB
                     await authoriserDB.insertAccount(res.data as IAccount);
                 }
 

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { getUnixTime } from "date-fns";
+import jwt_decode from "jwt-decode";
 import useAuthoriserDB from '@/composables/useAuthoriserDB';
 
 export const useAuthenticationStore = defineStore({
@@ -7,10 +8,9 @@ export const useAuthenticationStore = defineStore({
   state: () => ({
     email: "",
     password_salt: "",
-    access_token: localStorage.getItem("access_token") || null,
-    refresh_token: localStorage.getItem("refresh_token") || null,
-    lastActiveTimestamp: getUnixTime(new Date()),
-    activeAccount: localStorage.getItem("active_account") || null
+    access_token: localStorage.getItem("access_token") || "",
+    refresh_token: localStorage.getItem("refresh_token") || "",
+    lastActiveTimestamp: getUnixTime(new Date())
   }),
   getters: {
     getEmail: (state) => state.email,
@@ -18,7 +18,10 @@ export const useAuthenticationStore = defineStore({
     getAccessToken: (state) => state.access_token,
     getRefreshToken: (state) => state.refresh_token,
     getLastActiveTimestamp: (state) => state.lastActiveTimestamp,
-    getActiveAccount: (state) => state.activeAccount
+    getActiveAccount: (state) => {
+      const decoded = jwt_decode(state.access_token) as any;
+      return decoded.sub;
+    }
   },
   actions: {
     async initialise() {
@@ -55,16 +58,11 @@ export const useAuthenticationStore = defineStore({
         this.lastActiveTimestamp = timestamp;
     },
 
-    setActiveAccount(accountId: string) {
-      this.activeAccount = accountId;
-      localStorage.setItem("active_account", accountId);
-    },
-
     clear() {
         this.email = "";
         this.password_salt = "";
-        this.access_token = null;
-        this.refresh_token = null;
+        this.access_token = "";
+        this.refresh_token = "";
 
         localStorage.removeItem("email");
         localStorage.removeItem("password_salt");
