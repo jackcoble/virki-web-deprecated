@@ -11,11 +11,10 @@ import Settings from "@/views/Settings.vue"
 import SettingsSecurity from "@/views/settings/Security.vue";
 import SettingsPreferences from "@/views/settings/Preferences.vue";
 import SettingsVaults from "@/views/settings/Vaults.vue";
+import SettingsSyncing from "@/views/settings/Syncing.vue";
 import Lock from "@/views/Lock.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
-import useAccount from '@/composables/useAccount'
-import { Crypto } from '@/class/crypto'
 import useAuthoriserDB from '@/composables/useAuthoriserDB'
 import { useAuthenticationStore } from '@/stores/authenticationStore'
 
@@ -113,6 +112,15 @@ const router = createRouter({
       path: "/settings/vaults",
       name: "settingsVaults",
       component: SettingsVaults,
+      meta: {
+        authRequired: true,
+        showTabMenu: true
+      }
+    },
+    {
+      path: "/settings/syncing",
+      name: "settingsSyncing",
+      component: SettingsSyncing,
       meta: {
         authRequired: true,
         showTabMenu: true
