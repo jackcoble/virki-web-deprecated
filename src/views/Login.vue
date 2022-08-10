@@ -97,6 +97,13 @@ export default defineComponent({
                 // Whilst we are here we can set some application data in the store from the account response.
                 res = await user.GetAccount();
                 if (res.data) {
+                    const userAccount = res.data as IAccount;
+                    
+                    // So that Authoriser can be used offline, store the password and encrypted keys object
+                    // in LocalStorage.
+                    localStorage.setItem("password", JSON.stringify(userAccount.password));
+                    localStorage.setItem("encrypted_master_keypair", JSON.stringify(userAccount.encrypted_master_keypair));
+
                     const encryptedMasterPrivateKey = res.data.encrypted_master_keypair.private_key;
                     const masterPublicKey = res.data.encrypted_master_keypair.public_key;
 
@@ -108,9 +115,6 @@ export default defineComponent({
                     const dbName = `user_db-${trimmedUserID}`;
 
                     applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, dbName);
-
-                    // Save account to IndexedDB
-                    await authoriserDB.insertAccount(res.data as IAccount);
                 }
 
                 // Push to Index
