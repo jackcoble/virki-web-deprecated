@@ -13,7 +13,7 @@
                 <!-- User currently logged in -->
                 <p class="text-sm text-center">
                     Currently signed in as
-                    <span class="font-bold">{{ email }}</span>
+                    <span class="font-bold">{{ user.name }}.</span>
                 </p>
 
                 <!-- Unlock and Logout buttons -->
@@ -38,9 +38,7 @@
 </template>
 
 <script lang="ts">
-import { Account } from "@/class/account";
 import useToaster from "@/composables/useToaster";
-import authentication from "@/service/api/authentication";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { computed } from "@vue/reactivity";
@@ -48,9 +46,9 @@ import { defineComponent, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { LockClosedIcon, LockOpenIcon, LogoutIcon } from "@heroicons/vue/outline";
 import { useApplicationStore } from "@/stores/appStore";
-import useAuthoriserDB from "@/composables/useAuthoriserDB";
+import { Account } from "@/class/account";
 import { Crypto } from "@/class/crypto";
-import useAccount from "@/composables/useAccount";
+import authentication from "@/service/api/authentication";
 
 export default defineComponent({
     name: "Lock",
@@ -64,15 +62,13 @@ export default defineComponent({
         const route = useRoute();
         const toaster = useToaster();
 
-        const acc = useAccount();
         const applicationStore = useApplicationStore();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
-        const authoriserDB = useAuthoriserDB();
 
         const isOnline = computed(() => applicationStore.isOnline);
-        const email = computed(() => authenticationStore.getEmail);
-
+  
+        const user = computed(() => authenticationStore.getUser);
         const password = ref("");
         const isLoading = ref(false);
 
@@ -80,43 +76,40 @@ export default defineComponent({
         const unlockVault = async () => {
             isLoading.value = true;
 
-            // Decrypting the master keypair private key and setting it our store.
-            try {
-                const activeAccount = authenticationStore.getActiveAccount;
-                const account = await authoriserDB.getAccount(activeAccount!);
+            const account = new Account("", "");
 
-                // Stretch the password
-                const extended = await acc?.deriveStretchedPassword(password.value, account.password.salt);
+            // We should have the password and encrypted master keypair stored on the device if we're here,
+            // so using that information we can derive and decrypt it!
+            const passwordData = authenticationStore.getPassword;
+            const encryptedMasterKeypair = encryptionKeyStore.getEncryptedMasterKey;
+            if (passwordData && encryptedMasterKeypair) {
+                // Using password information, we need to derive the stretched password
+                const stretchedPassword = await account.deriveStretchedPassword(password.value, passwordData.salt);
 
-                const decryptedMasterPrivateKey = await Crypto.decrypt(account.encrypted_master_keypair.private_key, await Crypto.fromBase64(extended.key));
-                encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), account.encrypted_master_keypair.public_key);
-            } catch (e) {
-                isLoading.value = false;
-
-                toaster.error(e);
-                return;
-            }
-
-            // After decryption, request new access and refresh tokens from API (if device is online)
-            if (!!isOnline.value) {
+                // Decrypt the encrypted master keypair and store in memory
                 try {
-                    const accessToken = authenticationStore.getAccessToken;
-                    const refreshToken = authenticationStore.getRefreshToken;
-
-                    const res = await authentication.RefreshTokens(accessToken!, refreshToken!);
-                    if (res.data) {
-                        authenticationStore.setAccessToken(res.data.access_token);
-                        authenticationStore.setRefreshToken(res.data.refresh_token);
-                    }
+                    const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterKeypair.private_key, await Crypto.fromBase64(stretchedPassword.key));
+                    encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), encryptedMasterKeypair.public_key);
                 } catch (e) {
                     isLoading.value = false;
-
-                    toaster.error(e.response.data.error);
-                    return;
+                    return toaster.error("There was an error decrypting your private key, please try again!");
                 }
             }
 
-            isLoading.value = false;
+            // If this device is online, we can request for some updated access/refresh tokens.
+            if (!!isOnline.value) {
+                try {
+                    const existingTokens = authenticationStore.getTokens;
+                    const res = await authentication.RefreshTokens(existingTokens.access_token, existingTokens.refresh_token);
+
+                    // Update authentication store
+                    if (res && res.data) {
+                        authenticationStore.setTokens(res.data.access_token, res.data.refresh_token);
+                    }
+                } catch (e) {
+                    return toaster.error(e);
+                }
+            }
 
             // Check for query in parameter or push to index
             const redirect = route.query.redirect as string;
@@ -138,7 +131,7 @@ export default defineComponent({
         }
 
         return {
-            email,
+            user,
             password,
             isLoading,
 
