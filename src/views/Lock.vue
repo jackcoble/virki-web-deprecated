@@ -111,6 +111,8 @@ export default defineComponent({
                 }
             }
 
+            isLoading.value = false;
+
             // Check for query in parameter or push to index
             const redirect = route.query.redirect as string;
             if (redirect) {
