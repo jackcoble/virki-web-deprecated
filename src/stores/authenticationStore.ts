@@ -34,7 +34,7 @@ export const useAuthenticationStore = defineStore({
 
     setPassword(hash: string, salt: string) {
         this.password.hash = hash;
-        this.password.hash = salt;
+        this.password.salt = salt;
 
         // Store in LocalStorage
         localStorage.setItem("password", JSON.stringify(this.password));
