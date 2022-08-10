@@ -18,7 +18,7 @@ export const useAuthenticationStore = defineStore({
     getAccessToken: (state) => state.access_token,
     getRefreshToken: (state) => state.refresh_token,
     getLastActiveTimestamp: (state) => state.lastActiveTimestamp,
-    getActiveAccount: (state) => {
+    getActiveAccount: (state): string => {
       const decoded = jwt_decode(state.access_token) as any;
       return decoded.sub;
     }
@@ -59,15 +59,7 @@ export const useAuthenticationStore = defineStore({
     },
 
     clear() {
-        this.email = "";
-        this.password_salt = "";
-        this.access_token = "";
-        this.refresh_token = "";
-
-        localStorage.removeItem("email");
-        localStorage.removeItem("password_salt");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        localStorage.clear();
     }
   },
 })
