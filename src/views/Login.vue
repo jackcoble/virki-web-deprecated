@@ -47,7 +47,7 @@ import { useRouter } from "vue-router";
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { Crypto } from "@/class/crypto";
 import { useApplicationStore } from "@/stores/appStore";
-import { SYNC_TYPE } from "@/class/pouchdb";
+import { AUTHORISER_SYNC_URL, SYNC_TYPE } from "@/class/pouchdb";
 
 export default defineComponent({
     name: "Login",
@@ -117,7 +117,7 @@ export default defineComponent({
                     const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
                     const dbName = `user_db-${trimmedUserID}`;
 
-                    const syncServerURL = `https://jacks-macbook-air.local:3000/api/v1/store/${dbName}`;
+                    const syncServerURL = `${AUTHORISER_SYNC_URL}/${dbName}`;
 
                     // Update application state with new sync data
                     applicationStore.setSync(SYNC_TYPE.CLOUD, dbName, syncServerURL);

@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { SYNC_TYPE } from "@/class/pouchdb"
+import { AUTHORISER_SYNC_URL, SYNC_TYPE } from "@/class/pouchdb"
 import useToaster from "@/composables/useToaster";
 import { useApplicationStore } from "@/stores/appStore"
 import { useAuthenticationStore } from "@/stores/authenticationStore";
@@ -65,7 +65,7 @@ export default defineComponent({
 
             // If user has selected Authoriser Sync Server, then we need to set the sync URL
             if (syncType === SYNC_TYPE.CLOUD) {
-                syncServer.value = `${window.location.protocol}//${window.location.host}/api/v1/store/${dbName}`;
+                syncServer.value = `${AUTHORISER_SYNC_URL}/${dbName}`;
             }
             else if (syncType === SYNC_TYPE.CUSTOM) {
                 // Clear the sync server value if its the same as the default sync URL
@@ -94,7 +94,7 @@ export default defineComponent({
 
                 case SYNC_TYPE.CLOUD:
                     // Sync the database with the hosted instance of Authoriser Sync Server
-                    dbUrl = `${window.location.protocol}//${window.location.host}/api/v1/store/${dbName}`;
+                    dbUrl = `${AUTHORISER_SYNC_URL}/${dbName}`;
                     
                     break;
 
