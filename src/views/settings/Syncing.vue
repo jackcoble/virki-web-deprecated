@@ -11,14 +11,14 @@
 
             <!-- Sync options -->
             <fieldset class="space-y-3">
-                <div v-for="sType in syncTypes" @click="selectedSyncType = sType.id.toString()">
+                <div v-for="sType in syncTypes" @click="selectSyncType(sType.id)">
                     <input type="radio" :value="sType.id" :checked="selectedSyncType === sType.id.toString()">
                     <label class="mx-2">{{ sType.label }}</label>
                 </div>
             </fieldset>
 
             <b-input v-if="selectedSyncType !== '0'" placeholder="http(s)://username:password@hostname/database" v-model="syncServer" :readonly="selectedSyncType === '1'"></b-input>
-            <b-button :disabled="selectedSyncType === activeSyncType" @click="applyChanges">Apply</b-button>
+            <b-button :disabled="selectedSyncType === activeSyncType || !syncServer || syncServer === currentSyncServer" @click="applyChanges">Apply</b-button>
         </div>
     </div>
 </template>
@@ -40,6 +40,8 @@ export default defineComponent({
 
         const activeSyncType = computed(() => applicationStore.getSync.type);
         const selectedSyncType = ref(applicationStore.getSync.type);
+
+        const currentSyncServer = applicationStore.getSync.url;
         const syncServer = ref(applicationStore.getSync.url);
 
         const syncTypes = [
@@ -57,8 +59,20 @@ export default defineComponent({
             }
         ]
 
-        const selectSyncType = (syncType: string) => {
-            selectedSyncType.value = syncType;
+        const selectSyncType = (syncType: SYNC_TYPE) => {
+            // If user has selected Authoriser Sync Server, then we need to set the sync URL
+            if (syncType === SYNC_TYPE.CLOUD) {
+                const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
+                const dbName = `user_db-${trimmedUserID}`;
+
+                syncServer.value = `${window.location.protocol}//${window.location.host}/api/v1/store/${dbName}`;
+            }
+            else if (syncType === SYNC_TYPE.CUSTOM) {
+                // Clear the sync server value
+                syncServer.value = "";
+            }
+
+            selectedSyncType.value = syncType.toString();
         }
 
         const applyChanges = () => {
@@ -89,7 +103,8 @@ export default defineComponent({
 
                     // If there is no DB extracted, throw an error
                     if (!db) {
-                        return toaster.error("No database provided in CouchDB URL!");
+                        toaster.error("No database provided in CouchDB URL!");
+                        return;
                     }
 
                     applicationStore.setSyncDetails(SYNC_TYPE.CUSTOM, db, serverUrl.toString())
@@ -102,6 +117,7 @@ export default defineComponent({
         return {
             activeSyncType,
             selectedSyncType,
+            currentSyncServer,
             syncServer,
             syncTypes,
 
