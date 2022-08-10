@@ -40,7 +40,6 @@ import { useRouter } from "vue-router";
 import useVault from "@/composables/useVault";
 import { useApplicationStore } from "@/stores/appStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
-import useAuthoriserDB from "@/composables/useAuthoriserDB";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import usePouchDB from "@/composables/usePouchDB";
 import type { Vault } from "@/models/vault";
@@ -53,7 +52,6 @@ export default defineComponent({
     setup() {
         const account = useAccount();
         const vault = useVault();
-        const authoriserDB = useAuthoriserDB();
 
         const toaster = useToaster();
         const router = useRouter();
@@ -132,11 +130,11 @@ export default defineComponent({
                 // Now that we have the vault payload prepared, we can encrypt it and
                 // save to IndexedDB, and submit to our API (if we're online).
                 const masterKeyPair = encryptionKeyStore.getMasterKeyPair;
-                const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, masterKeyPair.privateKey, masterKeyPair.publicKey);
+                const encryptedVault = await vault.createEncryptedVaultObject(vaultDetails, masterKeyPair.private_key, masterKeyPair.public_key);
                 await pouchDB.addVault(encryptedVault)
 
                 // Decrypt the vault we just created, and then set the active vault + add to store
-                const decryptedVault = await vault.decryptFromVaultObject(encryptedVault, masterKeyPair.privateKey, masterKeyPair.publicKey);
+                const decryptedVault = await vault.decryptFromVaultObject(encryptedVault, masterKeyPair.private_key, masterKeyPair.public_key);
                 vaultStore.setActiveVault(decryptedVault._id);
                 vaultStore.add(decryptedVault)
 
