@@ -129,6 +129,10 @@ export default defineComponent({
             authenticationStore.clear();
             encryptionKeyStore.clear();
 
+            applicationStore.$reset();
+            authenticationStore.$reset();
+            encryptionKeyStore.$reset();
+
             const db = usePouchDB();
             await db.destroyDatabase();
 
