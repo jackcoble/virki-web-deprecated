@@ -106,11 +106,11 @@ export default defineComponent({
 
                 // Re-encrypt the active vault with the new data, and save it in PouchDB.
                 const keypair = encryptionKeyStore.getMasterKeyPair;
-                const encryptedActiveVault = await vault.createEncryptedVaultObject(modifiedVault, keypair.privateKey, keypair.publicKey);
+                const encryptedActiveVault = await vault.createEncryptedVaultObject(modifiedVault, keypair.private_key, keypair.public_key);
                 await pouchDB.addVault(encryptedActiveVault);
 
                 // Decrypt it and then update in vault store
-                const decryptedActiveVault = await vault.decryptFromVaultObject(encryptedActiveVault, keypair.privateKey, keypair.publicKey);
+                const decryptedActiveVault = await vault.decryptFromVaultObject(encryptedActiveVault, keypair.private_key, keypair.public_key);
                 vaultStore.add(decryptedActiveVault);
             }
         }

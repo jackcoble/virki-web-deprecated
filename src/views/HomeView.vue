@@ -99,7 +99,7 @@ export default defineComponent({
 
       const encryptedVaults = await pouchdb.getVaults();
       encryptedVaults.forEach(async v => {
-        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.privateKey, encryptionKeyStore.getMasterKeyPair.publicKey);
+        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.private_key, encryptionKeyStore.getMasterKeyPair.public_key);
         vaultStore.add(decrypted)
       })
 
