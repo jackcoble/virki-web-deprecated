@@ -103,7 +103,11 @@ export default defineComponent({
                     const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterPrivateKey, await Crypto.fromBase64(extended.key));
                     encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), masterPublicKey);
 
-                    applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, res.data.sync.db);
+                    // Construct the database name
+                    const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
+                    const dbName = `user_db-${trimmedUserID}`;
+
+                    applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, dbName);
 
                     // Save account to IndexedDB
                     await authoriserDB.insertAccount(res.data as IAccount);
