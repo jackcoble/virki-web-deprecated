@@ -49,6 +49,7 @@ import { useApplicationStore } from "@/stores/appStore";
 import { Account } from "@/class/account";
 import { Crypto } from "@/class/crypto";
 import authentication from "@/service/api/authentication";
+import usePouchDB from "@/composables/usePouchDB";
 
 export default defineComponent({
     name: "Lock",
@@ -123,10 +124,13 @@ export default defineComponent({
         }
 
         // Function to log out user
-        const logoutUser = () => {
+        const logoutUser = async () => {
             // Clear all stores
             authenticationStore.clear();
             encryptionKeyStore.clear();
+
+            const db = usePouchDB();
+            await db.destroyDatabase();
 
             // Push to login
             router.push("/login");
