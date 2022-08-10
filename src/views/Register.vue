@@ -66,8 +66,6 @@ import { Account, type IAccount } from "@/class/account";
 import { Crypto } from "@/class/crypto";
 import useToaster from "@/composables/useToaster";
 import authentication from "@/service/api/authentication";
-import { useAuthenticationStore } from "@/stores/authenticationStore";
-import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -85,9 +83,6 @@ export default defineComponent({
 
         const toaster = useToaster();
         const router = useRouter();
-
-        const authenticationStore = useAuthenticationStore();
-        const encryptionKeyStore = useEncryptionKeyStore();
 
         // Create a user account
         const registerUser = async () => {
@@ -147,8 +142,7 @@ export default defineComponent({
             // Send account payload to API
             try {
                 await authentication.RegisterAccount(accountPayload).then(res => {
-                    authenticationStore.setAccessToken(res.data.access_token);
-                    authenticationStore.setRefreshToken(res.data.refresh_token);
+                    return toaster.success("Account created! Please sign in.")
                 })
             } catch (e) {
                 return toaster.error(e.response.data.error)
@@ -157,7 +151,7 @@ export default defineComponent({
             }
 
             // Push to index
-            router.push("/");
+            router.push("/login");
         }
 
         return {
