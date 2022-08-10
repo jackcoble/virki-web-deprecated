@@ -10,19 +10,28 @@ export const useApplicationStore = defineStore({
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10", // 10 minute default inactivity timeout
 
         sync: {
-            type: localStorage.getItem("sync_type") || SYNC_TYPE.CLOUD.toString(), // Default to cloud if not present
-            db: localStorage.getItem("sync_db") || "",
-            url: localStorage.getItem("sync_url") || `${window.location.protocol}//${window.location.host}/api/v1/store` // Default to own service if not present
+            type: SYNC_TYPE.CLOUD,
+            db: "",
+            url: `${window.location.protocol}//${window.location.host}/api/v1/store` // Default to own service if not present
         }
     }),
     getters: {
         isOnline: (state) => state.online,
         isSyncing: (state) => state.syncing,
-        getSyncType: (state) => parseInt(state.sync.type),
         getSync: (state) => state.sync,
         getInactivityTimeout: (state) => parseInt(state.inactivityTimeout)
     },
     actions: {
+        // Initialise sync data
+        initialise() {
+            const syncDataString = localStorage.getItem("sync");
+            if (syncDataString) {
+                const syncData = JSON.parse(syncDataString);
+
+                this.setSync(syncData.type, syncData.db, syncData.url);
+            }
+        },
+
         setOnline(online: boolean) {
             this.online = online;
         },
@@ -36,22 +45,13 @@ export const useApplicationStore = defineStore({
             this.syncing = sync;
         },
 
-        setSyncDetails(type: SYNC_TYPE, database: string, host?: string) {
-            // Sync type
-            const typeString = type.toString();
-
-            this.sync.type = typeString;
-            localStorage.setItem("sync_type", typeString);
-
-            // Database
+        // Store syncing data in LocalStorage for persistance
+        setSync(type: SYNC_TYPE, database: string, remote: string) {
+            this.sync.type = type;
             this.sync.db = database;
-            localStorage.setItem("sync_db", database);
+            this.sync.url = remote;
 
-            // CouchDB host
-            if (host) {
-                this.sync.url = host;
-                localStorage.setItem("sync_url", host);
-            }
+            localStorage.setItem("sync", JSON.stringify(this.sync));
         }
     },
 })

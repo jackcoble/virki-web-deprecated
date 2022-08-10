@@ -16,6 +16,7 @@ import Lock from "@/views/Lock.vue"
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 import { useAuthenticationStore } from '@/stores/authenticationStore'
+import { useApplicationStore } from '@/stores/appStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -132,8 +133,10 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authenticationStore = useAuthenticationStore();
   const encryptionKeyStore = useEncryptionKeyStore();
+  const applicationStore = useApplicationStore();
 
   // Initialise the stores if possible, regardless of the route we're on.
+  applicationStore.initialise();
   authenticationStore.initialise();
   encryptionKeyStore.initialise();
   
