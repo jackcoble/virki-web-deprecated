@@ -1,9 +1,9 @@
 import * as CryptoJS from "crypto-js";
 
 export enum OTPType {
-    totp = 1,
-    hotp,
-    steam
+    TOTP = 1,
+    HOTP,
+    Steam
 }
 
 export enum OTPAlgorithm {
@@ -115,13 +115,13 @@ export class Token {
 
         // Depending on the OTP type, we need to set some values to properly generate the token.
         switch (type) {
-            case OTPType.totp:
-            case OTPType.hotp:
+            case OTPType.TOTP:
+            case OTPType.HOTP:
                 key = this.base32tohex(secret);
 
                 break;
 
-            case OTPType.steam:
+            case OTPType.Steam:
                 key = this.base32tohex(secret);
                 len = 10;
                 b26 = true;
@@ -141,7 +141,7 @@ export class Token {
         }
 
         // If the type isn't HOTP, then we need to initialise a counter from the current time
-        if (type !== OTPType.hotp) {
+        if (type !== OTPType.HOTP) {
             const epoch = Math.round(new Date().getTime() / 1000.0);
             counter = Math.floor(epoch / period);
         }
