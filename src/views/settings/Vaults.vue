@@ -19,7 +19,7 @@
 
                         <p class="font-medium text-gray-700 select-none flex-1">{{ vault.name }}</p>
 
-                        <b-button classType="danger" class="px-2 py-1.5 w-auto" @click="deleteVaultModal(vault._id)" :disabled="!isOnline">
+                        <b-button classType="danger" class="px-2 py-1.5 w-auto" @click="deleteVaultModal(vault._id)">
                             <TrashIcon class="w-4" />
                         </b-button>
                     </div>
@@ -56,12 +56,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useVaultStore } from "@/stores/vaultStore";
 import { TrashIcon, PhotographIcon, ClockIcon } from "@heroicons/vue/outline";
 import BaseModal from "../../components/Modal/BaseModal.vue";
 import useToaster from "@/composables/useToaster";
-import { useApplicationStore } from "@/stores/appStore";
 import usePouchDB from "@/composables/usePouchDB";
 
 export default defineComponent({
@@ -73,12 +72,9 @@ export default defineComponent({
         ClockIcon
     },
     setup() {
-        const applicationStore = useApplicationStore();
         const vaultStore = useVaultStore();
         const pouchDB = usePouchDB();
         const toaster = useToaster();
-
-        const isOnline = computed(() => applicationStore.isOnline);
 
         // Refs to track what modal to show
         const showDeleteVaultModal = ref(false);
@@ -134,7 +130,6 @@ export default defineComponent({
             selectedVault,
             showDeleteVaultModal,
             vaultNameConfirmation,
-            isOnline,
 
             deleteVaultModal,
             handleDeleteVault
