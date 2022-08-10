@@ -30,7 +30,7 @@ export class Database {
                     throw new Error("No access token provided!");
                 }
 
-                this.remoteDB = new PouchDB(`${remote_url}/${database_name}`, {
+                this.remoteDB = new PouchDB(remote_url, {
                     fetch: function(url, opts) {
                         opts.headers.set("Authorization", `Bearer ${access_token}`);
                         return PouchDB.fetch(url, opts);
