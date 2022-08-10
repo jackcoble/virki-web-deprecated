@@ -32,6 +32,33 @@ export const useAuthenticationStore = defineStore({
     }
   },
   actions: {
+    // Populate all information from LocalStorage and into the store
+    initialise() {
+      // User data
+      const userDataString = localStorage.getItem("user");
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+
+        this.setUser(userData.email, userData.name, userData.avatar);
+      }
+
+      // Password data
+      const passwordDataString = localStorage.getItem("password");
+      if (passwordDataString) {
+        const passwordData = JSON.parse(passwordDataString);
+
+        this.setPassword(passwordData.hash, passwordData.salt);
+      }
+
+      // Access/refresh tokens
+      const tokenDataString = localStorage.getItem("authentication_tokens");
+      if (tokenDataString) {
+        const tokenData = JSON.parse(tokenDataString);
+
+        this.setTokens(tokenData.access_token, tokenData.refresh_token);
+      }
+    },
+
     setUser(email: string, name: string, avatar?: string) {
         this.user.email = email;
         this.user.name = name;
