@@ -121,7 +121,7 @@ export default defineComponent({
       // We can loop through the encrypted vaults, decrypt them and then set them in the store
       const encryptedVaults = await pouchdb.getVaults();
       encryptedVaults.forEach(async v => {
-        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.privateKey, encryptionKeyStore.getMasterKeyPair.publicKey);
+        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.private_key, encryptionKeyStore.getMasterKeyPair.public_key);
         vaultStore.add(decrypted)
       })
 
