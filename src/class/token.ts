@@ -1,3 +1,5 @@
+import * as CryptoJS from "crypto-js";
+
 export enum OTPType {
     totp = 1,
     hotp,
@@ -89,5 +91,120 @@ export class Token {
             output = new Array(len - output.length + 1).join(chars[0]) + output;
         }
         return output;
+    }
+
+    // Generate a TOTP
+    static generate(
+        type: OTPType,
+        secret: string,
+        counter: number,
+        period: number,
+        len?: number,
+        algorithm?: OTPAlgorithm
+    ) {
+        // Remove any formatting from secret
+        secret = secret.replace(/\s/g, "");
+
+        // Default length to 6 if not provided
+        if (!len) {
+            len = 6;
+        }
+
+        let b26 = false;
+        let key: string;
+
+        // Depending on the OTP type, we need to set some values to properly generate the token.
+        switch (type) {
+            case OTPType.totp:
+            case OTPType.hotp:
+                key = this.base32tohex(secret);
+
+                break;
+
+            case OTPType.steam:
+                key = this.base32tohex(secret);
+                len = 10;
+                b26 = true;
+
+                break;
+
+            default:
+                // Default to Base32 if type couldn't be determined.
+                key = this.base32tohex(secret);
+
+                break;
+        }
+
+        // If theres no key, the secret is invalid.
+        if (!key) {
+            throw new Error("Invalid secret key!");
+        }
+
+        // If the type isn't HOTP, then we need to initialise a counter from the current time
+        if (type !== OTPType.hotp) {
+            const epoch = Math.round(new Date().getTime() / 1000.0);
+            counter = Math.floor(epoch / period);
+        }
+
+        const time = this.leftpad(this.dec2hex(counter), 16, "0");
+
+        // Some black magic going on here, not sure what this does, but it works....
+        if (key.length % 2 === 1) {
+            if (key.substring(-1) === "0") {
+                key = key.substring(0, key.length - 1);
+            } else {
+                key += "0";
+            }
+        }
+
+        // Derive the HMAC for specific algorithms
+        let hmacObj: CryptoJS.lib.WordArray
+        switch (algorithm) {
+            // HMAC-SHA256
+            case OTPAlgorithm.SHA256:
+                hmacObj = CryptoJS.HmacSHA256(
+                    CryptoJS.enc.Hex.parse(time),
+                    CryptoJS.enc.Hex.parse(key)
+                );
+
+                break;
+
+            // HMAC-SHA512
+            case OTPAlgorithm.SHA512:
+                hmacObj = CryptoJS.HmacSHA512(
+                    CryptoJS.enc.Hex.parse(time),
+                    CryptoJS.enc.Hex.parse(key)
+                );
+
+                break;
+
+            // If no algorithm has been provided we'll default to HMAC-SHA1
+            default:
+                hmacObj = CryptoJS.HmacSHA1(
+                    CryptoJS.enc.Hex.parse(time),
+                    CryptoJS.enc.Hex.parse(key)
+                );
+
+                break;
+        }
+
+        // Conver the hmac object into a hex string and calculate the offset.
+        const hmac = CryptoJS.enc.Hex.stringify(hmacObj);
+        const offset = this.hex2dec(hmac.substring(hmac.length - 1));
+
+        let otp =
+            (this.hex2dec(hmac.substr(offset * 2, 8)) & this.hex2dec("7fffffff")) +
+            "";
+
+        // Base26 encode if needed
+        if (b26) {
+            return this.base26(Number(otp));
+        }
+
+        // Otherwise return the OTP
+        if (otp.length < len) {
+            otp = new Array(len - otp.length + 1).join("0") + otp;
+        }
+        return otp.substr(otp.length - len, len).toString();
     }
 }
