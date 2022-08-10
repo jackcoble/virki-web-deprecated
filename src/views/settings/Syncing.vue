@@ -27,12 +27,14 @@
 import { SYNC_TYPE } from "@/class/pouchdb"
 import useToaster from "@/composables/useToaster";
 import { useApplicationStore } from "@/stores/appStore"
+import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { computed } from "@vue/reactivity";
 import { defineComponent, ref } from "vue"
 
 export default defineComponent({
     name: "Settings",
     setup() {
+        const authenticationStore = useAuthenticationStore();
         const applicationStore = useApplicationStore();
         const toaster = useToaster();
 
@@ -60,18 +62,41 @@ export default defineComponent({
         }
 
         const applyChanges = () => {
-            // Parse the custom URL to extract the database name
-            const serverUrl = new URL(syncServer.value);
-            const db = serverUrl.pathname.split("/").pop();
+            // Depending on the sync option, we need to handle setting the database names and remote URLs differently.
+            const syncType = parseInt(selectedSyncType.value);
 
-            // If there is no DB extracted, throw an error
-            if (!db) {
-                return toaster.error("No database provided in CouchDB URL!");
+            const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
+            const dbName = `user_db-${trimmedUserID}`;
+            let dbUrl = "";
+
+            switch (syncType) {
+                case SYNC_TYPE.LOCAL:
+                    // If we're local, we just want to create a URL pointing at localhost with our constructed DB name.
+                    dbUrl = `http://127.0.0.1/${dbName}`;
+                    applicationStore.setSyncDetails(SYNC_TYPE.LOCAL, dbName, dbUrl);
+
+                    break;
+
+                case SYNC_TYPE.CLOUD:
+                    // Sync the database with the hosted instance of Authoriser Sync Server
+                    dbUrl = `${window.location.protocol}//${window.location.host}/api/v1/store/${dbName}`;
+                    applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, dbName, dbUrl);
+
+                case SYNC_TYPE.CUSTOM:
+                    // Parse the custom URL to extract the database name
+                    const serverUrl = new URL(syncServer.value);
+                    const db = serverUrl.pathname.split("/").pop();
+
+                    // If there is no DB extracted, throw an error
+                    if (!db) {
+                        return toaster.error("No database provided in CouchDB URL!");
+                    }
+
+                    applicationStore.setSyncDetails(SYNC_TYPE.CUSTOM, db, serverUrl.toString())
+
+                default:
+                    break;
             }
-
-            // Set the modifications in application store
-            const sType = parseInt(selectedSyncType.value);
-            applicationStore.setSyncDetails(sType, db, serverUrl.toString())
         }
         
         return {
