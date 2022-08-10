@@ -60,16 +60,18 @@ export default defineComponent({
         ]
 
         const selectSyncType = (syncType: SYNC_TYPE) => {
+            const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
+            const dbName = `user_db-${trimmedUserID}`;
+
             // If user has selected Authoriser Sync Server, then we need to set the sync URL
             if (syncType === SYNC_TYPE.CLOUD) {
-                const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
-                const dbName = `user_db-${trimmedUserID}`;
-
                 syncServer.value = `${window.location.protocol}//${window.location.host}/api/v1/store/${dbName}`;
             }
             else if (syncType === SYNC_TYPE.CUSTOM) {
-                // Clear the sync server value
-                syncServer.value = "";
+                // Clear the sync server value if its the same as the default sync URL
+                if (currentSyncServer === syncServer.value) {
+                    syncServer.value = '';
+                }
             }
 
             selectedSyncType.value = syncType.toString();
