@@ -7,19 +7,9 @@
         <VaultSelector />
 
         <div class="flex flex-col">
-          <!-- Refresh vault button -->
-          <button v-if="isOnline" class="rounded-full p-1 text-purple-800"
-            :class="isRefreshingVault || isSyncing ? 'animate-reverse-spin' : ''" @click="refreshVault"
-            :disabled="isRefreshingVault || isSyncing">
-            <RefreshIcon class="w-6 h-6" />
-          </button>
-
-          <!-- Disconnected from cloud alert -->
-          <OfflineAlertModal :show="showOfflineAlertModal" @close="showOfflineAlertModal = false"
-            @done="showOfflineAlertModal = false" />
-          <button v-if="!isOnline" class="rounded-full p-1 text-red-400"
-            @click="showOfflineAlertModal = !showOfflineAlertModal">
-            <StatusOfflineIcon class="w-6 h-6" />
+          <!-- New entry icon -->
+          <button class="rounded-full p-1 text-purple-800" @click="router.push('/new/qrcode')">
+            <PlusCircleIcon class="w-7 h-7" />
           </button>
         </div>
       </div>
@@ -52,7 +42,7 @@ import useEmitter from "@/composables/useEmitter";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import OfflineAlertModal from "../components/OfflineAlertModal.vue";
@@ -60,6 +50,8 @@ import useToaster from "@/composables/useToaster";
 import usePouchDB from "@/composables/usePouchDB";
 import useVault from "@/composables/useVault";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
+import { OTPType, Token } from "@/class/token";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "HomeView",
@@ -68,9 +60,12 @@ export default defineComponent({
     RefreshIcon,
     EmojiSadIcon,
     StatusOfflineIcon,
-    OfflineAlertModal
+    OfflineAlertModal,
+    PlusCircleIcon
   },
   setup() {
+    const router = useRouter();
+
     const emitter = useEmitter();
     const toaster = useToaster();
     const vault = useVault();
@@ -83,8 +78,6 @@ export default defineComponent({
     // Computed values from store
     const isOnline = computed(() => applicationStore.isOnline);
     const isSyncing = computed(() => applicationStore.isSyncing);
-
-    const showOfflineAlertModal = ref(false);
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
@@ -131,6 +124,9 @@ export default defineComponent({
       interval = setInterval(() => {
         // Emit the 'countdown' event every second
         emitCountdownEvent();
+
+        // TESTING
+        console.log(Token.generate(OTPType.TOTP, "JBSWY3DPEHPK3PXP", 0, 30));
       }, 1000);
     })
 
@@ -151,12 +147,12 @@ export default defineComponent({
     const entries = ref([]);
 
     return {
+      router,
+      
       entries,
       isRefreshingVault,
       isOnline,
       isSyncing,
-
-      showOfflineAlertModal,
 
       vaultStore,
 
