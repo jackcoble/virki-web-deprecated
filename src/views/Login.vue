@@ -82,7 +82,6 @@ export default defineComponent({
                 // Attempt to login and set access/refresh tokens in store
                 res = await authentication.Login(email.value, passwordHash);
                 if (res.data && res.data.access_token && res.data.refresh_token) {
-                    authenticationStore.setEmail(email.value);
                     authenticationStore.setTokens(res.data.access_token, res.data.refresh_token);
                 }
 
@@ -95,6 +94,9 @@ export default defineComponent({
                     // So that Authoriser can be used offline, store the password hash, and encrypted master keypair in LocalStorage.
                     authenticationStore.setPassword(userAccount.password.hash, userAccount.password.salt);
                     encryptionKeyStore.setEncryptedMasterKey(res.data.encrypted_master_keypair.private_key, res.data.encrypted_master_keypair.public_key);
+
+                    // Also store some basic account data, such as Email, Name and Profile picture in LocalStorage
+                    authenticationStore.setUser(userAccount.email, userAccount.name);
 
                     // Once that is set, we can proceed to decrypt the master keypair at store it in memory.
                     const encryptedMasterKeypair = encryptionKeyStore.getEncryptedMasterKey;
