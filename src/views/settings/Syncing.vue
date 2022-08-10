@@ -18,7 +18,7 @@
             </fieldset>
 
             <b-input v-if="selectedSyncType !== '0'" placeholder="http(s)://username:password@hostname/database" v-model="syncServer" :readonly="selectedSyncType === '1'"></b-input>
-            <b-button :disabled="selectedSyncType === activeSyncType || !syncServer || syncServer === currentSyncServer" @click="applyChanges">Apply</b-button>
+            <b-button @click="applyChanges">Apply</b-button>
         </div>
     </div>
 </template>
@@ -96,6 +96,8 @@ export default defineComponent({
                     dbUrl = `${window.location.protocol}//${window.location.host}/api/v1/store/${dbName}`;
                     applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, dbName, dbUrl);
 
+                    break;
+
                 case SYNC_TYPE.CUSTOM:
                     // Parse the custom URL to extract the database name
                     const serverUrl = new URL(syncServer.value);
@@ -107,7 +109,9 @@ export default defineComponent({
                         return;
                     }
 
-                    applicationStore.setSyncDetails(SYNC_TYPE.CUSTOM, db, serverUrl.toString())
+                    applicationStore.setSyncDetails(SYNC_TYPE.CUSTOM, db, serverUrl.toString());
+
+                    break;
 
                 default:
                     break;
