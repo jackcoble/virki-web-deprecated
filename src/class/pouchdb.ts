@@ -11,6 +11,9 @@ export enum SYNC_TYPE {
     CUSTOM // Custom CouchDB server
 }
 
+// Default base syncing URL for the Authoriser service
+export const AUHTORISER_SYNC_URL = `${window.location.protocol}//${window.location.host}/api/v1/store/`;
+
 export class Database {
     private syncType: SYNC_TYPE;
     private localDB: PouchDB.Database;
