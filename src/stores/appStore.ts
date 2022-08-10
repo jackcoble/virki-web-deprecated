@@ -12,7 +12,7 @@ export const useApplicationStore = defineStore({
         sync: {
             type: SYNC_TYPE.CLOUD,
             db: "",
-            url: `${window.location.protocol}//${window.location.host}/api/v1/store` // Default to own service if not present
+            url: ""
         }
     }),
     getters: {
