@@ -1,57 +1,51 @@
 import { defineStore } from 'pinia'
 import { getUnixTime } from "date-fns";
 import jwt_decode from "jwt-decode";
-import useAuthoriserDB from '@/composables/useAuthoriserDB';
 
 export const useAuthenticationStore = defineStore({
   id: 'authentication',
   state: () => ({
     email: "",
-    password_salt: "",
-    access_token: localStorage.getItem("access_token") || "",
-    refresh_token: localStorage.getItem("refresh_token") || "",
+    password: {
+      salt: "",
+      hash: ""
+    },
+    tokens: {
+      access_token: "",
+      refresh_token: ""
+    },
     lastActiveTimestamp: getUnixTime(new Date())
   }),
   getters: {
     getEmail: (state) => state.email,
-    getPasswordSalt: (state) => state.password_salt,
-    getAccessToken: (state) => state.access_token,
-    getRefreshToken: (state) => state.refresh_token,
+    getPassword: (state) => state.password,
+    getAccessToken: (state) => state.tokens.access_token,
+    getRefreshToken: (state) => state.tokens.refresh_token,
     getLastActiveTimestamp: (state) => state.lastActiveTimestamp,
     getActiveAccount: (state): string => {
-      const decoded = jwt_decode(state.access_token) as any;
+      const decoded = jwt_decode(state.tokens.access_token) as any;
       return decoded.sub;
     }
   },
   actions: {
-    async initialise() {
-      const authoriserDB = useAuthoriserDB();
-      const account = await authoriserDB.getAccount(this.getActiveAccount!);
-      if (!account) {
-        return;
-      }
-
-      // Set the password salt and email
-      this.setPasswordSalt(account.password.salt);
-      this.setEmail(account.email);
-    },
-
     setEmail(email: string) {
         this.email = email
     },
 
-    setPasswordSalt(salt: string) {
-        this.password_salt = salt;
+    setPassword(hash: string, salt: string) {
+        this.password.hash = hash;
+        this.password.hash = salt;
+
+        // Store in LocalStorage
+        localStorage.setItem("password", JSON.stringify(this.password));
     },
 
-    setAccessToken(accessToken: string) {
-      this.access_token = accessToken;
-      localStorage.setItem("access_token", accessToken);
-    },
+    setTokens(access_token: string, refresh_token: string) {
+      this.tokens.access_token = access_token;
+      this.tokens.refresh_token = refresh_token;
 
-    setRefreshToken(refreshToken: string) {
-        this.refresh_token = refreshToken;
-        localStorage.setItem("refresh_token", refreshToken)
+      // Store in LocalStorage
+      localStorage.setItem("authentication_tokens", JSON.stringify(this.tokens));
     },
 
     setLastActiveTimestamp(timestamp: number) {
