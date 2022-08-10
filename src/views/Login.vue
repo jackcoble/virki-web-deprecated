@@ -46,9 +46,6 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { Crypto } from "@/class/crypto";
-import useAuthoriserDB from "@/composables/useAuthoriserDB";
-import { useApplicationStore } from "@/stores/appStore";
-import { SYNC_TYPE } from "@/class/pouchdb";
 
 export default defineComponent({
     name: "Login",
@@ -63,10 +60,8 @@ export default defineComponent({
         const isLoading = ref(false);
 
         const router = useRouter();
-        const applicationStore = useApplicationStore();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
-        const authoriserDB = useAuthoriserDB();
         const toaster = useToaster();
         const account = new Account("", "");
 
@@ -88,9 +83,7 @@ export default defineComponent({
                 res = await authentication.Login(email.value, passwordHash);
                 if (res.data && res.data.access_token && res.data.refresh_token) {
                     authenticationStore.setEmail(email.value);
-                    authenticationStore.setPasswordSalt(salt);
-                    authenticationStore.setAccessToken(res.data.access_token);
-                    authenticationStore.setRefreshToken(res.data.refresh_token);
+                    authenticationStore.setTokens(res.data.access_token, res.data.refresh_token);
                 }
 
                 // Fetch encrypted user account and decrypt the master keypair with the stretched password.
@@ -99,22 +92,14 @@ export default defineComponent({
                 if (res.data) {
                     const userAccount = res.data as IAccount;
                     
-                    // So that Authoriser can be used offline, store the password and encrypted keys object
-                    // in LocalStorage.
-                    localStorage.setItem("password", JSON.stringify(userAccount.password));
-                    localStorage.setItem("encrypted_master_keypair", JSON.stringify(userAccount.encrypted_master_keypair));
+                    // So that Authoriser can be used offline, store the password hash, and encrypted master keypair in LocalStorage.
+                    authenticationStore.setPassword(userAccount.password.hash, userAccount.password.salt);
+                    encryptionKeyStore.setEncryptedMasterKey(res.data.encrypted_master_keypair.private_key, res.data.encrypted_master_keypair.public_key);
 
-                    const encryptedMasterPrivateKey = res.data.encrypted_master_keypair.private_key;
-                    const masterPublicKey = res.data.encrypted_master_keypair.public_key;
-
-                    const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterPrivateKey, await Crypto.fromBase64(extended.key));
-                    encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), masterPublicKey);
-
-                    // Construct the database name
-                    const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
-                    const dbName = `user_db-${trimmedUserID}`;
-
-                    applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, dbName);
+                    // Once that is set, we can proceed to decrypt the master keypair at store it in memory.
+                    const encryptedMasterKeypair = encryptionKeyStore.getEncryptedMasterKey;
+                    const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterKeypair.private_key, await Crypto.fromBase64(extended.key));
+                    encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), encryptedMasterKeypair.public_key);
                 }
 
                 // Push to Index
