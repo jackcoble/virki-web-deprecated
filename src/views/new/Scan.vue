@@ -34,6 +34,7 @@
                         <GlobeIcon class="w-5 h-5 text-gray-500" />
                     </div>
                     <input type="text" id="issuer"
+                        v-model="tokenIssuer"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
                         placeholder="Twitter">
                 </div>
@@ -47,6 +48,7 @@
                         <UserIcon class="w-5 h-5 text-gray-500" />
                     </div>
                     <input type="text" id="username"
+                        v-model="tokenUsername"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
                         placeholder="user@example.tld">
                 </div>
@@ -60,6 +62,7 @@
                         <KeyIcon class="w-5 h-5 text-gray-500" />
                     </div>
                     <input type="text" id="secret"
+                        v-model="tokenSecret"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
                         placeholder="JBSWY3DPEHPK3PXP">
                 </div>
@@ -145,6 +148,9 @@ export default defineComponent({
         const hideScanner = ref(false);
 
         // Options needed for either manual or QR code scan
+        const tokenIssuer = ref("");
+        const tokenUsername = ref("");
+        const tokenSecret = ref("");
         const tokenAlgorithm = ref(OTPAlgorithm.SHA1);
         const tokenLength = ref(6);
         const tokenType = ref(OTPType.TOTP);
@@ -164,6 +170,9 @@ export default defineComponent({
             OTPAlgorithm,
             OTPType,
 
+            tokenIssuer,
+            tokenUsername,
+            tokenSecret,
             tokenAlgorithm,
             tokenLength,
             tokenType,
