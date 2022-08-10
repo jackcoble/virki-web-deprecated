@@ -12,7 +12,7 @@ export enum SYNC_TYPE {
 }
 
 // Default base syncing URL for the Authoriser service
-export const AUHTORISER_SYNC_URL = `${window.location.protocol}//${window.location.host}/api/v1/store`;
+export const AUTHORISER_SYNC_URL = `${window.location.protocol}//${window.location.host}/api/v1/store`;
 
 export class Database {
     private syncType: SYNC_TYPE;
