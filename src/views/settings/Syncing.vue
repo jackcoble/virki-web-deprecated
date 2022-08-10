@@ -13,26 +13,32 @@
             <fieldset class="space-y-3">
                 <div v-for="sType in syncTypes" @click="selectedSyncType = sType.id.toString()">
                     <input type="radio" :value="sType.id" :checked="selectedSyncType === sType.id.toString()">
-                    <label>{{ sType.label }}</label>
+                    <label class="mx-2">{{ sType.label }}</label>
                 </div>
             </fieldset>
+
+            <b-input v-if="selectedSyncType !== '0'" placeholder="http(s)://username:password@hostname/database" v-model="syncServer" :readonly="selectedSyncType === '1'"></b-input>
+            <b-button v-if="selectedSyncType !== activeSyncType" @click="applyChanges">Apply</b-button>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import { SYNC_TYPE } from "@/class/pouchdb"
+import useToaster from "@/composables/useToaster";
 import { useApplicationStore } from "@/stores/appStore"
 import { computed } from "@vue/reactivity";
-import { defineComponent, onMounted, ref } from "vue"
+import { defineComponent, ref } from "vue"
 
 export default defineComponent({
     name: "Settings",
     setup() {
         const applicationStore = useApplicationStore();
+        const toaster = useToaster();
 
         const activeSyncType = computed(() => applicationStore.getSync.type);
         const selectedSyncType = ref(applicationStore.getSync.type);
+        const syncServer = ref(applicationStore.getSync.url + '/' + applicationStore.getSync.db);
 
         const syncTypes = [
             {
@@ -48,12 +54,34 @@ export default defineComponent({
                 label: "Advanced (CouchDB)"
             }
         ]
+
+        const selectSyncType = (syncType: string) => {
+            selectedSyncType.value = syncType;
+        }
+
+        const applyChanges = () => {
+            // Parse the custom URL to extract the database name
+            const serverUrl = new URL(syncServer.value);
+            const db = serverUrl.pathname.split("/").pop();
+
+            // If there is no DB extracted, throw an error
+            if (!db) {
+                return toaster.error("No database provided in CouchDB URL!");
+            }
+
+            // Set the modifications in application store
+            const sType = parseInt(selectedSyncType.value);
+            applicationStore.setSyncDetails(sType, db, serverUrl.toString())
+        }
         
         return {
             activeSyncType,
             selectedSyncType,
+            syncServer,
+            syncTypes,
 
-            syncTypes
+            selectSyncType,
+            applyChanges
         }
     }
 })
