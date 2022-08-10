@@ -21,6 +21,17 @@ export const useEncryptionKeyStore = defineStore({
     getEncryptedMasterKey: (state) => state.encrypted_master_keypair
   },
   actions: {
+    // Populate all information from LocalStorage and into the store
+    initialise() {
+      // Encrypted master keypair
+      const encryptedKeypairString = localStorage.getItem("encrypted_master_keypair");
+      if (encryptedKeypairString) {
+        const encryptedKeypair = JSON.parse(encryptedKeypairString);
+
+        this.setEncryptedMasterKey(encryptedKeypair.private_key, encryptedKeypair.public_key);
+      }
+    },
+
     // Sets the decrypted master keypair
     setMasterKeyPair (private_key: string, public_key: string) {
       this.master_keypair.private_key = private_key;
