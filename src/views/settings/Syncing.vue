@@ -12,12 +12,12 @@
             <!-- Sync options -->
             <fieldset class="space-y-3">
                 <div v-for="sType in syncTypes" @click="selectSyncType(sType.id)">
-                    <input type="radio" :value="sType.id" :checked="selectedSyncType === sType.id.toString()">
+                    <input type="radio" :value="sType.id" :checked="selectedSyncType === sType.id">
                     <label class="mx-2">{{ sType.label }}</label>
                 </div>
             </fieldset>
 
-            <b-input v-if="selectedSyncType !== '0'" placeholder="http(s)://username:password@hostname/database" v-model="syncServer" :readonly="selectedSyncType === '1'"></b-input>
+            <b-input v-if="selectedSyncType !== SYNC_TYPE.LOCAL" placeholder="http(s)://username:password@hostname/database" v-model="syncServer" :readonly="selectedSyncType === SYNC_TYPE.CLOUD"></b-input>
             <b-button @click="applyChanges">Apply</b-button>
         </div>
     </div>
@@ -74,30 +74,28 @@ export default defineComponent({
                 }
             }
 
-            selectedSyncType.value = syncType.toString();
+            selectedSyncType.value = syncType;
         }
 
         const applyChanges = () => {
             // Depending on the sync option, we need to handle setting the database names and remote URLs differently.
-            const syncType = parseInt(selectedSyncType.value);
+            const syncType = selectedSyncType.value;
 
             const trimmedUserID = authenticationStore.getActiveAccount.replace(/-/g, "");
-            const dbName = `user_db-${trimmedUserID}`;
+            let dbName = `user_db-${trimmedUserID}`;
             let dbUrl = "";
 
             switch (syncType) {
                 case SYNC_TYPE.LOCAL:
                     // If we're local, we just want to create a URL pointing at localhost with our constructed DB name.
                     dbUrl = `http://127.0.0.1/${dbName}`;
-                    applicationStore.setSyncDetails(SYNC_TYPE.LOCAL, dbName, dbUrl);
-
+                    
                     break;
 
                 case SYNC_TYPE.CLOUD:
                     // Sync the database with the hosted instance of Authoriser Sync Server
                     dbUrl = `${window.location.protocol}//${window.location.host}/api/v1/store/${dbName}`;
-                    applicationStore.setSyncDetails(SYNC_TYPE.CLOUD, dbName, dbUrl);
-
+                    
                     break;
 
                 case SYNC_TYPE.CUSTOM:
@@ -111,13 +109,17 @@ export default defineComponent({
                         return;
                     }
 
-                    applicationStore.setSyncDetails(SYNC_TYPE.CUSTOM, db, serverUrl.toString());
+                    dbName = db;
+                    dbUrl = serverUrl.toString()
 
                     break;
 
                 default:
                     break;
             }
+
+            // Update sync data
+            applicationStore.setSync(syncType, dbName, dbUrl);
         }
         
         return {
@@ -126,6 +128,8 @@ export default defineComponent({
             currentSyncServer,
             syncServer,
             syncTypes,
+
+            SYNC_TYPE,
 
             selectSyncType,
             applyChanges
