@@ -5,7 +5,11 @@ import jwt_decode from "jwt-decode";
 export const useAuthenticationStore = defineStore({
   id: 'authentication',
   state: () => ({
-    email: "",
+    user: {
+      email: "",
+      name: "",
+      avatar: ""
+    },
     password: {
       salt: "",
       hash: ""
@@ -17,7 +21,7 @@ export const useAuthenticationStore = defineStore({
     lastActiveTimestamp: getUnixTime(new Date())
   }),
   getters: {
-    getEmail: (state) => state.email,
+    getUser: (state) => state.user,
     getPassword: (state) => state.password,
     getAccessToken: (state) => state.tokens.access_token,
     getRefreshToken: (state) => state.tokens.refresh_token,
@@ -28,8 +32,16 @@ export const useAuthenticationStore = defineStore({
     }
   },
   actions: {
-    setEmail(email: string) {
-        this.email = email
+    setUser(email: string, name: string, avatar?: string) {
+        this.user.email = email;
+        this.user.name = name;
+
+        if (avatar) {
+          this.user.avatar = avatar;
+        }
+
+        // Store in LocalStorage
+        localStorage.setItem("user", JSON.stringify(this.user));
     },
 
     setPassword(hash: string, salt: string) {
