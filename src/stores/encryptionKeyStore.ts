@@ -1,37 +1,30 @@
-import { AuthoriserDB } from '@/class/db';
 import { defineStore } from 'pinia'
 
 export const useEncryptionKeyStore = defineStore({
   id: 'encryptionKeys',
   state: () => ({
     masterPasswordStretched: localStorage.getItem("stretched_password") || "",
-    encryptedMasterKey: localStorage.getItem("encrypted_master_key") || "",
-    masterKeyPair: {
-      privateKey: "",
-      publicKey: ""
+    encrypted_master_keypair: {
+      private_key: "",
+      public_key: ""
+    },
+
+    // This holds the decrypted master keypair, so this should never be persistent!
+    master_keypair: {
+      private_key: "",
+      public_key: ""
     }
   }),
   getters: {
-    getMasterKeyPair: (state) => state.masterKeyPair,
+    getMasterKeyPair: (state) => state.master_keypair,
     getStretchedPassword: (state) => state.masterPasswordStretched,
-    getEncryptedMasterKey: (state) => state.encryptedMasterKey
+    getEncryptedMasterKey: (state) => state.encrypted_master_keypair
   },
   actions: {
-    async initialise() {
-      const database = new AuthoriserDB();
-      
-      // We want to fetch the account encrypted master key,
-      // and decrypt it if we can!
-      const account = await database.getAccount();
-      if (account) {
-        this.encryptedMasterKey = account.encrypted_master_keypair.private_key;
-        this.masterKeyPair.publicKey = account.encrypted_master_keypair.public_key;
-      }
-    },
-
-    setMasterKeyPair (privateKey: string, publicKey: string) {
-      this.masterKeyPair.privateKey = privateKey;
-      this.masterKeyPair.publicKey = publicKey;
+    // Sets the decrypted master keypair
+    setMasterKeyPair (private_key: string, public_key: string) {
+      this.master_keypair.private_key = private_key;
+      this.master_keypair.public_key = public_key;
     },
 
     // Use this for keeping stretched password just in memory or localStorage
@@ -44,18 +37,15 @@ export const useEncryptionKeyStore = defineStore({
       }
     },
 
-    // Use this for settings the users encrypted master key in localStorage
-    setEncryptedMasterKey(encryptedMasterKey: string) {
-      this.encryptedMasterKey = encryptedMasterKey;
-      localStorage.setItem("encrypted_master_key", encryptedMasterKey);
+    // Store the encrypted master keypair for offline use
+    setEncryptedMasterKey(private_key: string, public_key: string) {
+      this.encrypted_master_keypair.private_key = private_key;
+      this.encrypted_master_keypair.public_key = public_key;
+
+      localStorage.setItem("encrypted_master_keypair", JSON.stringify(this.encrypted_master_keypair));
     },
 
     clear() {
-      this.masterPasswordStretched = "";
-      this.masterKeyPair.privateKey = "";
-      this.masterKeyPair.publicKey = "";
-      this.encryptedMasterKey = "";
-
       localStorage.removeItem("stretched_password");
       localStorage.removeItem("encrypted_master_key");
     }
