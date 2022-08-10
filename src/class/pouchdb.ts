@@ -136,4 +136,18 @@ export class Database {
             return Promise.reject(error);
         }
     }
+
+    /**
+     * Destroys the local database instance
+     * @returns 
+     */
+    async destroyDatabase(): Promise<any> {
+        try {
+            await this.localDB.destroy();
+
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
 }
