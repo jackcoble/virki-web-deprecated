@@ -18,7 +18,7 @@
             </fieldset>
 
             <b-input v-if="selectedSyncType !== '0'" placeholder="http(s)://username:password@hostname/database" v-model="syncServer" :readonly="selectedSyncType === '1'"></b-input>
-            <b-button v-if="selectedSyncType !== activeSyncType" @click="applyChanges">Apply</b-button>
+            <b-button :disabled="selectedSyncType === activeSyncType" @click="applyChanges">Apply</b-button>
         </div>
     </div>
 </template>
@@ -40,7 +40,7 @@ export default defineComponent({
 
         const activeSyncType = computed(() => applicationStore.getSync.type);
         const selectedSyncType = ref(applicationStore.getSync.type);
-        const syncServer = ref(applicationStore.getSync.url + '/' + applicationStore.getSync.db);
+        const syncServer = ref(applicationStore.getSync.url);
 
         const syncTypes = [
             {
