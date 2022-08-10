@@ -25,6 +25,7 @@ export const useAuthenticationStore = defineStore({
     getPassword: (state) => state.password,
     getAccessToken: (state) => state.tokens.access_token,
     getRefreshToken: (state) => state.tokens.refresh_token,
+    getTokens: (state) => state.tokens,
     getLastActiveTimestamp: (state) => state.lastActiveTimestamp,
     getActiveAccount: (state): string => {
       const decoded = jwt_decode(state.tokens.access_token) as any;
