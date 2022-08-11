@@ -7,5 +7,5 @@ export default function usePouchDB () {
     const authenticationStore = useAuthenticationStore();
     const applicationStore = useApplicationStore();
     
-    return new Database(parseInt(applicationStore.getSync.type), applicationStore.getSync.db, applicationStore.getSync.url, authenticationStore.getAccessToken!)
+    return new Database(applicationStore.getSync.type, applicationStore.getSync.db, applicationStore.getSync.url, authenticationStore.getAccessToken!)
 }
