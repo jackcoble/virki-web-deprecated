@@ -181,7 +181,7 @@ export default defineComponent({
             const label = otpauth.pathname.replace(/^\/|\/$/g, ''); // Strips leading slashes
             if (label.indexOf(":") !== -1) {
                 tokenIssuer.value = label.split(":")[0];
-                tokenUsername.value = label.split(":")[1];
+                tokenUsername.value = decodeURIComponent(label.split(":")[1]);
             } else {
                 tokenUsername.value = label;
             }
