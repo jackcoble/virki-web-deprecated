@@ -15,8 +15,8 @@
       </div>
 
       <div class="flex flex-col">
-        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry">
-          <div class="w-full border-t border-gray-300"></div>
+        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry._id">
+          <Entry :token="entry" />
         </div>
 
         <div v-else class="mt-48 items-center justify-items-center text-gray-400 mx-auto space-y-3">
@@ -52,6 +52,7 @@ import useVault from "@/composables/useVault";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { OTPType, Token } from "@/class/token";
 import { useRouter } from "vue-router";
+import Entry from "@/components/Entry.vue"
 
 export default defineComponent({
   name: "HomeView",
@@ -61,7 +62,8 @@ export default defineComponent({
     EmojiSadIcon,
     StatusOfflineIcon,
     OfflineAlertModal,
-    PlusCircleIcon
+    PlusCircleIcon,
+    Entry
   },
   setup() {
     const router = useRouter();
@@ -124,9 +126,6 @@ export default defineComponent({
       interval = setInterval(() => {
         // Emit the 'countdown' event every second
         emitCountdownEvent();
-
-        // TESTING
-        console.log(Token.generate(OTPType.TOTP, "JBSWY3DPEHPK3PXP", 0, 30));
       }, 1000);
     })
 
@@ -144,11 +143,11 @@ export default defineComponent({
       emitter.emit("countdown", eventPayload);
     }
 
-    const entries = ref([]);
+    const entries = computed(() => vaultStore.getTokens);
 
     return {
       router,
-      
+
       entries,
       isRefreshingVault,
       isOnline,
