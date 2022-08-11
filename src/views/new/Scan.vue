@@ -125,6 +125,9 @@
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5">
                 </div>
             </div>
+
+            <!-- Save token button -->
+            <b-button @click="addToken">Add Token</b-button>
         </div>
     </div>
 </template>
@@ -132,7 +135,10 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { GlobeIcon, UserIcon, KeyIcon, ClockIcon, PencilIcon, QrcodeIcon } from "@heroicons/vue/outline";
-import { OTPAlgorithm, OTPType } from "@/class/token";
+import { OTPAlgorithm, OTPType, Token } from "@/class/token";
+import type { Token as TokenModel } from "@/models/token";
+import { useVaultStore } from "@/stores/vaultStore";
+import usePouchDB from "@/composables/usePouchDB";
 
 export default defineComponent({
     name: "Scan",
@@ -145,6 +151,9 @@ export default defineComponent({
         QrcodeIcon
     },
     setup() {
+        const vaultStore = useVaultStore();
+        const pouchDB = usePouchDB();
+
         const hideScanner = ref(false);
 
         // Options needed for either manual or QR code scan
@@ -247,6 +256,50 @@ export default defineComponent({
             hideScanner.value = true;
         }
 
+        // Encrypt and save all of the token data into PouchDB
+        const addToken = async () => {
+            const activeVault = vaultStore.getActiveVault;
+            if (!activeVault) {
+                // TODO: Throw error about active vault not being set
+                return;
+            }
+
+            const tokenDetails = {
+                vault: activeVault._id,
+                issuer: tokenIssuer.value,
+                label: tokenUsername.value,
+                secret: tokenSecret.value,
+                algorithm: tokenAlgorithm.value,
+                length: tokenLength.value,
+                otp_type: tokenType.value
+            } as TokenModel;
+
+            // Depending on if the token is TOTP or HOTP, we need to add some more details
+            switch (tokenDetails.type) {
+                case OTPType.TOTP:
+                    tokenDetails.period = tokenTimePeriod.value;
+                    break;
+
+                case OTPType.HOTP:
+                    tokenDetails.counter = tokenCounter.value;
+                    break;
+            
+                default:
+                    break;
+            }
+
+            // Retrieve the active vault and encrypt the token data with the symmetric key
+            const t = new Token();
+            const encryptedToken = await t.createEncryptedTokenObject(tokenDetails, activeVault.key);
+            console.log(encryptedToken);
+
+            await pouchDB.addToken(encryptedToken);
+
+            // Decrypt the newly encrypted token and then add it to the token store
+            const decryptedToken = await t.decryptFromTokenObject(encryptedToken, activeVault.key);
+            vaultStore.addToken(decryptedToken);
+        }
+
         return {
             OTPAlgorithm,
             OTPType,
@@ -261,7 +314,8 @@ export default defineComponent({
             tokenCounter,
 
             hideScanner,
-            onDecode
+            onDecode,
+            addToken
         }
     }
 })
