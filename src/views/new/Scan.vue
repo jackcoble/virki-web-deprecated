@@ -199,10 +199,10 @@ export default defineComponent({
             // Determine username and issuer if possible
             const label = otpauth.pathname.replace(/^\/|\/$/g, ''); // Strips leading slashes
             if (label.indexOf(":") !== -1) {
-                tokenIssuer.value = label.split(":")[0];
+                tokenIssuer.value = decodeURIComponent(label.split(":")[0]);
                 tokenUsername.value = decodeURIComponent(label.split(":")[1]);
             } else {
-                tokenUsername.value = label;
+                tokenUsername.value = decodeURIComponent(label);
             }
 
             // Need to split the remainder of the parameters
