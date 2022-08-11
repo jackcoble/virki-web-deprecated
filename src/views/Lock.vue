@@ -50,6 +50,9 @@ import { Account } from "@/class/account";
 import { Crypto } from "@/class/crypto";
 import authentication from "@/service/api/authentication";
 import usePouchDB from "@/composables/usePouchDB";
+import { useVaultStore } from "@/stores/vaultStore";
+import useVault from "@/composables/useVault";
+import { Token } from "@/class/token";
 
 export default defineComponent({
     name: "Lock",
@@ -62,10 +65,12 @@ export default defineComponent({
         const router = useRouter();
         const route = useRoute();
         const toaster = useToaster();
+        const vault = useVault();
 
         const applicationStore = useApplicationStore();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
+        const vaultStore = useVaultStore();
 
         const isOnline = computed(() => applicationStore.isOnline);
   
@@ -111,6 +116,34 @@ export default defineComponent({
                     return toaster.error(e);
                 }
             }
+
+            // We can request for PouchDB to synchronise, and then we can decrypt vault + tokens
+            const pouchDB = usePouchDB();
+                await pouchDB.synchronise();
+                const encryptedVaults = await pouchDB.getVaults();
+
+                encryptedVaults.forEach(async v => {
+                    const decrypted = await vault?.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.private_key, encryptionKeyStore.getMasterKeyPair.public_key);
+                    vaultStore.add(decrypted!);
+                    vaultStore.setActiveVault(decrypted!._id);
+                })
+
+                // Do the same for tokens...
+                const token = new Token();
+                const encryptedTokens = await pouchDB.getTokens();
+                encryptedTokens.forEach(async t => {
+                    // Need to fetch the decrypted vault as it contains the symmetric key
+                    const vaultBelongingToToken = vaultStore.getVaults.find(v => v._id === t.vault);
+                    if (!vaultBelongingToToken) {
+                        // TODO: Throw error as something has gone wrong here...
+                        return;
+                    }
+
+                    const key = vaultBelongingToToken.key;
+                    const decryptedToken = await token.decryptFromTokenObject(t, key);
+
+                    vaultStore.addToken(decryptedToken);
+                })
 
             isLoading.value = false;
 
