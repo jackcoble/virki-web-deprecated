@@ -125,6 +125,10 @@ export default defineComponent({
 
         // Function to log out user
         const logoutUser = async () => {
+            // Destroy databases
+            const db = usePouchDB();
+            await db.destroyDatabase();
+
             // Clear all stores
             authenticationStore.clear();
             encryptionKeyStore.clear();
@@ -132,9 +136,6 @@ export default defineComponent({
             applicationStore.$reset();
             authenticationStore.$reset();
             encryptionKeyStore.$reset();
-
-            const db = usePouchDB();
-            await db.destroyDatabase();
 
             // Push to login
             router.push("/login");
