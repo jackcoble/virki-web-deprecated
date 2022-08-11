@@ -54,6 +54,34 @@ export class Token {
         return Promise.resolve(encryptedToken);
     }
 
+    async decryptFromTokenObject(token: TokenModel, vaultSymmetricKey: string): Promise<TokenModel> {
+        const decryptedToken = Object.assign({}, token);
+
+        // Convert the vault symmetric key into a Uint8Array for use with decryption
+        const symmetricEncryptionKey = await Crypto.fromBase64(vaultSymmetricKey);
+
+        // Decrypt the required data:
+        // - Issuer
+        // - Label
+        // - Secret
+        // - Icon (if present)
+        const issuer = await Crypto.decrypt(token.issuer, symmetricEncryptionKey);
+        decryptedToken.issuer = await Crypto.toText(issuer);
+
+        const label = await Crypto.decrypt(token.label, symmetricEncryptionKey);
+        decryptedToken.label = await Crypto.toText(label);
+
+        const secret = await Crypto.decrypt(token.secret, symmetricEncryptionKey);
+        decryptedToken.secret = await Crypto.toText(secret);
+
+        if (token.icon) {
+            const icon = await Crypto.decrypt(token.icon, symmetricEncryptionKey);
+            decryptedToken.icon = await Crypto.toText(icon);
+        }
+
+        return Promise.resolve(decryptedToken);
+    }
+
     // Generate a TOTP
     static generate(
         type: OTPType,
