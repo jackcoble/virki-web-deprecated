@@ -3,7 +3,7 @@ import type { OTPAlgorithm, OTPType } from "@/class/token";
 type Token = {
     _id: string;
     _rev?: string;
-    _type: string;
+    type: string;
 
     issuer: string;
     label: string; // This is the username value
@@ -11,7 +11,7 @@ type Token = {
     secret: string;
     algorithm: OTPAlgorithm;
     length: number;
-    type: OTPType;
+    otp_type: OTPType;
     period?: number;
     counter?: number;
 

@@ -16,8 +16,8 @@ export enum OTPAlgorithm {
 
 export class Token {
     async createEncryptedTokenObject(token: TokenModel, vaultSymmetricKey: string): Promise<TokenModel> {
-        // The token document _type should be "token"
-        token._type = "token";
+        // The token document type should be "token"
+        token.type = "token";
 
         // Create a new object that will contain our encrypted data
         const encryptedToken = Object.assign({}, token);
@@ -25,7 +25,7 @@ export class Token {
         // Generate an ID for the token if it hasn't been generated already.
         if (!token._id) {
             let tokenId = window.crypto.randomUUID().replace(/-/g, "");
-            encryptedToken._id = `${token._type}:${tokenId}`;
+            encryptedToken._id = `${token.type}:${tokenId}`;
         }
 
         // Using the vault symmetric key, we can encrypt the relevant data:
