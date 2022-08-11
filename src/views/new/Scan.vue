@@ -159,8 +159,89 @@ export default defineComponent({
 
         const onDecode = (data: any) => {
             // TODO: Parse the OTP string URL in the data
+            const otpauth = new URL(data);
+            if (otpauth.protocol !== "otpauth:") {
+                // TODO: Show error
+                return;
+            }
 
-            // TODO: Populate fields
+            // Determine OTP type
+            const otpType = otpauth.host;
+            if (otpType === 'totp') {
+                tokenType.value = OTPType.TOTP
+            }
+            else if (otpType === 'hotp') {
+                tokenType.value = OTPType.HOTP
+            }
+            else if (otpType === 'steam') {
+                tokenType.value = OTPType.Steam
+            }
+
+            // Determine username and issuer if possible
+            const label = otpauth.pathname.replace(/^\/|\/$/g, ''); // Strips leading slashes
+            if (label.indexOf(":") !== -1) {
+                tokenIssuer.value = label.split(":")[0];
+                tokenUsername.value = label.split(":")[1];
+            } else {
+                tokenUsername.value = label;
+            }
+
+            // Need to split the remainder of the parameters
+            const parameters = otpauth.searchParams;
+
+            // Set the token secret
+            const secret = parameters.get("secret");
+            if (secret) {
+                tokenSecret.value = secret;
+            }
+            
+            // Override the issuer if its present
+            const issuer = parameters.get("issuer");
+            if (issuer) {
+                tokenIssuer.value = decodeURIComponent(issuer);
+            }
+
+            // Determine the algorithm
+            const algorithm = parameters.get("algorithm");
+            if (algorithm) {
+                switch (algorithm) {
+                    case "SHA1":
+                        tokenAlgorithm.value = OTPAlgorithm.SHA1
+                        break;
+
+                    case "SHA256":
+                        tokenAlgorithm.value = OTPAlgorithm.SHA256
+                        break;
+
+                    case "SHA512":
+                        tokenAlgorithm.value = OTPAlgorithm.SHA512
+                        break;
+                
+                    default:
+                        // TODO: Throw not supported error.
+                        break;
+                }
+            }
+
+            // Set the token digits
+            const digits = parameters.get("digits");
+            if (digits) {
+                const digitsNumber = parseInt(digits);
+                tokenLength.value = digitsNumber;
+            }
+
+            // Set token time period (for TOTP)
+            const period = parameters.get("period");
+            if (period) {
+                const periodNumber = parseInt(period);
+                tokenTimePeriod.value = periodNumber;
+            }
+
+            // Set the initial counter (for HOTP)
+            const counter = parameters.get("counter");
+            if (counter) {
+                tokenCounter.value = parseInt(counter);
+            }
 
             // Hide the scanner
             hideScanner.value = true;
