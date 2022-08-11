@@ -25,7 +25,8 @@ export const useVaultStore = defineStore({
             // Otherwise find and return the vault active
             const activeVault = state.vaults.find(v => v._id === state.activeVaultId);
             return activeVault;
-        }
+        },
+        getTokens: (state) => state.tokens
     },
     actions: {
         add(vault: Vault) {
