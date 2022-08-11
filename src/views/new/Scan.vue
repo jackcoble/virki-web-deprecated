@@ -139,6 +139,7 @@ import { OTPAlgorithm, OTPType, Token } from "@/class/token";
 import type { Token as TokenModel } from "@/models/token";
 import { useVaultStore } from "@/stores/vaultStore";
 import usePouchDB from "@/composables/usePouchDB";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     name: "Scan",
@@ -153,6 +154,7 @@ export default defineComponent({
     setup() {
         const vaultStore = useVaultStore();
         const pouchDB = usePouchDB();
+        const router = useRouter();
 
         const hideScanner = ref(false);
 
@@ -291,13 +293,13 @@ export default defineComponent({
             // Retrieve the active vault and encrypt the token data with the symmetric key
             const t = new Token();
             const encryptedToken = await t.createEncryptedTokenObject(tokenDetails, activeVault.key);
-            console.log(encryptedToken);
-
             await pouchDB.addToken(encryptedToken);
 
             // Decrypt the newly encrypted token and then add it to the token store
             const decryptedToken = await t.decryptFromTokenObject(encryptedToken, activeVault.key);
             vaultStore.addToken(decryptedToken);
+
+            router.push("/");
         }
 
         return {
