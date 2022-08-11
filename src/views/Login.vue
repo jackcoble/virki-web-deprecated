@@ -48,6 +48,9 @@ import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { Crypto } from "@/class/crypto";
 import { useApplicationStore } from "@/stores/appStore";
 import { AUTHORISER_SYNC_URL, SYNC_TYPE } from "@/class/pouchdb";
+import usePouchDB from "@/composables/usePouchDB";
+import useVault from "@/composables/useVault";
+import { useVaultStore } from "@/stores/vaultStore";
 
 export default defineComponent({
     name: "Login",
@@ -66,9 +69,11 @@ export default defineComponent({
         const applicationStore = useApplicationStore();
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
+        const vaultStore = useVaultStore();
 
         const toaster = useToaster();
         const account = new Account("", "");
+        const vault = useVault();
 
         // Handle user login
         const handleSignIn = async () => {
@@ -123,11 +128,23 @@ export default defineComponent({
                     applicationStore.setSync(SYNC_TYPE.CLOUD, dbName, syncServerURL);
                 }
 
+                // More for a UX perspective, we should fetch all vaults, decrypt and set the active vault where possible.
+                // Synchronise if possible from remote.
+                const pouchDB = usePouchDB();
+                await pouchDB.synchronise();
+                const encryptedVaults = await pouchDB.getVaults();
+
+                encryptedVaults.forEach(async v => {
+                    const decrypted = await vault?.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.private_key, encryptionKeyStore.getMasterKeyPair.public_key);
+                    vaultStore.add(decrypted!);
+                    vaultStore.setActiveVault(decrypted!._id);
+                })
+
+                // TODO: Do the same for tokens...
+
                 // Push to Index
                 router.push("/");
             } catch (e) {
-                isLoading.value = false;
-
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
                     return;
