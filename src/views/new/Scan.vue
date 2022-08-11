@@ -26,6 +26,11 @@
 
         <!-- Manual Entry -->
         <div v-else class="flex-col mt-16 p-4 space-y-3">
+            <!-- Icon uploader -->
+            <div class="flex justify-center">
+                <IconUpload :image="tokenIcon" @image-data="handleImageData" />
+            </div>
+
             <!-- Title/Issuer -->
             <div>
                 <label for="issuer" class="block mb-2 font-medium text-gray-900">Title (Issuer)</label>
@@ -140,6 +145,7 @@ import type { Token as TokenModel } from "@/models/token";
 import { useVaultStore } from "@/stores/vaultStore";
 import usePouchDB from "@/composables/usePouchDB";
 import { useRouter } from "vue-router";
+import IconUpload from "@/components/IconUpload.vue";
 
 export default defineComponent({
     name: "Scan",
@@ -149,7 +155,8 @@ export default defineComponent({
         KeyIcon,
         ClockIcon,
         PencilIcon,
-        QrcodeIcon
+        QrcodeIcon,
+        IconUpload
     },
     setup() {
         const vaultStore = useVaultStore();
@@ -159,6 +166,7 @@ export default defineComponent({
         const hideScanner = ref(false);
 
         // Options needed for either manual or QR code scan
+        const tokenIcon = ref("");
         const tokenIssuer = ref("");
         const tokenUsername = ref("");
         const tokenSecret = ref("");
@@ -276,6 +284,11 @@ export default defineComponent({
                 otp_type: tokenType.value
             } as TokenModel;
 
+            // Add the icon if one has been uploaded
+            if (tokenIcon.value && tokenIcon.value !== "") {
+                tokenDetails.icon = tokenIcon.value;
+            }
+
             // Depending on if the token is TOTP or HOTP, we need to add some more details
             switch (tokenDetails.otp_type) {
                 case OTPType.TOTP:
@@ -302,10 +315,24 @@ export default defineComponent({
             router.push("/");
         }
 
+        // Function to handle the "imageData" event from icon upload component
+        const handleImageData = (e: any) => {
+            // If the event is undefined, that means
+            // the image has been cleared, so we want to remove the icon from this vault.
+            if (!e) {
+                tokenIcon.value = "";
+            }
+            else {
+                // Update icon from the string in the event
+                tokenIcon.value = e;
+            }
+        }
+
         return {
             OTPAlgorithm,
             OTPType,
 
+            tokenIcon,
             tokenIssuer,
             tokenUsername,
             tokenSecret,
@@ -317,7 +344,8 @@ export default defineComponent({
 
             hideScanner,
             onDecode,
-            addToken
+            addToken,
+            handleImageData
         }
     }
 })
