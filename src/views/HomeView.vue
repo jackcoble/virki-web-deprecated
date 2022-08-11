@@ -1,6 +1,5 @@
 <template>
   <div class="h-screen bg-gray-50">
-
     <div class="container mx-auto p-4 space-y-3">
       <div class="flex justify-between items-center">
         <!-- Vault selection dropdown -->
@@ -14,7 +13,7 @@
         </div>
       </div>
 
-      <div class="flex flex-col space-y-3">
+      <div class="flex flex-col space-y-3 pt-4">
         <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry._id">
           <Entry :token="entry" />
         </div>
