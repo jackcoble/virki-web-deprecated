@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col">
         <!-- Header -->
-        <div class="flex fixed p-4 z-10 bg-gray-50 w-full justify-between">
+        <div class="flex p-4 z-10 bg-gray-50 w-full justify-between">
             <h2 class="text-2xl font-semibold text-gray-900">{{ !hideScanner ? "Scan QR Code" : "Add" }}</h2>
 
             <div class="flex flex-col">
@@ -25,7 +25,7 @@
         </div>
 
         <!-- Manual Entry -->
-        <div v-else class="flex-col mt-16 p-4 space-y-3">
+        <div v-else class="flex-col p-4 space-y-3">
             <!-- Icon uploader -->
             <div class="flex justify-center">
                 <IconUpload :image="tokenIcon" @image-data="handleImageData" />

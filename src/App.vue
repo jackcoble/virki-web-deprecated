@@ -90,6 +90,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <RouterView />
-  <Tabs v-if="currentRoute.meta.showTabMenu"></Tabs>
+  <div class="flex flex-col h-screen">
+    <RouterView class="flex-grow overflow-auto" />
+    <Tabs v-if="currentRoute.meta.showTabMenu"></Tabs>
+  </div>
 </template>
