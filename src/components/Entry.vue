@@ -43,7 +43,7 @@ export default defineComponent({
 
         // The entry component should handle the rendering and countdown of TOTP codes
         const otp = ref();
-        const remaining = ref(30);
+        const remaining = ref(props.token?.period);
 
         const token = new Token();
 
@@ -54,8 +54,10 @@ export default defineComponent({
         // Listen for an event emitted to us and handle the countdown.
         const handleCountdown = (event: any) => {
             // Generate the OTP and work out how long is left before it expires
+            const period = props.token?.period || 30;
+
             otp.value = Token.generate(props.token!.otp_type, props.token!.secret, props.token!.counter!, 30);
-            remaining.value = 30 - (event.seconds % 30);
+            remaining.value = period - (event.seconds % period);
         }
 
         return {
