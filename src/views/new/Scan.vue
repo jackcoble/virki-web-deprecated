@@ -275,7 +275,7 @@ export default defineComponent({
             } as TokenModel;
 
             // Depending on if the token is TOTP or HOTP, we need to add some more details
-            switch (tokenDetails.type) {
+            switch (tokenDetails.otp_type) {
                 case OTPType.TOTP:
                     tokenDetails.period = tokenTimePeriod.value;
                     break;
