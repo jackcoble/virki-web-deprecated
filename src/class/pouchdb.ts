@@ -134,6 +134,24 @@ export class Database {
     }
 
     /**
+     * Retrieves all encrypted tokens out of PouchDB.
+     * @returns {Token[]}
+     */
+     async getTokens(): Promise<Token[]> {
+        try {
+            const result = await this.localDB.find({
+                selector: { 
+                    type: "token" 
+                }
+            })
+
+            return Promise.resolve(result.docs as Token[]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    /**
      * Creates and maintains indexes for us to query on
      * @returns 
      */
