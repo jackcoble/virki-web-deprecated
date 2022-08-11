@@ -7,7 +7,7 @@
 
                 <!-- Icon -->
                 <div class="flex justify-center">
-                    <IconUpload :image="icon" @image-data="handleImageData" />
+                    <IconUpload :image="icon"  />
                 </div>
                
                 <!-- Name -->
