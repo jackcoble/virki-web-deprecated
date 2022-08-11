@@ -6,9 +6,9 @@ PouchDB.plugin(PouchDBFind);
 
 // Custom sync type
 export enum SYNC_TYPE {
-    LOCAL = 0, // Data remains on this device only
-    CLOUD, // Cloud-hosted CouchDB server
-    CUSTOM // Custom CouchDB server
+    LOCAL = "local", // Data remains on this device only
+    CLOUD = "cloud", // Cloud-hosted CouchDB server
+    CUSTOM = "custom" // Custom CouchDB server
 }
 
 // Default base syncing URL for the Authoriser service
