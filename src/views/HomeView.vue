@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <div class="flex flex-col">
+      <div class="flex flex-col space-y-3">
         <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry._id">
           <Entry :token="entry" />
         </div>

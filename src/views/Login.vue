@@ -158,8 +158,6 @@ export default defineComponent({
                     vaultStore.addToken(decryptedToken);
                 })
 
-                console.log(encryptedTokens);
-
                 // Push to Index
                 router.push("/");
             } catch (e) {

@@ -1,8 +1,8 @@
 <template>
-    <div class="flex p-2 space-x-4">
+    <div class="flex space-x-4">
         <!-- Issuer icon -->
         <div class="flex-shrink-0">
-            <img v-if="token?.icon" class="w-12 h-12 m-2 rounded-full" :src="token?.icon" />
+            <img v-if="token?.icon" class="w-12 h-12 rounded-full" :src="token?.icon" />
             <ClockIcon v-else class="w-12 h-12 p-2 rounded-full bg-gray-200 text-gray-600" />
         </div>
 
