@@ -1,3 +1,4 @@
+import type { Token } from "@/models/token";
 import type { Vault } from "@/models/vault";
 import PouchDB from "pouchdb-browser";
 import PouchDBFind from "pouchdb-find";
@@ -114,6 +115,19 @@ export class Database {
             })
 
             return Promise.resolve(result.docs as Vault[]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    /**
+     * Inserts an encrypted token into PouchDB.
+     * @param token 
+     * @returns {boolean}
+     */
+     async addToken(token: Token): Promise<any> {
+        try {
+            const result = await this.localDB.put(token);
         } catch (error) {
             return Promise.reject(error);
         }
