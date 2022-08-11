@@ -1,15 +1,15 @@
 import * as CryptoJS from "crypto-js";
 
 export enum OTPType {
-    TOTP = 1,
-    HOTP,
-    Steam
+    TOTP = "totp",
+    HOTP = "hotp",
+    Steam = "steam"
 }
 
 export enum OTPAlgorithm {
-    SHA1 = 1,
-    SHA256,
-    SHA512
+    SHA1 = "sha1",
+    SHA256 = "sha256",
+    SHA512 = "sha512"
 }
 
 export class Token {
