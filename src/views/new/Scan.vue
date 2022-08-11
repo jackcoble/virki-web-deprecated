@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col">
         <!-- Header -->
-        <div class="flex fixed p-4 z-10 bg-gray-100 w-full justify-between">
+        <div class="flex fixed p-4 z-10 bg-gray-50 w-full justify-between">
             <h2 class="text-2xl font-semibold text-gray-900">{{ !hideScanner ? "Scan QR Code" : "Add" }}</h2>
 
             <div class="flex flex-col">
