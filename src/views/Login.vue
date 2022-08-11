@@ -51,6 +51,7 @@ import { AUTHORISER_SYNC_URL, SYNC_TYPE } from "@/class/pouchdb";
 import usePouchDB from "@/composables/usePouchDB";
 import useVault from "@/composables/useVault";
 import { useVaultStore } from "@/stores/vaultStore";
+import { Token } from "@/class/token";
 
 export default defineComponent({
     name: "Login",
@@ -140,7 +141,24 @@ export default defineComponent({
                     vaultStore.setActiveVault(decrypted!._id);
                 })
 
-                // TODO: Do the same for tokens...
+                // Do the same for tokens...
+                const token = new Token();
+                const encryptedTokens = await pouchDB.getTokens();
+                encryptedTokens.forEach(async t => {
+                    // Need to fetch the decrypted vault as it contains the symmetric key
+                    const vaultBelongingToToken = vaultStore.getVaults.find(v => v._id === t.vault);
+                    if (!vaultBelongingToToken) {
+                        // TODO: Throw error as something has gone wrong here...
+                        return;
+                    }
+
+                    const key = vaultBelongingToToken.key;
+                    const decryptedToken = await token.decryptFromTokenObject(t, key);
+
+                    vaultStore.addToken(decryptedToken);
+                })
+
+                console.log(encryptedTokens);
 
                 // Push to Index
                 router.push("/");
