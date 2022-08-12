@@ -17,6 +17,7 @@ import Lock from "@/views/Lock.vue"
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 import { useAuthenticationStore } from '@/stores/authenticationStore'
 import { useApplicationStore } from '@/stores/appStore'
+import { Crypto } from '@/class/crypto'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -148,10 +149,13 @@ router.beforeEach(async (to, from, next) => {
   }
   
   if (to.matched.some(route => route.meta.authRequired)) {
-    // If the stretched master password is set, but master private key isn't present
-    // then decrypt encrypted master private key with stretched password
-    if (encryptionKeyStore.getStretchedPassword && !encryptionKeyStore.getMasterKeyPair) {
-      console.log("Need to decrypt master keypair...")
+    // If the stretched master password is set, we have the encrypted master keypair,
+    // but no decrypted master keypair, then decrypt it.
+    if (encryptionKeyStore.getStretchedPassword && encryptionKeyStore.getEncryptedMasterKey.private_key && !encryptionKeyStore.getMasterKeyPair.private_key) {
+      const encryptedMasterKeypair = encryptionKeyStore.getEncryptedMasterKey;
+      const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterKeypair.private_key, await Crypto.fromBase64(encryptionKeyStore.getStretchedPassword));
+
+      encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), encryptedMasterKeypair.public_key);
     }
 
     // If we have no master private key or stretched password, but have the encrypted master key, we can prompt for
