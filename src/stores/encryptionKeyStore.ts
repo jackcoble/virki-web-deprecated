@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useEncryptionKeyStore = defineStore({
   id: 'encryptionKeys',
   state: () => ({
-    masterPasswordStretched: localStorage.getItem("stretched_password") || "",
+    stretched_master_password: localStorage.getItem("stretched_password") || "",
     encrypted_master_keypair: {
       private_key: "",
       public_key: ""
@@ -16,8 +16,8 @@ export const useEncryptionKeyStore = defineStore({
     }
   }),
   getters: {
+    getStretchedPassword: (state) => state.stretched_master_password,
     getMasterKeyPair: (state) => state.master_keypair,
-    getStretchedPassword: (state) => state.masterPasswordStretched,
     getEncryptedMasterKey: (state) => state.encrypted_master_keypair
   },
   actions: {
@@ -40,7 +40,7 @@ export const useEncryptionKeyStore = defineStore({
 
     // Use this for keeping stretched password just in memory or localStorage
     setStretchedPassword(password: string, persist?: boolean) {
-      this.masterPasswordStretched = password;
+      this.stretched_master_password = password;
 
       // Persist to LocalStorage if opted
       if (persist) {
