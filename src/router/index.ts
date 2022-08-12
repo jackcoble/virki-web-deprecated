@@ -139,6 +139,13 @@ router.beforeEach(async (to, from, next) => {
   applicationStore.initialise();
   authenticationStore.initialise();
   encryptionKeyStore.initialise();
+
+  // We don't want the user being able to go to the Lock page if they don't have any user details, password or encryption key
+  if (to.path === '/lock') {
+    if (!authenticationStore.getAccessToken || !authenticationStore.getPassword.hash || !encryptionKeyStore.getEncryptedMasterKey.private_key) {
+      return next({ path: "/login" })
+    }
+  }
   
   if (to.matched.some(route => route.meta.authRequired)) {
     // If the stretched master password is set, but master private key isn't present
@@ -165,9 +172,9 @@ router.beforeEach(async (to, from, next) => {
     if (!encryptionKeyStore.getEncryptedMasterKey.private_key) {
       return next({ path: "/login" });
     }
+  } else {
+    return next();
   }
-
-  next();
 })
 
 export default router
