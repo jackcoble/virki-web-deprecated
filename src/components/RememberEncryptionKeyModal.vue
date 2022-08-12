@@ -23,6 +23,7 @@ import { Account } from "@/class/account";
 import useToaster from "@/composables/useToaster";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
+import { Crypto } from "@/class/crypto";
 
 export default defineComponent({
     components: {
@@ -44,16 +45,18 @@ export default defineComponent({
 
         // Remember encryption key
         const rememberEncryptionKey = async () => {
-            // If we can decrypt the encrypted master key, then we can save this encryption key
             try {
-                const salt = authenticationStore.getPasswordSalt;
-                const decryptedMasterKey = await account.decryptMasterKey(password.value, salt!, encryptionKeyStore.getEncryptedMasterKey);
+                // Derive stretched password
+                const salt = authenticationStore.getPassword.salt;
+                const stretched = await account.deriveStretchedPassword(password.value, salt);
 
-                if (decryptedMasterKey) {
-                    // Derive the stretched key used to encrypt the master key and save it
-                    const stretchedKey = await account.deriveStretchedPassword(password.value, salt!);
-                    encryptionKeyStore.setStretchedPassword(stretchedKey.key, true);
+                // If we're able to decrypt the encrypted master keypair with the stretched password,
+                // then the password was correct and we can store it.
+                const encryptedMasterKeypair = encryptionKeyStore.getEncryptedMasterKey;
+                const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterKeypair.private_key, await Crypto.fromBase64(stretched.key));
 
+                if (decryptedMasterPrivateKey) {
+                    encryptionKeyStore.setStretchedPassword(stretched.key, true);
                     emit("ok")
                 }
             } catch (e) {
