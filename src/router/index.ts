@@ -172,9 +172,9 @@ router.beforeEach(async (to, from, next) => {
     if (!encryptionKeyStore.getEncryptedMasterKey.private_key) {
       return next({ path: "/login" });
     }
-  } else {
-    return next();
   }
+
+  next();
 })
 
 export default router
