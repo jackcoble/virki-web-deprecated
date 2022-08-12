@@ -36,7 +36,7 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const toaster = useToaster();
-        const account = new Account();
+        const account = new Account("", "");
 
         const authenticationStore = useAuthenticationStore();
         const encryptionKeyStore = useEncryptionKeyStore();
