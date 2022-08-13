@@ -24,20 +24,6 @@ import Toaster from "@meforma/vue-toaster";
 // Styles
 import "@/assets/index.css";
 
-// Firebase
-
-// Firebase
-import { initializeApp } from "firebase/app";
-const firebaseConfig = {
-    apiKey: "AIzaSyCLF6-3ka8CpRIvuzNMTkZsn9Wl1kJB1Ak",
-    authDomain: "authoriser-e148f.firebaseapp.com",
-    projectId: "authoriser-e148f",
-    storageBucket: "authoriser-e148f.appspot.com",
-    messagingSenderId: "541622874478",
-    appId: "1:541622874478:web:562d24399bc3a9d3de517f"
-};
-initializeApp(firebaseConfig);
-
 const app = createApp(App)
 
 // Mitt - event emitter
