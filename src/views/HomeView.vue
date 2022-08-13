@@ -6,10 +6,13 @@
         <VaultSelector />
 
         <div class="flex flex-col">
-          <!-- New entry icon -->
-          <button class="rounded-full p-1 text-purple-800" @click="router.push('/new/qrcode')">
-            <PlusCircleIcon class="w-7 h-7" />
-          </button>
+          <!-- New entry button -->
+          <b-button type="submit" classType="primary" @click="router.push('/new/qrcode')">
+            <div class="flex flex-row justify-center space-x-1">
+              <PlusCircleIcon class="w-4 -ml-1" />
+              <span>Create</span>
+            </div>
+          </b-button>
         </div>
       </div>
 
