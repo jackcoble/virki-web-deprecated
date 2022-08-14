@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen">
+  <div class="flex flex-col">
     <!-- Header -->
     <div class="flex justify-between items-center px-8 py-4 border-b-2 bg-gray-100">
       <!-- Vault Selector -->
@@ -83,9 +83,16 @@
       </div>
 
       <!-- Entries view -->
-      <div class="flex flex-col flex-1 text-gray-700 justify-center items-center space-y-2">
-        <EmojiSadIcon class="w-24 text-purple-800" />
-        <p class="text-sm">You have no authentication tokens.</p>
+      <div class="flex-col flex-1 text-gray-700 space-y-2 h-screen overflow-auto">
+        <!-- Show frowny face if we've got no tokens -->
+        <div v-if="!entries" class="justify-center items-center">
+          <EmojiSadIcon class="w-24 text-purple-800" />
+          <p class="text-sm">You have no authentication tokens.</p>
+        </div>
+
+        <div v-for="entry in entries" :key="entry._id">
+          <Entry :token="entry" />
+        </div>
       </div>
     </div>
   </div>

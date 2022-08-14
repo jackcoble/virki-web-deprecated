@@ -1,5 +1,5 @@
 <template>
-    <div class="flex space-x-4 border-b pb-3">
+    <div class="flex space-x-4 items-center justify-center border-b p-3">
         <!-- Issuer icon -->
         <div class="flex-shrink-0">
             <img v-if="token?.icon" class="w-12 h-12 rounded-full" :src="token?.icon" />
