@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-screen">
     <!-- Header -->
-    <div class="flex w-full justify-between items-center px-12 py-4 border-b-2 bg-gray-100">
+    <div class="flex w-full justify-between items-center px-11 py-4 border-b-2 bg-gray-100">
       <!-- Text -->
       <h1 class="font-medium text-lg text-purple-800">Authoriser</h1>
 
@@ -28,7 +28,7 @@
       <!-- TOTP Entries -->
       <div class="flex-col flex-grow overflow-auto">
         <!-- Show frowny face if we've got no tokens -->
-        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+        <div v-if="entries.length === 0" class="flex flex-col w-full justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-purple-800" />
           <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
         </div>
@@ -39,7 +39,7 @@
       </div>
 
       <!-- Edit column -->
-      <div class="flex-col bg-red-200 w-2/5 border-l-2">
+      <div class="flex-col bg-red-200 w-2/6 border-l-2 flex-shrink-0">
         <!-- Editing header -->
         <div class="flex justify-between items-center px-4">
           <p>Edit an entry</p>
@@ -120,7 +120,6 @@ import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon
 import { StarIcon } from "@heroicons/vue/solid";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
-import OfflineAlertModal from "../components/OfflineAlertModal.vue";
 import CreateVaultModal from "../components/CreateVaultModal.vue";
 
 import usePouchDB from "@/composables/usePouchDB";
@@ -140,7 +139,6 @@ export default defineComponent({
     RefreshIcon,
     EmojiSadIcon,
     StatusOfflineIcon,
-    OfflineAlertModal,
     CreateVaultModal,
     PlusCircleIcon,
     ClockIcon,
