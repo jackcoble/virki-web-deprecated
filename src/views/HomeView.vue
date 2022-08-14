@@ -114,7 +114,6 @@
 import useEmitter from "@/composables/useEmitter";
 
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
-import VaultSelector from "@/components/VaultSelector.vue"
 
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
@@ -134,7 +133,6 @@ import Sidebar from "../components/Sidebar.vue";
 export default defineComponent({
   name: "HomeView",
   components: {
-    VaultSelector,
     EmojiSadIcon,
     CreateVaultModal,
     PlusCircleIcon,
