@@ -25,14 +25,31 @@
       <div class="border-r-2 flex-col p-6 w-1/6 bg-gray-100 overflow-auto">
 
         <!-- Avatar and user name -->
-        <div class="flex p-4 items-center text-purple-800">
-          <div class="flex flex-1 justify-start space-x-2">
-            <UserIcon class="w-6" />
-            <h2>{{ user.name }}</h2>
+        <div class="p-4">
+          <div class="flex items-center text-purple-800 cursor-pointer" @click="showSidebarUserOptions = !showSidebarUserOptions">
+            <div class="flex flex-1 justify-start space-x-2">
+              <UserIcon class="w-6" />
+              <h2>{{ user.name }}</h2>
+            </div>
+
+            <div>
+              <ChevronDownIcon class="w-4" />
+            </div>
           </div>
 
-          <div>
-            <ChevronDownIcon class="w-4" />
+          <!-- User options -->
+          <div v-if="showSidebarUserOptions" class="flex-col p-2 mt-2 rounded bg-gray-200 text-gray-600 space-y-3">
+              <!-- Lock -->
+              <div class="flex items-center space-x-2 p-1">
+                <LockClosedIcon class="w-4" />
+                <h2 class="text-xs">Lock</h2>
+              </div>
+
+              <!-- Sign Out -->
+              <div class="flex items-center space-x-2 p-1 text-red-400">
+                <LogoutIcon class="w-4" />
+                <h2 class="text-xs">Sign Out</h2>
+              </div>
           </div>
         </div>
 
@@ -175,7 +192,7 @@ import useEmitter from "@/composables/useEmitter";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon, LogoutIcon } from "@heroicons/vue/outline"
 import { StarIcon } from "@heroicons/vue/solid";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
@@ -206,6 +223,7 @@ export default defineComponent({
     ChevronDownIcon,
     ChevronRightIcon,
     StarIcon,
+    LogoutIcon,
     Entry,
     BaseModal
   },
@@ -231,6 +249,7 @@ export default defineComponent({
 
     // Sidebar refs
     const showSidebarVaults = ref(false);
+    const showSidebarUserOptions = ref(false);
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
@@ -309,6 +328,7 @@ export default defineComponent({
 
       showCreateActionModal,
       showSidebarVaults,
+      showSidebarUserOptions,
 
       vaultStore,
 
