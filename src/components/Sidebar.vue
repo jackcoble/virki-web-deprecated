@@ -1,6 +1,6 @@
 <template>
     <!-- Sidebar -->
-    <div class="h-full border-r-2 p-6 bg-gray-100 overflow-y-scroll">
+    <div class="h-full border-r-2 p-6 bg-gray-100 overflow-auto">
 
         <!-- Avatar and user name -->
         <div class="p-4">
