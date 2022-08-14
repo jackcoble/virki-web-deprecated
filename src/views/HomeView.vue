@@ -27,6 +27,12 @@
 
       <!-- TOTP Entries -->
       <div class="flex-col h-full flex-grow overflow-auto">
+        <!-- Show frowny face if we've got no tokens -->
+        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+          <EmojiSadIcon class="w-24 text-purple-800" />
+          <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
+        </div>
+
         <div v-for="entry in entries" :key="entry._id">
           <Entry :token="entry" />
         </div>
