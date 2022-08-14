@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <!-- Header -->
-    <div class="flex justify-between items-center px-8 py-4 border-b-2 bg-gray-100">
+    <div class="flex justify-between items-center px-12 py-4 border-b-2 bg-gray-100">
       <!-- Text -->
       <h1 class="font-medium text-lg text-purple-800">Authoriser</h1>
 
@@ -71,6 +71,14 @@
               </div>
               <p class="text-sm">{{ vault.name }}</p>
             </div>
+          </div>
+
+          <!-- Show active vault even if sidebar is closed -->
+          <div v-if="vaultStore.getActiveVaultId && !showSidebarVaults" class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
+            <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
+                <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
+              </div>
+              <p class="text-sm">{{ vaultStore.getActiveVault?.name }}</p>
           </div>
         </div>
 
