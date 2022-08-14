@@ -21,100 +21,8 @@
 
     <!-- Main view -->
     <div class="flex flex-grow">
-      <!-- Sidebar -->
-      <div class="border-r-2 flex-col p-6 xl:w-1/6 md:w-1/4 w-2/6 bg-gray-100 overflow-auto">
-
-        <!-- Avatar and user name -->
-        <div class="p-4">
-          <div class="flex items-center text-purple-800 cursor-pointer" @click="showSidebarUserOptions = !showSidebarUserOptions">
-            <div class="flex flex-1 justify-start space-x-2">
-              <UserIcon class="w-6" />
-              <h2>{{ user.name }}</h2>
-            </div>
-
-            <div>
-              <ChevronDownIcon class="w-4" />
-            </div>
-          </div>
-
-          <!-- User options -->
-          <div v-if="showSidebarUserOptions" class="flex-col mt-3 text-gray-600 space-y-1">
-              <!-- Lock -->
-              <div class="flex items-center space-x-2 p-3 cursor-pointer bg-gray-200 rounded">
-                <LockClosedIcon class="w-4" />
-                <h2 class="text-xs">Lock</h2>
-              </div>
-
-              <!-- Sign Out -->
-              <div class="flex items-center space-x-2 p-3 cursor-pointer bg-gray-200 text-red-400 rounded">
-                <LogoutIcon class="w-4" />
-                <h2 class="text-xs">Sign Out</h2>
-              </div>
-          </div>
-        </div>
-
-        <!-- All Items and Favourites -->
-        <div class="flex-col space-y-2 p-4 text-gray-700">
-          <div class="flex py-2 items-center space-x-2">
-            <InboxIcon class="w-6" />
-            <h2 class="text-sm">All Items</h2>
-          </div>
-
-          <div class="flex py-2 items-center space-x-2">
-            <StarIcon class="w-6 text-yellow-400" />
-            <h2 class="text-sm">Favourites</h2>
-          </div>
-        </div>
-
-        <!-- Vaults -->
-        <div class="p-4 text-gray-700">
-          <div class="flex">
-            <button class="flex flex-1 justify-start space-x-2" @click="showSidebarVaults = !showSidebarVaults">
-              <ChevronRightIcon v-if="!showSidebarVaults" class="w-4" />
-              <ChevronDownIcon v-else class="w-4" />
-              <p class="text-sm">Vaults</p>
-            </button>
-
-            <button @click="showCreateVaultModal = !showCreateVaultModal">
-              <PlusIcon class="w-4" />
-            </button>
-          </div>
-
-          <!-- List all vaults -->
-          <div v-if="showSidebarVaults" class="pt-2 space-y-1">
-            <div v-for="vault in vaults" class="flex p-2 rounded items-center space-x-2 cursor-pointer" :class="vaultStore.getActiveVaultId === vault._id ? 'bg-gray-200' : ''" @click="vaultStore.setActiveVault(vault._id)">
-              <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
-                <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
-              </div>
-              <p class="text-sm">{{ vault.name }}</p>
-            </div>
-          </div>
-
-          <!-- Show active vault even if sidebar is closed -->
-          <div v-if="vaultStore.getActiveVaultId && !showSidebarVaults" class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
-            <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
-                <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
-              </div>
-              <p class="text-sm">{{ vaultStore.getActiveVault?.name }}</p>
-          </div>
-        </div>
-
-        <!-- Tags -->
-        <div class="p-4 text-gray-700">
-          <div class="flex">
-            <div class="flex flex-1 justify-start space-x-2">
-              <ChevronDownIcon class="w-4" />
-              <p class="text-sm">Tags</p>
-            </div>
-
-            <button>
-              <PlusIcon class="w-4" />
-            </button>
-          </div>
-
-          <!-- TODO: List all tags -->
-        </div>
-      </div>
+      <!-- Sidebar component -->
+      <Sidebar />
 
       <!-- Entries view -->
       <div class="flex-col flex-1 text-gray-700 space-y-2 h-screen overflow-auto">
@@ -124,20 +32,36 @@
           <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
         </div>
 
-        <div v-for="entry in entries" :key="entry._id" @click="setTokenToEdit(entry._id, entry.vault)">
+        <div v-for="entry in entries" :key="entry._id" @click="setTokenToEdit(entry._id)">
           <Entry :token="entry" />
         </div>
       </div>
 
       <!-- Edit column -->
-      <div class="flex-col w-2/5 border-l-2 bg-gray-100 p-2" v-if="showEditTokenPane">
+      <div class="flex-col w-2/5 border-l-2 bg-gray-100 py-2 px-4 space-y-2" v-if="showEditTokenPane">
         <!-- Editing header -->
-        <div class="flex justify-between items-center px-4">
+        <div class="flex justify-between items-center">
           <p>Edit an entry</p>
           
           <button class="p-2" @click="showEditTokenPane = !showEditTokenPane">
             <XIcon class="w-6 text-red-400" />
           </button>
+        </div>
+
+        <!-- Editing body -->
+        <div class="space-y-2">
+          <!-- Icon -->
+          <img :src="tokenToEdit.icon" alt="Icon">
+
+          <!-- Issuer -->
+          <b-input v-model="tokenToEdit.issuer" placeholder="Issuer"></b-input>
+
+          <!-- Username -->
+          <b-input v-model="tokenToEdit.label" placeholder="Username"></b-input>
+
+          <!-- Secret/Seed -->
+          <b-password-input v-model="tokenToEdit.secret" placeholder="Secret/seed"></b-password-input>
+
         </div>
       </div>
     </div>
@@ -221,6 +145,8 @@ import { useRouter } from "vue-router";
 import Entry from "@/components/Entry.vue"
 import BaseModal from "@/components/Modal/BaseModal.vue"
 import { useAuthenticationStore } from "@/stores/authenticationStore";
+import type { Token } from "@/models/token";
+import Sidebar from "../components/Sidebar.vue";
 
 export default defineComponent({
   name: "HomeView",
@@ -245,8 +171,9 @@ export default defineComponent({
     TrashIcon,
     XIcon,
     Entry,
-    BaseModal
-  },
+    BaseModal,
+    Sidebar
+},
   setup() {
     const router = useRouter();
 
@@ -274,15 +201,15 @@ export default defineComponent({
 
     // Set token to be edited
     const showEditTokenPane = ref(false);
-    const tokenToEdit = ref({
-      id: "",
-      vault_id: ""
-    });
+    const tokenToEdit = ref({} as Token);
 
-    const setTokenToEdit = (tokenId: string, vaultId: string) => {
-      tokenToEdit.value = {
-        id: tokenId,
-        vault_id: vaultId
+    const setTokenToEdit = (tokenId: string) => {
+      tokenToEdit.value = {} as Token;
+
+      // Lookup the token within the vault to be edited
+      const t = vaultStore.getTokens.find(to => to._id === tokenId)
+      if (t) {
+        tokenToEdit.value = t;
       }
 
       showEditTokenPane.value = true;
