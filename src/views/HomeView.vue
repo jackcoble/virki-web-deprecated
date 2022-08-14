@@ -51,23 +51,26 @@
 
         <!-- Vaults -->
         <div class="p-4 text-gray-700">
-          <div class="flex pb-2">
-            <div class="flex flex-1 justify-start space-x-2">
-              <ChevronDownIcon class="w-4" />
+          <div class="flex">
+            <button class="flex flex-1 justify-start space-x-2 pb-2" @click="showSidebarVaults = !showSidebarVaults">
+              <ChevronRightIcon v-if="!showSidebarVaults" class="w-4" />
+              <ChevronDownIcon v-else class="w-4" />
               <p class="text-sm">Vaults</p>
-            </div>
+            </button>
 
             <button>
               <PlusIcon class="w-4" />
             </button>
           </div>
 
-          <!-- TODO: List all vaults -->
-          <div v-for="vault in vaults" class="flex p-2 bg-gray-200 rounded items-center space-x-2">
-            <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
-              <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
+          <!-- List all vaults -->
+          <div v-if="showSidebarVaults">
+            <div v-for="vault in vaults" class="flex p-2 bg-gray-200 rounded items-center space-x-2">
+              <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
+                <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
+              </div>
+              <p class="text-sm">{{ vault.name }}</p>
             </div>
-            <p class="text-sm">{{ vault.name }}</p>
           </div>
         </div>
 
@@ -164,7 +167,7 @@ import useEmitter from "@/composables/useEmitter";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, PlusIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon } from "@heroicons/vue/outline"
 import { StarIcon } from "@heroicons/vue/solid";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
@@ -193,6 +196,7 @@ export default defineComponent({
     UserIcon,
     PlusIcon,
     ChevronDownIcon,
+    ChevronRightIcon,
     StarIcon,
     Entry,
     BaseModal
@@ -216,6 +220,9 @@ export default defineComponent({
     const vaults = computed(() => vaultStore.getVaults);
 
     const showCreateActionModal = ref(false);
+
+    // Sidebar refs
+    const showSidebarVaults = ref(false);
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
@@ -291,7 +298,9 @@ export default defineComponent({
       isRefreshingVault,
       isOnline,
       isSyncing,
+
       showCreateActionModal,
+      showSidebarVaults,
 
       vaultStore,
 
