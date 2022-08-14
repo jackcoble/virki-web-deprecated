@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-screen">
     <!-- Header -->
-    <div class="flex w-full justify-between items-center px-4 mx md:px-11 py-4 border-b-2 bg-gray-100 space-x-3">
+    <div class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 bg-gray-100 space-x-3">
       <!-- Text -->
       <h1 class="font-medium text-lg text-purple-800 hidden md:block">Authoriser</h1>
 
@@ -27,12 +27,16 @@
 
     <div class="flex flex-grow overflow-hidden">
       <!-- Sidebar -->
-      <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 w-2/6">
+      <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full" :class="closeMenuMobile ? 'block w-full' : 'hidden md:block'">
         <Sidebar />
       </div>
 
       <!-- TOTP Entries -->
-      <div class="flex-col flex-grow overflow-auto" :class="showEditTokenPane ? 'hidden md:flex' : 'flex'">
+      <div class="flex-col flex-grow overflow-auto" 
+        :class="[
+          showEditTokenPane && !closeMenuMobile ? 'hidden md:flex' : 'flex',
+          closeMenuMobile ? 'hidden' : ''
+        ]" >
         <!-- Show frowny face if we've got no tokens -->
         <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-purple-800" />
