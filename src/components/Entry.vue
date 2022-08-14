@@ -1,5 +1,5 @@
 <template>
-    <div class="flex space-x-4 items-center justify-center border-b p-3" @click="copyOTPToClipboard">
+    <div class="flex space-x-4 items-center justify-center border-b p-3">
         <!-- Issuer icon -->
         <div class="flex-shrink-0">
             <img v-if="token?.icon" class="w-12 h-12 rounded-full" :src="token?.icon" />
@@ -7,7 +7,7 @@
         </div>
 
         <!-- Token details -->
-        <div class="md:w-3/4 w-6/12 flex-grow">
+        <div class="md:w-3/4 w-6/12 flex-grow" @click="copyOTPToClipboard">
             <p class="text-sm text-gray-900 truncate">{{ token?.issuer }} </p>
             <p class="text-xs text-gray-700 font-semibold">{{ token?.label }}</p>
             <p class="text-2xl">{{ otp }}</p>
