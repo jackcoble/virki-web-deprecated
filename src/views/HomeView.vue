@@ -53,60 +53,6 @@
 
   <!-- Create vault modal -->
   <CreateVaultModal v-if="showCreateVaultModal" @close="showCreateVaultModal = !showCreateVaultModal" />
-
-  <!-- Create action modal -->
-  <BaseModal v-if="showCreateActionModal" @close="showCreateActionModal = !showCreateActionModal" noFooter>
-    <template v-slot:body>
-      <div class="flex flex-col space-y-2 text-center pb-4">
-        <h1 class="text-xl">Create</h1>
-      </div>
-
-      <fieldset class="space-y-2">
-        <!-- Create token entry-->
-        <div
-          class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-          <div
-            class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-            <ClockIcon class="text-gray-500 rounded-full" />
-          </div>
-
-          <div class="flex-col">
-            <p class="text-lg font-medium text-gray-700 select-none">Entry</p>
-            <p class="text-xs">Create a new authentication token entry by scanning a QR code or inputting the details
-              manually.</p>
-          </div>
-        </div>
-
-        <!-- Create a tag -->
-        <div
-          class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-          <div
-            class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-            <TagIcon class="text-gray-500 rounded-full" />
-          </div>
-
-          <div class="flex-col">
-            <p class="text-lg font-medium text-gray-700 select-none">Tag</p>
-            <p class="text-xs">Tags are a quick and easy way to organise different categories within a vault.</p>
-          </div>
-        </div>
-
-        <!-- Create a vault -->
-        <div
-          class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-          <div
-            class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-            <LockClosedIcon class="text-gray-500 rounded-full" />
-          </div>
-
-          <div class="flex-col">
-            <p class="text-lg font-medium text-gray-700 select-none">Vault</p>
-            <p class="text-xs">Create separate vaults for Personal, Work, etc.</p>
-          </div>
-        </div>
-      </fieldset>
-    </template>
-  </BaseModal>
 </template>
 
 <script lang="ts">
@@ -160,8 +106,6 @@ export default defineComponent({
     const isSyncing = computed(() => applicationStore.isSyncing);
     const user = computed(() => authenticationStore.getUser);
     const vaults = computed(() => vaultStore.getVaults);
-
-    const showCreateActionModal = ref(false);
 
     // Sidebar refs
     const showMenuMobile = ref(false);
