@@ -100,6 +100,9 @@
             <!-- TODO: List all tags -->
         </div>
     </div>
+
+    <!-- Create vault modal -->
+    <CreateVaultModal v-if="showCreateVaultModal" @close="showCreateVaultModal = !showCreateVaultModal" />
 </template>
 
 <script lang="ts">
@@ -117,6 +120,7 @@ import {
     PlusIcon
 
 } from "@heroicons/vue/outline";
+import CreateVaultModal from '@/components/CreateVaultModal.vue';
 
 export default defineComponent({
     name: "Sidebar",
@@ -128,7 +132,8 @@ export default defineComponent({
         InboxIcon,
         StarIcon,
         ChevronRightIcon,
-        PlusIcon
+        PlusIcon,
+        CreateVaultModal
     },
     setup() {
         const authenticationStore = useAuthenticationStore();
@@ -142,6 +147,7 @@ export default defineComponent({
         // Refs for sidebar menus
         const showSidebarUserOptions = ref(false);
         const showSidebarVaults = ref(false);
+        const showCreateVaultModal = ref(false);
 
         // Update active vault in store
         const setActiveVault = (vault_id: string) => {
@@ -155,6 +161,7 @@ export default defineComponent({
 
             showSidebarUserOptions,
             showSidebarVaults,
+            showCreateVaultModal,
 
             setActiveVault
         }
