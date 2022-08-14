@@ -162,8 +162,25 @@ export default defineComponent({
                 return toaster.error("Could not find the vault belonging to token!");
             }
 
+            // Put the token data into a new object
+            const tokenDetails = {
+                _id: modifiedToken.value._id,
+                vault: modifiedToken.value.vault,
+                issuer: modifiedToken.value.issuer,
+                label: modifiedToken.value.label,
+                secret: modifiedToken.value.secret,
+                algorithm: modifiedToken.value.algorithm,
+                length: modifiedToken.value.length,
+                otp_type: modifiedToken.value.otp_type
+            } as TokenModel;
+
+            // Add the icon if one has been uploaded
+            if (modifiedToken.value.icon && modifiedToken.value.icon !== "") {
+                tokenDetails.icon = modifiedToken.value.icon;
+            }
+
             const token = new Token();
-            const encryptedToken = await token.createEncryptedTokenObject(modifiedToken.value, vaultBelonging.key);
+            const encryptedToken = await token.createEncryptedTokenObject(tokenDetails, vaultBelonging.key);
             await pouchDB.addToken(encryptedToken);
 
             // Decrypt the newly encrypted token and then add it to the token store
