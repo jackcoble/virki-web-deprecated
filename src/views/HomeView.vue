@@ -1,19 +1,19 @@
 <template>
   <div class="flex flex-col h-screen">
     <!-- Header -->
-    <div class="flex w-full justify-between items-center px-11 py-4 border-b-2 bg-gray-100">
+    <div class="flex w-full justify-between items-center px-4 mx md:px-11 py-4 border-b-2 bg-gray-100 space-x-3">
       <!-- Text -->
-      <h1 class="font-medium text-lg text-purple-800">Authoriser</h1>
+      <h1 class="font-medium text-lg text-purple-800 hidden md:block">Authoriser</h1>
 
       <!-- Search input -->
-      <b-input class="w-3/6" type="search" placeholder="Search for an entry or tag..."></b-input>
+      <b-input class="w-full md:w-3/6" type="search" placeholder="Search for an entry or tag..."></b-input>
 
       <!-- New Entry button -->
       <div>
         <b-button type="submit" classType="primary" @click="router.push('/new/qrcode')">
-          <div class="flex flex-row justify-center space-x-1">
-            <PlusCircleIcon class="w-4 -ml-1" />
-            <span>New Entry</span>
+          <div class="flex flex-row justify-center items-center space-x-1">
+            <PlusCircleIcon class="w-5 md:-ml-1" />
+            <span class="hidden md:block">New Entry</span>
           </div>
         </b-button>
       </div>
