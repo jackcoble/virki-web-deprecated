@@ -39,7 +39,7 @@
       </div>
 
       <!-- Edit column -->
-      <div v-if="showEditTokenPane" class="flex-col flex-grow bg-gray-100 border-l-2">
+      <div v-if="showEditTokenPane" class="flex-col flex-grow bg-gray-100 border-l-2 overflow-auto">
         <EditEntry :id="tokenToEdit._id" @close="showEditTokenPane = !showEditTokenPane" />
       </div>
     </div>
