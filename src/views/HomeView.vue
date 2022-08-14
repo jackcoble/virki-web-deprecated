@@ -1,27 +1,26 @@
 <template>
-  <div class="bg-gray-50">
-    <div class="border-b-2 md:px-6 px-3 py-4">
-      <div class="flex justify-between items-center">
-        <!-- Vault selection dropdown -->
-        <VaultSelector />
+  <div class="flex flex-col h-screen">
+    <!-- Header -->
+    <div class="flex justify-between items-center px-8 py-4 border-b-2 bg-gray-100">
+      <!-- Vault Selector -->
+      <VaultSelector />
 
-        <!-- Search input -->
-        <b-input class="w-2/6" type="search" placeholder="Search for an entry or tag..."></b-input>
+      <!-- Search input -->
+      <b-input class="w-2/6" type="search" placeholder="Search for an entry or tag..."></b-input>
 
-        <!-- Create button -->
-        <div>
-          <b-button type="submit" classType="primary" @click="showCreateActionModal = !showCreateActionModal">
-            <div class="flex flex-row justify-center space-x-1">
-              <PlusCircleIcon class="w-4 -ml-1" />
-              <span>Create</span>
-            </div>
-          </b-button>
-        </div>
+      <!-- Create button -->
+      <div>
+        <b-button type="submit" classType="primary" @click="showCreateActionModal = !showCreateActionModal">
+          <div class="flex flex-row justify-center space-x-1">
+            <PlusCircleIcon class="w-4 -ml-1" />
+            <span>Create</span>
+          </div>
+        </b-button>
       </div>
     </div>
 
-    <!-- Main home view -->
-    <div class="flex">
+    <!-- Main view -->
+    <div class="flex flex-grow">
       <!-- Sidebar -->
       <div class="border-r-2 flex-col p-6 w-1/6 bg-gray-100">
 
@@ -84,7 +83,7 @@
       </div>
 
       <!-- Entries view -->
-      <div class="flex flex-col bg-red-100 flex-1 text-gray-700 justify-center items-center space-y-2">
+      <div class="flex flex-col flex-1 text-gray-700 justify-center items-center space-y-2">
         <EmojiSadIcon class="w-24" />
         <p class="text-sm">You have no authentication tokens.</p>
       </div>
