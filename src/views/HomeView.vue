@@ -6,14 +6,14 @@
       <h1 class="font-medium text-lg text-purple-800">Authoriser</h1>
 
       <!-- Search input -->
-      <b-input class="w-2/6" type="search" placeholder="Search for an entry or tag..."></b-input>
+      <b-input class="w-3/6" type="search" placeholder="Search for an entry or tag..."></b-input>
 
-      <!-- Create button -->
+      <!-- New Entry button -->
       <div>
-        <b-button type="submit" classType="primary" @click="showCreateActionModal = !showCreateActionModal">
+        <b-button type="submit" classType="primary" @click="router.push('/new/qrcode')">
           <div class="flex flex-row justify-center space-x-1">
             <PlusCircleIcon class="w-4 -ml-1" />
-            <span>Create</span>
+            <span>New Entry</span>
           </div>
         </b-button>
       </div>
