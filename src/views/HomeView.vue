@@ -119,9 +119,9 @@
       <!-- Entries view -->
       <div class="flex-col flex-1 text-gray-700 space-y-2 h-screen overflow-auto">
         <!-- Show frowny face if we've got no tokens -->
-        <div v-if="!entries" class="justify-center items-center">
+        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-3/4">
           <EmojiSadIcon class="w-24 text-purple-800" />
-          <p class="text-sm">You have no authentication tokens.</p>
+          <p class="text-sm">You have no authentication tokens in this vault.</p>
         </div>
 
         <div v-for="entry in entries" :key="entry._id">
