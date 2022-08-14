@@ -20,73 +20,123 @@
       </div>
     </div>
 
-    <div class="container mx-auto p-4 space-y-3">
-      <div class="flex flex-col space-y-3 pt-4">
-        <div v-if="entries && entries.length !== 0" v-for="entry in entries" :key="entry._id">
-          <Entry :token="entry" />
+    <!-- Main home view -->
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <div class="border-r-2 flex-col p-6 w-1/6">
+
+        <!-- Avatar and user name -->
+        <div class="flex p-4 items-center text-purple-900">
+          <div class="flex flex-1 justify-start space-x-2">
+            <UserIcon class="w-6" />
+            <h2>{{ user.name }}</h2>
+          </div>
+
+          <div>
+            <ChevronDownIcon class="w-4" />
+          </div>
         </div>
 
-        <div v-else class="mt-48 items-center justify-items-center text-gray-400 mx-auto space-y-3">
-          <EmojiSadIcon class="w-24 mx-auto" />
-          <p class="text-sm text-center">
-            You don't have any tokens in your <span class="font-semibold text-gray-800">{{
-                vaultStore.getActiveVault?.name
-            }}</span> vault.
-          </p>
+        <!-- All Items and Favourites -->
+        <div class="flex-col space-y-2 p-4 text-gray-700">
+          <div class="flex py-2 items-center space-x-2">
+            <ClockIcon class="w-6" />
+            <h2 class="text-sm">All Items</h2>
+          </div>
+
+          <div class="flex py-2 items-center space-x-2">
+            <StarIcon class="w-6 text-yellow-400" />
+            <h2 class="text-sm">Favourites</h2>
+          </div>
+        </div>
+
+        <!-- Folders -->
+        <div class="p-4 text-gray-700">
+          <div class="flex">
+            <div class="flex flex-1 justify-start space-x-2">
+              <ChevronDownIcon class="w-4" />
+              <p class="text-sm">Folders</p>
+            </div>
+
+            <button>
+              <PlusIcon class="w-4" />
+            </button>
+          </div>
+
+          <!-- TODO: List all folders -->
+        </div>
+
+        <!-- Tags -->
+        <div class="p-4 text-gray-700">
+          <div class="flex">
+            <div class="flex flex-1 justify-start space-x-2">
+              <ChevronDownIcon class="w-4" />
+              <p class="text-sm">Tags</p>
+            </div>
+
+            <button>
+              <PlusIcon class="w-4" />
+            </button>
+          </div>
+
+          <!-- TODO: List all tags -->
         </div>
       </div>
     </div>
-
-    <p v-if="entries && entries.length !== 0" class="text-sm text-gray-400 text-center">{{ entries.length }} {{
-        entries.length === 1 ? 'entry' : 'entries'
-    }}</p>
   </div>
 
   <!-- Create action modal -->
   <BaseModal v-if="showCreateActionModal" @close="showCreateActionModal = !showCreateActionModal" noFooter>
-      <template v-slot:body>
-          <div class="flex flex-col space-y-2 text-center pb-4">
-              <h1 class="text-xl">Create</h1>
+    <template v-slot:body>
+      <div class="flex flex-col space-y-2 text-center pb-4">
+        <h1 class="text-xl">Create</h1>
+      </div>
+
+      <fieldset class="space-y-2">
+        <!-- Create token entry-->
+        <div
+          class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
+          <div
+            class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
+            <ClockIcon class="text-gray-500 rounded-full" />
           </div>
 
-          <fieldset class="space-y-2">
-              <!-- Create token entry-->
-              <div class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-                  <div class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-                      <ClockIcon class="text-gray-500 rounded-full" />
-                  </div>
+          <div class="flex-col">
+            <p class="text-lg font-medium text-gray-700 select-none">Entry</p>
+            <p class="text-xs">Create a new authentication token entry by scanning a QR code or inputting the details
+              manually.</p>
+          </div>
+        </div>
 
-                  <div class="flex-col">
-                    <p class="text-lg font-medium text-gray-700 select-none">Entry</p>
-                    <p class="text-xs">Create a new authentication token entry by scanning a QR code or inputting the details manually.</p>
-                  </div>
-              </div>
+        <!-- Create a tag -->
+        <div
+          class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
+          <div
+            class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
+            <TagIcon class="text-gray-500 rounded-full" />
+          </div>
 
-              <!-- Create a tag -->
-              <div class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-                  <div class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-                      <TagIcon class="text-gray-500 rounded-full" />
-                  </div>
+          <div class="flex-col">
+            <p class="text-lg font-medium text-gray-700 select-none">Tag</p>
+            <p class="text-xs">Tags are a quick and easy way to organise different categories within a vault.</p>
+          </div>
+        </div>
 
-                  <div class="flex-col">
-                    <p class="text-lg font-medium text-gray-700 select-none">Tag</p>
-                    <p class="text-xs">Tags are a quick and easy way to organise different categories within a vault.</p>
-                  </div>
-              </div>
+        <!-- Create a vault -->
+        <div
+          class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
+          <div
+            class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
+            <LockClosedIcon class="text-gray-500 rounded-full" />
+          </div>
 
-              <!-- Create a vault -->
-              <div class="flex flex-row items-center px-4 py-10 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-                  <div class="flex-col flex-shrink-0 object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-                      <LockClosedIcon class="text-gray-500 rounded-full" />
-                  </div>
-
-                  <div class="flex-col">
-                    <p class="text-lg font-medium text-gray-700 select-none">Vault</p>
-                    <p class="text-xs">Create separate vaults for Personal, Work, etc.</p>
-                  </div>
-              </div>
-          </fieldset>
-      </template>
+          <div class="flex-col">
+            <p class="text-lg font-medium text-gray-700 select-none">Vault</p>
+            <p class="text-xs">Create separate vaults for Personal, Work, etc.</p>
+          </div>
+        </div>
+      </fieldset>
+    </template>
   </BaseModal>
 </template>
 
@@ -96,7 +146,8 @@ import useEmitter from "@/composables/useEmitter";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, PlusIcon } from "@heroicons/vue/outline"
+import { StarIcon } from "@heroicons/vue/solid";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import OfflineAlertModal from "../components/OfflineAlertModal.vue";
@@ -107,6 +158,7 @@ import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { useRouter } from "vue-router";
 import Entry from "@/components/Entry.vue"
 import BaseModal from "@/components/Modal/BaseModal.vue"
+import { useAuthenticationStore } from "@/stores/authenticationStore";
 
 export default defineComponent({
   name: "HomeView",
@@ -120,6 +172,10 @@ export default defineComponent({
     ClockIcon,
     TagIcon,
     LockClosedIcon,
+    UserIcon,
+    PlusIcon,
+    ChevronDownIcon,
+    StarIcon,
     Entry,
     BaseModal
   },
@@ -127,10 +183,10 @@ export default defineComponent({
     const router = useRouter();
 
     const emitter = useEmitter();
-    const toaster = useToaster();
     const vault = useVault();
     const pouchdb = usePouchDB();
 
+    const authenticationStore = useAuthenticationStore();
     const applicationStore = useApplicationStore();
     const encryptionKeyStore = useEncryptionKeyStore();
     const vaultStore = useVaultStore();
@@ -138,6 +194,7 @@ export default defineComponent({
     // Computed values from store
     const isOnline = computed(() => applicationStore.isOnline);
     const isSyncing = computed(() => applicationStore.isSyncing);
+    const user = computed(() => authenticationStore.getUser)
 
     const showCreateActionModal = ref(false);
 
@@ -207,6 +264,7 @@ export default defineComponent({
 
     return {
       router,
+      user,
 
       entries,
       isRefreshingVault,
