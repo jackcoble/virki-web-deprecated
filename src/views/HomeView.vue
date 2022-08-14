@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen bg-gray-50">
+  <div class="bg-gray-50">
     <div class="border-b-2 md:px-6 px-3 py-4">
       <div class="flex justify-between items-center">
         <!-- Vault selection dropdown -->
@@ -21,9 +21,9 @@
     </div>
 
     <!-- Main home view -->
-    <div class="flex h-screen">
+    <div class="flex">
       <!-- Sidebar -->
-      <div class="border-r-2 flex-col p-6 w-1/6">
+      <div class="border-r-2 flex-col p-6 w-1/6 bg-gray-100">
 
         <!-- Avatar and user name -->
         <div class="flex p-4 items-center text-purple-900">
@@ -81,6 +81,12 @@
 
           <!-- TODO: List all tags -->
         </div>
+      </div>
+
+      <!-- Entries view -->
+      <div class="flex flex-col bg-red-100 flex-1 text-gray-700 justify-center items-center space-y-2">
+        <EmojiSadIcon class="w-24" />
+        <p class="text-sm">You have no authentication tokens.</p>
       </div>
     </div>
   </div>
