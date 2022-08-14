@@ -2,8 +2,8 @@
   <div class="flex flex-col">
     <!-- Header -->
     <div class="flex justify-between items-center px-8 py-4 border-b-2 bg-gray-100">
-      <!-- Vault Selector -->
-      <VaultSelector />
+      <!-- Text -->
+      <h1 class="font-medium text-lg text-purple-800">Authoriser</h1>
 
       <!-- Search input -->
       <b-input class="w-2/6" type="search" placeholder="Search for an entry or tag..."></b-input>
@@ -64,8 +64,8 @@
           </div>
 
           <!-- List all vaults -->
-          <div v-if="showSidebarVaults" class="pt-2">
-            <div v-for="vault in vaults" class="flex p-2 bg-gray-200 rounded items-center space-x-2">
+          <div v-if="showSidebarVaults" class="pt-2 space-y-1">
+            <div v-for="vault in vaults" class="flex p-2 rounded items-center space-x-2 cursor-pointer" :class="vaultStore.getActiveVaultId === vault._id ? 'bg-gray-200' : ''" @click="vaultStore.setActiveVault(vault._id)">
               <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
                 <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
               </div>
