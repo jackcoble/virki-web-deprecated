@@ -75,7 +75,7 @@
               <p class="text-sm">Vaults</p>
             </button>
 
-            <button>
+            <button @click="showCreateVaultModal = !showCreateVaultModal">
               <PlusIcon class="w-4" />
             </button>
           </div>
@@ -130,6 +130,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Create vault modal -->
+  <CreateVaultModal v-if="showCreateVaultModal" @close="showCreateVaultModal = !showCreateVaultModal" />
 
   <!-- Create action modal -->
   <BaseModal v-if="showCreateActionModal" @close="showCreateActionModal = !showCreateActionModal" noFooter>
@@ -197,7 +200,8 @@ import { StarIcon } from "@heroicons/vue/solid";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import OfflineAlertModal from "../components/OfflineAlertModal.vue";
-import useToaster from "@/composables/useToaster";
+import CreateVaultModal from "../components/CreateVaultModal.vue";
+
 import usePouchDB from "@/composables/usePouchDB";
 import useVault from "@/composables/useVault";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
@@ -214,6 +218,7 @@ export default defineComponent({
     EmojiSadIcon,
     StatusOfflineIcon,
     OfflineAlertModal,
+    CreateVaultModal,
     PlusCircleIcon,
     ClockIcon,
     TagIcon,
@@ -250,6 +255,7 @@ export default defineComponent({
     // Sidebar refs
     const showSidebarVaults = ref(false);
     const showSidebarUserOptions = ref(false);
+    const showCreateVaultModal = ref(false);
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
@@ -329,6 +335,7 @@ export default defineComponent({
       showCreateActionModal,
       showSidebarVaults,
       showSidebarUserOptions,
+      showCreateVaultModal,
 
       vaultStore,
 
