@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
+      injectRegister: 'auto',
       devOptions: {
         enabled: true
       }
