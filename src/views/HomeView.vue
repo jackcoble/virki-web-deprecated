@@ -56,7 +56,7 @@
         <!-- All Items and Favourites -->
         <div class="flex-col space-y-2 p-4 text-gray-700">
           <div class="flex py-2 items-center space-x-2">
-            <ClockIcon class="w-6" />
+            <InboxIcon class="w-6" />
             <h2 class="text-sm">All Items</h2>
           </div>
 
@@ -195,7 +195,7 @@ import useEmitter from "@/composables/useEmitter";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon, LogoutIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon, LogoutIcon, InboxIcon } from "@heroicons/vue/outline"
 import { StarIcon } from "@heroicons/vue/solid";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
@@ -229,6 +229,7 @@ export default defineComponent({
     ChevronRightIcon,
     StarIcon,
     LogoutIcon,
+    InboxIcon,
     Entry,
     BaseModal
   },
