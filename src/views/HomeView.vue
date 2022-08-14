@@ -38,15 +38,15 @@
           </div>
 
           <!-- User options -->
-          <div v-if="showSidebarUserOptions" class="flex-col p-2 mt-2 rounded bg-gray-200 text-gray-600 space-y-3">
+          <div v-if="showSidebarUserOptions" class="flex-col p-2 mt-3 rounded-md bg-white text-gray-600 space-y-3 shadow">
               <!-- Lock -->
-              <div class="flex items-center space-x-2 p-1">
+              <div class="flex items-center space-x-2 p-1 cursor-pointer">
                 <LockClosedIcon class="w-4" />
                 <h2 class="text-xs">Lock</h2>
               </div>
 
               <!-- Sign Out -->
-              <div class="flex items-center space-x-2 p-1 text-red-400">
+              <div class="flex items-center space-x-2 p-1 cursor-pointer text-red-400">
                 <LogoutIcon class="w-4" />
                 <h2 class="text-xs">Sign Out</h2>
               </div>
