@@ -116,8 +116,7 @@ import useEmitter from "@/composables/useEmitter";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon, LogoutIcon, InboxIcon, TrashIcon, XIcon } from "@heroicons/vue/outline"
-import { StarIcon } from "@heroicons/vue/solid";
+import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import CreateVaultModal from "../components/CreateVaultModal.vue";
@@ -136,22 +135,10 @@ export default defineComponent({
   name: "HomeView",
   components: {
     VaultSelector,
-    RefreshIcon,
     EmojiSadIcon,
-    StatusOfflineIcon,
     CreateVaultModal,
     PlusCircleIcon,
     ClockIcon,
-    TagIcon,
-    LockClosedIcon,
-    UserIcon,
-    PlusIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
-    StarIcon,
-    LogoutIcon,
-    InboxIcon,
-    TrashIcon,
     XIcon,
     Entry,
     BaseModal,
