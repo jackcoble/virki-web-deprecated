@@ -21,7 +21,7 @@
 
     <div class="flex flex-grow overflow-hidden">
       <!-- Sidebar -->
-      <div class="flex-col flex-shrink-0 w-1/6">
+      <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 w-2/6">
         <Sidebar />
       </div>
 
