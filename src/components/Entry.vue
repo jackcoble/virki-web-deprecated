@@ -1,5 +1,5 @@
 <template>
-    <div class="flex space-x-4 items-center justify-center border-b p-3">
+    <div class="flex space-x-4 items-center justify-center border-b p-3" @click="copyOTPToClipboard">
         <!-- Issuer icon -->
         <div class="flex-shrink-0">
             <img v-if="token?.icon" class="w-12 h-12 rounded-full" :src="token?.icon" />
@@ -62,6 +62,7 @@ import { OTPType, Token } from "@/class/token";
 import type { Token as TokenModel } from "@/models/token";
 import { ClockIcon, DotsHorizontalIcon, PencilAltIcon, TrashIcon } from "@heroicons/vue/outline";
 import BaseModal from "./Modal/BaseModal.vue";
+import useToaster from "@/composables/useToaster";
 
 export default defineComponent({
     name: "Entry",
@@ -79,6 +80,7 @@ export default defineComponent({
         BaseModal
     },
     setup(props) {
+        const toaster = useToaster();
         const emitter = useEmitter();
 
         const showActionModal = ref(false);
@@ -100,7 +102,22 @@ export default defineComponent({
             remaining.value = period - (event.seconds % period);
         }
 
+        // When the entry is clicked, copy the OTP code to the clipboard
+        const copyOTPToClipboard = () => {
+            if (navigator && navigator.clipboard) {
+                navigator.clipboard.writeText(otp.value);
+                toaster.success("Copied OTP to clipboard!");
+
+                return;
+            }
+            else {
+                return toaster.error("Unable to copy OTP to clipboard!");
+            }
+        }
+
         return {
+            copyOTPToClipboard,
+
             showActionModal,
 
             OTPType,
