@@ -13,46 +13,10 @@
             <p class="text-2xl">{{ otp }}</p>
         </div>
 
-        <button class="p-2" @click="showActionModal = !showActionModal">
+        <button class="p-2" @click="tokenToEdit(token?._id)">
             <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
         </button>
     </div>
-
-    <!-- Actions modal -->
-    <BaseModal v-if="showActionModal" @close="showActionModal = !showActionModal" noFooter>
-        <template v-slot:body>
-            <div class="flex flex-col space-y-2 text-center pb-4">
-                <h1 class="text-xl">Actions</h1>
-                <p class="text-sm">Here you can make changes to your authentication token.</p>
-            </div>
-
-            <fieldset class="space-y-2">
-                <!-- Edit token details -->
-                <div class="flex flex-row items-center px-4 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-                    <div class="object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-                        <PencilAltIcon class="text-gray-500 rounded-full" />
-                    </div>
-                    <p class="font-medium text-gray-700 select-none">Edit token details</p>
-                </div>
-
-                <!-- Increment HOTP counter (HOTP only) -->
-                <div v-if="token?.otp_type === OTPType.HOTP" class="flex flex-row items-center px-4 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-                    <div class="object-contain rounded-full w-9 h-9 p-1.5 bg-gray-200 border-2 border-gray-300">
-                        <ClockIcon class="text-gray-500 rounded-full" />
-                    </div>
-                    <p class="font-medium text-gray-700 select-none">Increment counter</p>
-                </div>
-
-                <!-- Delete token -->
-                <div class="flex flex-row items-center px-4 w-100 text-sm h-14 space-x-3 cursor-pointer border-2 rounded-md">
-                    <div class="object-contain rounded-full w-9 h-9 p-1.5 bg-red-300 border-2 border-red-300">
-                        <TrashIcon class="text-red-700 rounded-full" />
-                    </div>
-                    <p class="font-medium text-red-700 select-none">Remove token</p>
-                </div>
-            </fieldset>
-        </template>
-    </BaseModal>
 </template>
 
 <script lang="ts">
@@ -71,6 +35,7 @@ export default defineComponent({
             type: Object as PropType<TokenModel>
         }
     },
+    emits: ["tokenToEdit"],
     components: {
         ClockIcon,
         DotsHorizontalIcon,
@@ -79,7 +44,7 @@ export default defineComponent({
 
         BaseModal
     },
-    setup(props) {
+    setup(props, { emit }) {
         const toaster = useToaster();
         const emitter = useEmitter();
 
@@ -115,8 +80,14 @@ export default defineComponent({
             }
         }
 
+        // Emit an event containing the ID of the token we want to edit
+        const tokenToEdit = (id: string) => {
+            emit("tokenToEdit", id);
+        }
+
         return {
             copyOTPToClipboard,
+            tokenToEdit,
 
             showActionModal,
 
