@@ -1,6 +1,6 @@
 <template>
     <!-- Sidebar -->
-    <div class="border-r-2 flex-col p-6 xl:w-1/6 md:w-1/4 w-2/6 bg-gray-100 overflow-auto">
+    <div class="h-full border-r-2 p-6 bg-gray-100">
 
         <!-- Avatar and user name -->
         <div class="p-4">

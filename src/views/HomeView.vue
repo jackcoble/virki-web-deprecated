@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col h-screen">
     <!-- Header -->
-    <div class="flex justify-between items-center px-12 py-4 border-b-2 bg-gray-100">
+    <div class="flex w-full justify-between items-center px-12 py-4 border-b-2 bg-gray-100">
       <!-- Text -->
       <h1 class="font-medium text-lg text-purple-800">Authoriser</h1>
 
@@ -19,49 +19,16 @@
       </div>
     </div>
 
-    <!-- Main view -->
-    <div class="flex flex-grow">
-      <!-- Sidebar component -->
-      <Sidebar />
-
-      <!-- Entries view -->
-      <div class="flex-col flex-1 text-gray-700 space-y-2 h-screen overflow-auto">
-        <!-- Show frowny face if we've got no tokens -->
-        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-3/4 p-4 text-center space-y-2">
-          <EmojiSadIcon class="w-24 text-purple-800" />
-          <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
-        </div>
-
-        <div v-for="entry in entries" :key="entry._id" @click="setTokenToEdit(entry._id)">
-          <Entry :token="entry" />
-        </div>
+    <div class="flex flex-grow overflow-hidden">
+      <!-- Sidebar -->
+      <div class="flex-col flex-shrink-0 w-1/6">
+        <Sidebar />
       </div>
 
-      <!-- Edit column -->
-      <div class="flex-col w-2/5 border-l-2 bg-gray-100 py-2 px-4 space-y-2" v-if="showEditTokenPane">
-        <!-- Editing header -->
-        <div class="flex justify-between items-center">
-          <p>Edit an entry</p>
-          
-          <button class="p-2" @click="showEditTokenPane = !showEditTokenPane">
-            <XIcon class="w-6 text-red-400" />
-          </button>
-        </div>
-
-        <!-- Editing body -->
-        <div class="space-y-2">
-          <!-- Icon -->
-          <img :src="tokenToEdit.icon" alt="Icon">
-
-          <!-- Issuer -->
-          <b-input v-model="tokenToEdit.issuer" placeholder="Issuer"></b-input>
-
-          <!-- Username -->
-          <b-input v-model="tokenToEdit.label" placeholder="Username"></b-input>
-
-          <!-- Secret/Seed -->
-          <b-password-input v-model="tokenToEdit.secret" placeholder="Secret/seed"></b-password-input>
-
+      <!-- TOTP Entries -->
+      <div class="flex-col h-full flex-grow overflow-auto">
+        <div v-for="entry in entries" :key="entry._id">
+          <Entry :token="entry" />
         </div>
       </div>
     </div>
@@ -173,7 +140,7 @@ export default defineComponent({
     Entry,
     BaseModal,
     Sidebar
-},
+  },
   setup() {
     const router = useRouter();
 
@@ -281,7 +248,7 @@ export default defineComponent({
 
     return {
       router,
-      
+
       user,
       vaults,
 
