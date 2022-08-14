@@ -119,13 +119,25 @@
       <!-- Entries view -->
       <div class="flex-col flex-1 text-gray-700 space-y-2 h-screen overflow-auto">
         <!-- Show frowny face if we've got no tokens -->
-        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-3/4">
+        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-3/4 p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-purple-800" />
           <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
         </div>
 
-        <div v-for="entry in entries" :key="entry._id">
+        <div v-for="entry in entries" :key="entry._id" @click="setTokenToEdit(entry._id, entry.vault)">
           <Entry :token="entry" />
+        </div>
+      </div>
+
+      <!-- Edit column -->
+      <div class="flex-col w-2/5 border-l-2 bg-gray-100 p-2" v-if="showEditTokenPane">
+        <!-- Editing header -->
+        <div class="flex justify-between items-center px-4">
+          <p>Edit an entry</p>
+          
+          <button class="p-2" @click="showEditTokenPane = !showEditTokenPane">
+            <XIcon class="w-6 text-red-400" />
+          </button>
         </div>
       </div>
     </div>
@@ -195,7 +207,7 @@ import useEmitter from "@/composables/useEmitter";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import VaultSelector from "@/components/VaultSelector.vue"
 
-import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon, LogoutIcon, InboxIcon } from "@heroicons/vue/outline"
+import { RefreshIcon, EmojiSadIcon, StatusOfflineIcon, PlusCircleIcon, ClockIcon, TagIcon, LockClosedIcon, UserIcon, ChevronDownIcon, ChevronRightIcon, PlusIcon, LogoutIcon, InboxIcon, TrashIcon, XIcon } from "@heroicons/vue/outline"
 import { StarIcon } from "@heroicons/vue/solid";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
@@ -230,6 +242,8 @@ export default defineComponent({
     StarIcon,
     LogoutIcon,
     InboxIcon,
+    TrashIcon,
+    XIcon,
     Entry,
     BaseModal
   },
@@ -257,6 +271,22 @@ export default defineComponent({
     const showSidebarVaults = ref(false);
     const showSidebarUserOptions = ref(false);
     const showCreateVaultModal = ref(false);
+
+    // Set token to be edited
+    const showEditTokenPane = ref(false);
+    const tokenToEdit = ref({
+      id: "",
+      vault_id: ""
+    });
+
+    const setTokenToEdit = (tokenId: string, vaultId: string) => {
+      tokenToEdit.value = {
+        id: tokenId,
+        vault_id: vaultId
+      }
+
+      showEditTokenPane.value = true;
+    }
 
     const isRefreshingVault = ref(false);
     const refreshVault = async () => {
@@ -337,6 +367,10 @@ export default defineComponent({
       showSidebarVaults,
       showSidebarUserOptions,
       showCreateVaultModal,
+
+      setTokenToEdit,
+      showEditTokenPane,
+      tokenToEdit,
 
       vaultStore,
 
