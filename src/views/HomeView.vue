@@ -22,7 +22,7 @@
     <!-- Main view -->
     <div class="flex flex-grow">
       <!-- Sidebar -->
-      <div class="border-r-2 flex-col p-6 w-1/6 bg-gray-100">
+      <div class="border-r-2 flex-col p-6 w-1/6 bg-gray-100 overflow-auto">
 
         <!-- Avatar and user name -->
         <div class="flex p-4 items-center text-purple-800">
@@ -49,12 +49,12 @@
           </div>
         </div>
 
-        <!-- Folders -->
+        <!-- Vaults -->
         <div class="p-4 text-gray-700">
-          <div class="flex">
+          <div class="flex pb-2">
             <div class="flex flex-1 justify-start space-x-2">
               <ChevronDownIcon class="w-4" />
-              <p class="text-sm">Folders</p>
+              <p class="text-sm">Vaults</p>
             </div>
 
             <button>
@@ -62,7 +62,13 @@
             </button>
           </div>
 
-          <!-- TODO: List all folders -->
+          <!-- TODO: List all vaults -->
+          <div v-for="vault in vaults" class="flex p-2 bg-gray-200 rounded items-center space-x-2">
+            <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
+              <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
+            </div>
+            <p class="text-sm">{{ vault.name }}</p>
+          </div>
         </div>
 
         <!-- Tags -->
@@ -206,7 +212,8 @@ export default defineComponent({
     // Computed values from store
     const isOnline = computed(() => applicationStore.isOnline);
     const isSyncing = computed(() => applicationStore.isSyncing);
-    const user = computed(() => authenticationStore.getUser)
+    const user = computed(() => authenticationStore.getUser);
+    const vaults = computed(() => vaultStore.getVaults);
 
     const showCreateActionModal = ref(false);
 
@@ -276,7 +283,9 @@ export default defineComponent({
 
     return {
       router,
+      
       user,
+      vaults,
 
       entries,
       isRefreshingVault,
