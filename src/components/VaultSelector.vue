@@ -1,9 +1,8 @@
 <template>
     <!-- Vault currently active -->
     <div class="flex flex-row items-center space-x-2">
-        <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300" :class="[vaultStore.getActiveVault?.icon ? '' : 'bg-gray-200 p-1.5 h-10 w-10']" @click="showModal = !showModal">
-            <ClockIcon v-if="!vaultStore.getActiveVault?.icon" class="text-gray-500" />
-            <img v-else class="rounded-full w-10 h-10 object-cover" :src="vaultStore.getActiveVault?.icon" alt="Vault Icon">
+        <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-10 w-10" @click="showModal = !showModal">
+            <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
         </div>
 
         <!-- Active vault title and edit vault modal -->
@@ -28,10 +27,7 @@
                                 <input type="radio" class="h-4 w-4 border-gray-300" :checked="vault._id === selectedVault" />
 
                                 <div class="rounded-full bg-gray-200 border-2 border-gray-300">
-                                    <div v-if="!vault.icon" class="w-8 h-8 p-1.5 bg-gray-200 rounded-full">
-                                        <ClockIcon class="text-gray-500" />
-                                    </div>
-                                    <img v-else class="rounded-full object-cover w-8 h-8" :src="vault.icon" alt="Vault Icon">
+                                    <img class="rounded-full object-cover w-8 h-8" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
                                 </div>
 
                                 <p class="font-medium text-gray-700 select-none">{{ vault.name }}</p>
