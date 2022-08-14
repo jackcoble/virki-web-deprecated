@@ -28,7 +28,7 @@
       <!-- TOTP Entries -->
       <div class="flex-col flex-grow overflow-auto">
         <!-- Show frowny face if we've got no tokens -->
-        <div v-if="entries.length === 0" class="flex flex-col w-full justify-center items-center h-full p-4 text-center space-y-2">
+        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-purple-800" />
           <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
         </div>
@@ -39,8 +39,8 @@
       </div>
 
       <!-- Edit column -->
-      <div v-if="showEditTokenPane" class="flex-col bg-gray-100 w-2/6 border-l-2 flex-shrink-0">
-        <EditEntry />
+      <div v-if="showEditTokenPane" class="flex-col flex-grow bg-gray-100 border-l-2">
+        <EditEntry :id="tokenToEdit._id" @close="showEditTokenPane = !showEditTokenPane" />
       </div>
     </div>
   </div>
