@@ -6,8 +6,8 @@
       <h1 class="font-medium text-lg text-purple-800 hidden md:block">Authoriser</h1>
 
       <!-- Menu icon (only visible on mobile) -->
-      <button class="block md:hidden text-purple-800 w-9" @click="showMenuMobile = !showMenuMobile">
-        <MenuIcon v-if="showMenuMobile" />
+      <button class="block md:hidden text-purple-800 w-9" @click="closeMenuMobile = !closeMenuMobile">
+        <MenuIcon v-if="!closeMenuMobile" />
         <XIcon v-else />
       </button>
 
@@ -60,7 +60,7 @@ import useEmitter from "@/composables/useEmitter";
 
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 
-import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
+import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
 import CreateVaultModal from "../components/CreateVaultModal.vue";
@@ -84,6 +84,7 @@ export default defineComponent({
     PlusCircleIcon,
     ClockIcon,
     XIcon,
+    MenuIcon,
     Entry,
     BaseModal,
     Sidebar,
@@ -108,7 +109,7 @@ export default defineComponent({
     const vaults = computed(() => vaultStore.getVaults);
 
     // Sidebar refs
-    const showMenuMobile = ref(false);
+    const closeMenuMobile = ref(false);
     const showSidebarVaults = ref(false);
     const showSidebarUserOptions = ref(false);
     const showCreateVaultModal = ref(false);
@@ -208,7 +209,7 @@ export default defineComponent({
       isOnline,
       isSyncing,
 
-      showMenuMobile,
+      closeMenuMobile,
       showSidebarVaults,
       showSidebarUserOptions,
       showCreateVaultModal,
