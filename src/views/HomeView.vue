@@ -5,6 +5,12 @@
       <!-- Text -->
       <h1 class="font-medium text-lg text-purple-800 hidden md:block">Authoriser</h1>
 
+      <!-- Menu icon (only visible on mobile) -->
+      <button class="block md:hidden text-purple-800 w-9" @click="showMenuMobile = !showMenuMobile">
+        <MenuIcon v-if="showMenuMobile" />
+        <XIcon v-else />
+      </button>
+
       <!-- Search input -->
       <b-input class="w-full md:w-3/6" type="search" placeholder="Search for an entry or tag..."></b-input>
 
@@ -158,6 +164,7 @@ export default defineComponent({
     const showCreateActionModal = ref(false);
 
     // Sidebar refs
+    const showMenuMobile = ref(false);
     const showSidebarVaults = ref(false);
     const showSidebarUserOptions = ref(false);
     const showCreateVaultModal = ref(false);
@@ -257,7 +264,7 @@ export default defineComponent({
       isOnline,
       isSyncing,
 
-      showCreateActionModal,
+      showMenuMobile,
       showSidebarVaults,
       showSidebarUserOptions,
       showCreateVaultModal,
