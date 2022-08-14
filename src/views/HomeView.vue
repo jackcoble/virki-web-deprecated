@@ -26,7 +26,7 @@
       </div>
 
       <!-- TOTP Entries -->
-      <div class="flex-col flex-grow overflow-auto">
+      <div class="flex-col flex-grow overflow-auto" :class="showEditTokenPane ? 'hidden md:flex' : 'flex'">
         <!-- Show frowny face if we've got no tokens -->
         <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-purple-800" />
@@ -39,7 +39,7 @@
       </div>
 
       <!-- Edit column -->
-      <div v-if="showEditTokenPane" class="flex-col flex-grow bg-gray-100 border-l-2 overflow-auto">
+      <div v-if="showEditTokenPane" class="flex-col flex-grow bg-gray-100 overflow-auto">
         <EditEntry :id="tokenToEdit._id" @close="showEditTokenPane = !showEditTokenPane" />
       </div>
     </div>
