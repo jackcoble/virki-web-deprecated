@@ -25,7 +25,7 @@
       <div class="border-r-2 flex-col p-6 w-1/6 bg-gray-100">
 
         <!-- Avatar and user name -->
-        <div class="flex p-4 items-center text-purple-900">
+        <div class="flex p-4 items-center text-purple-800">
           <div class="flex flex-1 justify-start space-x-2">
             <UserIcon class="w-6" />
             <h2>{{ user.name }}</h2>
@@ -84,7 +84,7 @@
 
       <!-- Entries view -->
       <div class="flex flex-col flex-1 text-gray-700 justify-center items-center space-y-2">
-        <EmojiSadIcon class="w-24" />
+        <EmojiSadIcon class="w-24 text-purple-800" />
         <p class="text-sm">You have no authentication tokens.</p>
       </div>
     </div>
