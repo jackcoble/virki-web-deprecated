@@ -52,7 +52,7 @@
         <!-- Vaults -->
         <div class="p-4 text-gray-700">
           <div class="flex">
-            <button class="flex flex-1 justify-start space-x-2 pb-2" @click="showSidebarVaults = !showSidebarVaults">
+            <button class="flex flex-1 justify-start space-x-2" @click="showSidebarVaults = !showSidebarVaults">
               <ChevronRightIcon v-if="!showSidebarVaults" class="w-4" />
               <ChevronDownIcon v-else class="w-4" />
               <p class="text-sm">Vaults</p>
@@ -64,7 +64,7 @@
           </div>
 
           <!-- List all vaults -->
-          <div v-if="showSidebarVaults">
+          <div v-if="showSidebarVaults" class="pt-2">
             <div v-for="vault in vaults" class="flex p-2 bg-gray-200 rounded items-center space-x-2">
               <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
                 <img class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon">
