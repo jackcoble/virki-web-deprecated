@@ -26,7 +26,7 @@
       </div>
 
       <!-- TOTP Entries -->
-      <div class="flex-col h-full flex-grow overflow-auto">
+      <div class="flex-col flex-grow overflow-auto">
         <!-- Show frowny face if we've got no tokens -->
         <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-purple-800" />
@@ -35,6 +35,18 @@
 
         <div v-for="entry in entries" :key="entry._id">
           <Entry :token="entry" />
+        </div>
+      </div>
+
+      <!-- Edit column -->
+      <div class="flex-col bg-red-200 w-2/5 border-l-2">
+        <!-- Editing header -->
+        <div class="flex justify-between items-center px-4">
+          <p>Edit an entry</p>
+          
+          <button class="p-2" @click="showEditTokenPane = !showEditTokenPane">
+            <XIcon class="w-6 text-red-400" />
+          </button>
         </div>
       </div>
     </div>
