@@ -38,15 +38,15 @@
           </div>
 
           <!-- User options -->
-          <div v-if="showSidebarUserOptions" class="flex-col p-2 mt-3 rounded-md bg-white text-gray-600 space-y-3 shadow">
+          <div v-if="showSidebarUserOptions" class="flex-col mt-3 text-gray-600 space-y-1">
               <!-- Lock -->
-              <div class="flex items-center space-x-2 p-1 cursor-pointer">
+              <div class="flex items-center space-x-2 p-3 cursor-pointer bg-gray-200 rounded">
                 <LockClosedIcon class="w-4" />
                 <h2 class="text-xs">Lock</h2>
               </div>
 
               <!-- Sign Out -->
-              <div class="flex items-center space-x-2 p-1 cursor-pointer text-red-400">
+              <div class="flex items-center space-x-2 p-3 cursor-pointer bg-gray-200 text-red-400 rounded">
                 <LogoutIcon class="w-4" />
                 <h2 class="text-xs">Sign Out</h2>
               </div>
@@ -121,7 +121,7 @@
         <!-- Show frowny face if we've got no tokens -->
         <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-3/4">
           <EmojiSadIcon class="w-24 text-purple-800" />
-          <p class="text-sm">You have no authentication tokens in this vault.</p>
+          <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
         </div>
 
         <div v-for="entry in entries" :key="entry._id">
