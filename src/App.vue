@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterView, useRoute, useRouter } from 'vue-router'
-import Tabs from './components/Tabs.vue'
 
 import { fromUnixTime, getUnixTime, sub } from "date-fns";
 import { useAuthenticationStore } from './stores/authenticationStore';
@@ -90,8 +89,5 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen">
-    <RouterView class="flex-grow overflow-auto" />
-    <Tabs v-if="false"></Tabs>
-  </div>
+  <RouterView />
 </template>
