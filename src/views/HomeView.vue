@@ -34,20 +34,13 @@
         </div>
 
         <div v-for="entry in entries" :key="entry._id">
-          <Entry :token="entry" />
+          <Entry :token="entry" @tokenToEdit="handleEditToken" />
         </div>
       </div>
 
       <!-- Edit column -->
-      <div class="flex-col bg-red-200 w-2/6 border-l-2 flex-shrink-0">
-        <!-- Editing header -->
-        <div class="flex justify-between items-center px-4">
-          <p>Edit an entry</p>
-          
-          <button class="p-2" @click="showEditTokenPane = !showEditTokenPane">
-            <XIcon class="w-6 text-red-400" />
-          </button>
-        </div>
+      <div v-if="showEditTokenPane" class="flex-col bg-gray-100 w-2/6 border-l-2 flex-shrink-0">
+        <EditEntry />
       </div>
     </div>
   </div>
@@ -129,6 +122,7 @@ import BaseModal from "@/components/Modal/BaseModal.vue"
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import type { Token } from "@/models/token";
 import Sidebar from "../components/Sidebar.vue";
+import EditEntry from "../components/EditEntry.vue";
 
 export default defineComponent({
   name: "HomeView",
@@ -140,7 +134,8 @@ export default defineComponent({
     XIcon,
     Entry,
     BaseModal,
-    Sidebar
+    Sidebar,
+    EditEntry
   },
   setup() {
     const router = useRouter();
@@ -171,11 +166,15 @@ export default defineComponent({
     const showEditTokenPane = ref(false);
     const tokenToEdit = ref({} as Token);
 
-    const setTokenToEdit = (tokenId: string) => {
+    const handleEditToken = (id: any) => {
+      if (!id) {
+        return;
+      }
+
       tokenToEdit.value = {} as Token;
 
       // Lookup the token within the vault to be edited
-      const t = vaultStore.getTokens.find(to => to._id === tokenId)
+      const t = vaultStore.getTokens.find(to => to._id === id)
       if (t) {
         tokenToEdit.value = t;
       }
@@ -263,7 +262,7 @@ export default defineComponent({
       showSidebarUserOptions,
       showCreateVaultModal,
 
-      setTokenToEdit,
+      handleEditToken,
       showEditTokenPane,
       tokenToEdit,
 
