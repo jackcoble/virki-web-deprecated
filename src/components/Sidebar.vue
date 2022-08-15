@@ -74,13 +74,18 @@
             </div>
 
             <!-- Show active vault even if sidebar is closed -->
-            <div v-if="activeVault?._id && !showSidebarVaults"
-                class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
-                <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
-                    <img v-if="activeVault.icon" class="rounded-full object-cover" :src="activeVault.icon" alt="Vault Icon" />
-                    <img v-else class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon" />
+            <div v-if="activeVault?._id && !showSidebarVaults" class="flex justify-between p-2 mt-2 rounded cursor-pointer bg-gray-200">
+                <div class="flex items-center space-x-2">
+                    <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
+                        <img v-if="activeVault.icon" class="rounded-full object-cover" :src="activeVault.icon" alt="Vault Icon" />
+                        <img v-else class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon" />
+                    </div>
+                    <p class="text-sm">{{ activeVault?.name }}</p>
                 </div>
-                <p class="text-sm">{{ activeVault?.name }}</p>
+                
+                <button>
+                    <DotsHorizontalIcon class="w-4" />
+                </button>
             </div>
         </div>
 
@@ -117,7 +122,8 @@ import {
     InboxIcon,
     StarIcon,
     ChevronRightIcon,
-    PlusIcon
+    PlusIcon,
+    DotsHorizontalIcon
 
 } from "@heroicons/vue/outline";
 import CreateVaultModal from '@/components/CreateVaultModal.vue';
@@ -133,6 +139,7 @@ export default defineComponent({
         StarIcon,
         ChevronRightIcon,
         PlusIcon,
+        DotsHorizontalIcon,
         CreateVaultModal
     },
     setup() {
