@@ -1,8 +1,11 @@
 <template>
-    <div class="flex justify-center items-center h-screen md:bg-gray-100 bg-white">
-        <div class="p-6 rounded md:shadow-sm md:bg-white md:border md:border-gray-200 space-y-3 sm:w-2/6 w-full">
+    <div class="flex justify-center items-center h-screen md:bg-gray-200 bg-white">
+        <div class="p-6 rounded-md md:shadow md:bg-white md:border md:border-gray-200 space-y-3 sm:w-3/12 w-full">
             <!-- Header -->
-            <h1 class="text-lg text-center">Create an Authoriser account.</h1>
+            <div class="space-y-1">
+                <h1 class="font-medium text-xl text-purple-800 text-center">Authoriser</h1>
+                <p class="text-xs text-center">Create an account to secure your authentication tokens.</p>
+            </div>
 
             <form @submit.prevent="registerUser" class="space-y-3">
                 <!-- Email input -->
@@ -24,10 +27,10 @@
                 </div>
 
                 <!-- Terms of Service and Privacy Policy tickbox -->
-                <div class="form-check">
-                    <input required class="form-check-input h-4 w-4 border border-gray-300 rounded-sm focus:outline-none transition duration-200 mt-1 align-top float-left mr-2 cursor-pointer" type="checkbox" v-model="acceptedTerms" id="acceptedTermsCheck">
-                    <label class="form-check-label text-xs inline-block text-gray-800" for="acceptedTermsCheck">
-                        By checking this box, you agree to the Terms of Service and Privacy Policy.
+                <div class="flex items-center space-x-2 focus:outline-none">
+                    <input required class="border border-gray-300 rounded-sm focus:outline-none cursor-pointer" type="checkbox" v-model="acceptedTerms" id="acceptedTermsCheck">
+                    <label class="text-xs inline-block text-gray-800 cursor-pointer" for="acceptedTermsCheck">
+                        I agree to the Terms of Service and Privacy Policy.
                     </label>
                 </div>
 
