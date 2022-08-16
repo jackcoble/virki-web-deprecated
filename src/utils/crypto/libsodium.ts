@@ -38,6 +38,15 @@ export async function deriveKeyEncryptionKey(passphrase: string, salt?: string, 
 }
 
 /**
+ * Generates salt to be used for password hashing or encryption.
+ * @returns {string}
+ */
+export async function generateSalt(): Promise<string> {
+    await sodium.ready;
+    return await toBase64(sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES));
+}
+
+/**
  * Generates a random key used for symmetric encryption.
  * @returns {string}
  */
