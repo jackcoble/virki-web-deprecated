@@ -2,6 +2,41 @@ import sodium from "libsodium-wrappers";
 import type { KEK } from "@/types/user"
 
 /**
+ * Encrypts data with a symmetric key.
+ * @param data 
+ * @param key 
+ * @returns 
+ */
+export async function encrypt(data: Uint8Array, key?: Uint8Array | null): Promise<any> {
+    await sodium.ready;
+
+    const uintKey: Uint8Array = key || sodium.crypto_secretbox_keygen();
+    const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
+    const ciphertext = sodium.crypto_secretbox_easy(data, nonce, uintKey);
+
+    return {
+        key: key,
+        ciphertext: ciphertext,
+        nonce: nonce
+    }
+}
+
+export async function encryptToB64(data: string, key?: string): Promise<any> {
+    await sodium.ready;
+    const encrypted = await encrypt(
+        await fromBase64(data),
+        key ? await fromBase64(key) : null
+    )
+    
+    // Return Base64 encoded object
+    return {
+        key: await toBase64(encrypted.key),
+        ciphertext: await toBase64(encrypted.ciphertext),
+        nonce: await toBase64(encrypted.nonce)
+    }
+}
+
+/**
  * Derive stretched encryption key
  * @param passphrase - User supplied password
  * @param salt - Base64 encoded salt value
