@@ -90,6 +90,16 @@ export async function generateEncryptionKey(): Promise<string> {
     return await toBase64(sodium.crypto_kdf_keygen())
 }
 
+export async function generateKeypair(): Promise<any> {
+    await sodium.ready;
+    const keypair = sodium.crypto_box_keypair();
+
+    return {
+        publicKey: await toBase64(keypair.publicKey),
+        privateKey: await toBase64(keypair.privateKey)
+    }
+}
+
 /**
  * Return a SHA-256 hash of provided data.
  * @param input - Data to be hashed
