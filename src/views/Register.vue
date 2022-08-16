@@ -11,31 +11,16 @@
                     <b-input type="email" required v-model="email" />
                 </div>
 
-                <!-- Name input -->
+                <!-- Password -->
                 <div class="space-y-1.5">
-                    <p class="font-bold text-sm">Name</p>
-                    <b-input type="text" required v-model="name" />
-                    <p class="text-xs">What do you like to be called?</p>
-                </div>
-
-                <!-- Master password -->
-                <div class="space-y-1.5">
-                    <p class="font-bold text-sm pt-2">Master Password</p>
+                    <p class="font-bold text-sm pt-2">Password</p>
                     <b-password-input v-model="password" :showStrength="true" />
-                    <p class="text-xs">This password is used to access your token vault. It is important that you do not forget it, as due to the nature of encryption we cannot recover it for you.</p>
                 </div>
 
-                <!-- Confirm master password input -->
+                <!-- Confirm password input -->
                 <div class="space-y-1.5">
-                    <p class="font-bold text-sm">Confirm Master Password</p>
+                    <p class="font-bold text-sm">Confirm Password</p>
                     <b-password-input v-model="confirmPassword" />
-                </div>
-
-                <!-- Master password hint input -->
-                <div class="space-y-1.5">
-                    <p class="font-bold text-sm">Master Password Hint</p>
-                    <b-input type="text" v-model="passwordHint" />
-                    <p class="text-xs">Setting a hint is optional, but can help jog your memory in the event you forget your master password!</p>
                 </div>
 
                 <!-- Terms of Service and Privacy Policy tickbox -->
