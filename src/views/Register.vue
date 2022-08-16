@@ -54,6 +54,7 @@ import { Account, type IAccount } from "@/class/account";
 import { Crypto } from "@/class/crypto";
 import useToaster from "@/composables/useToaster";
 import authentication from "@/service/api/authentication";
+import { generateKeys } from "@/utils/crypto";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -92,51 +93,15 @@ export default defineComponent({
                 return toaster.error("Password must be at least 12 characters long!")
             }
 
-            // Made it to the derivation stage of the account, so set isLoading value
+            // Generate all the keys we need
             isLoading.value = true;
 
-            // Randomly generate a master keypair and initialise the Account class
-            const masterKeyPair = await Crypto.generateKeyPair();
-            const account = new Account(masterKeyPair.privateKey, masterKeyPair.publicKey);
+            alert("isLoading: " + isLoading.value);
 
-            // Stretch the password into a stronger key and use it to encrypt the master private key
-            const stretched = await account.deriveStretchedPassword(password.value);
-            const encryptedMasterPrivateKey = await Crypto.encrypt(
-                await Crypto.fromBase64(masterKeyPair.privateKey),
-                await Crypto.fromBase64(stretched.key)
-            );
+            const keys = await generateKeys(password.value);
+            console.log(keys);
 
-            // Derive a SHA-256 hash of the stretched password (used for authentication)
-            const passwordHash = await Crypto.sha256hash(await Crypto.fromBase64(stretched.key));
-
-            // We have all the data we need for now, so construct an account payload that will be sent to the API
-            const accountPayload: IAccount = {
-                email: email.value,
-                name: name.value,
-                password: {
-                    hash: passwordHash,
-                    salt: stretched.salt
-                },
-                encrypted_master_keypair: {
-                    private_key: encryptedMasterPrivateKey,
-                    public_key: masterKeyPair.publicKey
-                }
-            }
-
-            if (passwordHint.value) {
-                accountPayload.password.hint = passwordHint.value;
-            }
-
-            // Send account payload to API
-            try {
-                await authentication.RegisterAccount(accountPayload).then(res => {
-                    return toaster.success("Account created! Please sign in.")
-                })
-            } catch (e) {
-                return toaster.error(e.response.data.error)
-            } finally {
-                isLoading.value = false;
-            }
+            isLoading.value = false;
 
             // Push to index
             router.push("/login");
