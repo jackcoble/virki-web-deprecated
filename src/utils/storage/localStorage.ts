@@ -1,6 +1,5 @@
 export enum LS_KEYS {
-    AUTH_TOKENS = "authenticationTokens",
-    ENCRYPTED_MASTER_KEYPAIR = "encryptedMasterKeypair",
+    KEYS = "keys",
     PASSWORD = "password",
     USER_DETAILS = "userDetails"
 }
