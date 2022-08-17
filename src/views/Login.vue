@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center items-center h-screen bg-mine-shaft">
-        <div class="p-8 m-8 md:m-auto rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 sm:w-2/6 w-full">
+        <div class="p-8 m-8 md:m-auto rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 sm:w-3/12 w-full">
             <!-- Header -->
             <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
             <h1 class="text-xl text-center">Welcome to <span class="text-mountain-meadow">Virki</span>.</h1>
@@ -14,19 +14,19 @@
                 <p class="font-bold text-sm pt-2">Master Password</p>
                 <b-password-input v-model="password" />
 
-                <!-- Unlock and Logout buttons -->
-                <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
+                <!-- Login and Create buttons -->
+                <div class="flex flex-wrap pt-2 space-y-2">
                     <b-button type="submit" classType="primary" :loading="isLoading">
-                        <div class="flex flex-row justify-center">
+                        <div class="flex flex-row justify-center items-center">
                             <LoginIcon class="w-4 mr-1" />
-                            Log In
+                            <span>Log In</span>
                         </div>
                     </b-button>
 
                     <b-button classType="light" @click="router.push('/signup')">
-                        <div class="flex flex-row justify-center">
+                        <div class="flex flex-row justify-center items-center">
                             <UserAddIcon class="w-4 mr-1" />
-                            Create Account
+                            <span>Create Account</span>
                         </div>
                     </b-button>
                 </div>
