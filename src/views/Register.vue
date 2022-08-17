@@ -50,13 +50,13 @@
 </template>
 
 <script lang="ts">
-import { Account, type IAccount } from "@/class/account";
-import { Crypto } from "@/class/crypto";
 import useToaster from "@/composables/useToaster";
-import authentication from "@/service/api/authentication";
-import { generateKeys } from "@/utils/crypto";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+
+import { getDedicatedCryptoWorker } from "@/utils/comlink";
+import { LS_KEYS, setData } from "@/utils/storage/localStorage";
+import userService from "@/service/api/userService";
 
 export default defineComponent({
     name: "Login",
@@ -93,18 +93,29 @@ export default defineComponent({
                 return toaster.error("Password must be at least 12 characters long!")
             }
 
-            // Generate all the keys we need
             isLoading.value = true;
 
-            alert("isLoading: " + isLoading.value);
+            // Store some registration details, such as email
+            setData(LS_KEYS.USER_DETAILS, { email: email.value });
 
-            const keys = await generateKeys(password.value);
-            console.log(keys);
+            // Offload key generation onto CryptoWorker
+            // and set the keys in LocalStorage.
+            const cryptoWorker = getDedicatedCryptoWorker();
+            const keys = await cryptoWorker.generateKeys(password.value);
+
+            setData(LS_KEYS.KEYS, keys);
+
+            // Make API request to send OTP to users email address
+            try {
+                await userService.SendOTP(email.value);
+            } catch (error) {
+                return toaster.error("Unexpected error sending email");
+            }
 
             isLoading.value = false;
 
-            // Push to index
-            router.push("/login");
+            // Push to verification page
+            router.push("/verify");
         }
 
         return {
