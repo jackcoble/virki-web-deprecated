@@ -1,6 +1,6 @@
 <template>
     <input :type="type" :value="modelValue" @input="updateValue" :placeholder="placeholder" min="0"
-        class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2 h-10">
+        class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-mountain-meadow focus:border-mountain-meadow block w-full p-2 h-10">
 </template>
 
 <script lang="ts">

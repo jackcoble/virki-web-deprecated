@@ -52,7 +52,7 @@ export default defineComponent({
     setup() {
         // Define a dictionary of classes to be applied to the button
         const styles: Record<string, string> = {
-            "primary": "bg-purple-800 text-white hover:bg-purple-600 disabled:bg-purple-600",
+            "primary": "bg-mountain-meadow text-white hover:bg-mountain-meadow-400 disabled:bg-mountain-meadow",
             "danger": "bg-red-400 text-red-900 hover:bg-red-300 hover:text-red-700 disabled:bg-red-300",
             "light": "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-500 border-gray-200 disabled:bg-gray-100"
         };

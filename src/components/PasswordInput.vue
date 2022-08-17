@@ -2,13 +2,13 @@
     <div class="flex">
         <div class="flex-row flex-grow">
             <input :type="showPassword ? 'text' : 'password'" :value="modelValue" @input="updateValue" :placeholder="placeholder"
-            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2 h-10">
+            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-mountain-meadow focus:border-mountain-meadow block w-full p-2 h-10">
 
             <password-strength v-if="showStrength" class="mt-1" :password="modelValue" />
         </div>
 
         <div class="flex-col items-center justify-center">
-            <button type="button" class="m-2 w-5 text-purple-800" @click="showPassword = !showPassword">
+            <button type="button" class="m-2 w-5 text-mountain-meadow" @click="showPassword = !showPassword">
             <EyeOffIcon v-if="showPassword" />
             <EyeIcon v-if="!showPassword" />
         </button>
