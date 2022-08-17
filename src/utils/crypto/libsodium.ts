@@ -43,7 +43,7 @@ export async function encryptToB64(data: string, key?: string): Promise<any> {
  * @param opsLimit - Argon2 maximum CPU computations to perform 
  * @param memLimit - Argon2 maximum RAM hashing function will use.
  */
-export async function deriveKeyEncryptionKey(passphrase: string, salt?: string, opsLimit?: number, memLimit?: number): Promise<KEK> {
+export async function deriveKeyEncryptionKey(passphrase: string, salt?: string, opsLimit?: number, memLimit?: number): Promise<KEK | null> {
     await sodium.ready;
 
     // Default algorithm can change in future, so added this in as a safeguard.
@@ -55,21 +55,29 @@ export async function deriveKeyEncryptionKey(passphrase: string, salt?: string, 
     const saltBuffer = salt ? await fromBase64(salt) : sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
 
     // Determine opsLimit and memLimit
-    // Ideally we would use SENSITIVE here, but use INTERACTIVE until we can figure out WebWorkers...
-    opsLimit = opsLimit ? opsLimit : sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE;
-    memLimit = memLimit ? memLimit : sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE;
+    opsLimit = opsLimit ? opsLimit : sodium.crypto_pwhash_OPSLIMIT_SENSITIVE;
+    memLimit = memLimit ? memLimit : sodium.crypto_pwhash_MEMLIMIT_SENSITIVE;
 
-    // Derive stretched key using Sodium and Argon2ID
-    const key = sodium.crypto_pwhash(sodium.crypto_secretbox_KEYBYTES, passphrase, saltBuffer, opsLimit, memLimit, sodium.crypto_pwhash_ALG_DEFAULT);
-
-    const kek: KEK = {
-        key: await toBase64(key),
-        salt: await toBase64(saltBuffer),
-        opsLimit: opsLimit,
-        memLimit: memLimit
+    // If any operation fails due to insufficient memory, double the computation allowed and halve the memory limit.
+    const minMemLimit = sodium.crypto_pwhash_MEMLIMIT_MIN;
+    while (memLimit > minMemLimit) {
+        try {
+            const key = sodium.crypto_pwhash(sodium.crypto_secretbox_KEYBYTES, passphrase, saltBuffer, opsLimit, memLimit, sodium.crypto_pwhash_ALG_DEFAULT);
+            const kek: KEK = {
+                key: await toBase64(key),
+                salt: await toBase64(saltBuffer),
+                opsLimit: opsLimit,
+                memLimit: memLimit
+            }
+            
+            return Promise.resolve(kek);
+        } catch (e) {
+            opsLimit *= 2;
+            memLimit /= 2;
+        }
     }
-    
-    return Promise.resolve(kek);
+
+    return Promise.resolve(null);
 }
 
 /**
