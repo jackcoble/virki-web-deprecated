@@ -8,11 +8,7 @@
             <form @submit.prevent="handleSignIn" class="space-y-2">
                 <!-- Email input -->
                 <p class="font-bold text-sm">Email Address</p>
-                <b-input type="email" v-model="email" autofocus />
-
-                <!-- Master password -->
-                <p class="font-bold text-sm pt-2">Master Password</p>
-                <b-password-input v-model="password" />
+                <b-input type="email" v-model="email" placeholder="hello@virki.io" autofocus />
 
                 <!-- Login and Create buttons -->
                 <div class="flex flex-wrap md:flex-nowrap justify-center items-center md:space-x-2 space-y-2 md:space-y-0 pt-3">
