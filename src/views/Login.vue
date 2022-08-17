@@ -40,6 +40,7 @@ import userService from "@/service/api/userService";
 
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { LS_KEYS, setData } from "@/utils/storage/localStorage";
+import { sleep } from "@/utils/common";
 
 export default defineComponent({
     name: "Login",
@@ -65,6 +66,9 @@ export default defineComponent({
 
                 // Set email to be stored in LocalStorage
                 setData(LS_KEYS.USER_DETAILS, { email: email.value });
+
+                // Sleep for 1.5 seconds
+                await sleep(1.5);
 
                 // Push to OTP verification page
                 router.push("/verify");
