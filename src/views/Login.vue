@@ -15,7 +15,7 @@
                 <b-password-input v-model="password" />
 
                 <!-- Login and Create buttons -->
-                <div class="flex flex-wrap pt-2 space-y-2">
+                <div class="flex flex-wrap md:flex-nowrap justify-center items-center md:space-x-2 space-y-2 md:space-y-0 pt-3">
                     <b-button type="submit" classType="primary" :loading="isLoading">
                         <div class="flex flex-row justify-center items-center">
                             <LoginIcon class="w-4 mr-1" />
