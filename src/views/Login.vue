@@ -39,7 +39,7 @@
 import { Account, type IAccount } from "@/class/account";
 import useToaster from "@/composables/useToaster";
 import authentication from "@/service/api/authentication";
-import user from "@/service/api/user";
+import userService from "@/service/api/userService";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { defineComponent, ref } from "vue";
@@ -98,7 +98,7 @@ export default defineComponent({
 
                 // Fetch encrypted user account and decrypt the master keypair with the stretched password.
                 // Whilst we are here we can set some application data in the store from the account response.
-                res = await user.GetAccount();
+                res = await userService.GetAccount();
                 if (res.data) {
                     const userAccount = res.data as IAccount;
                     

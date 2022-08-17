@@ -67,7 +67,7 @@ import { UserIcon, ShieldCheckIcon, AdjustmentsIcon, StarIcon, CollectionIcon, C
 
 // Custom components
 import DeauthoriseModal from "@/components/DeauthoriseModal.vue";
-import user from "@/service/api/user";
+import userService from "@/service/api/userService";
 
 export default defineComponent({
     name: "Settings",
@@ -88,7 +88,7 @@ export default defineComponent({
         onMounted(async () => {
             // Fetch account data from API
             try {
-                const res = await user.GetAccount();
+                const res = await userService.GetAccount();
                 accountData.value = res.data;
             } catch (e) {
                 console.log(e);
