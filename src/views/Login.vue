@@ -1,6 +1,6 @@
 <template>
-    <div class="flex justify-center items-center h-screen bg-mine-shaft">
-        <div class="p-8 m-8 md:m-auto rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 sm:w-3/12 w-full">
+    <div class="flex justify-center items-center h-screen bg-mine-shaft p-8">
+        <div class="p-8 md:m-auto rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
             <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
             <h1 class="text-xl text-center">Welcome to <span class="text-mountain-meadow">Virki</span>.</h1>
