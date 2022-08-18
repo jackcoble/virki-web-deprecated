@@ -5,7 +5,7 @@ export enum EncryptionType {
 
 // Interface representing the parsed format of a "cipher"
 export interface Cipher {
-    type: number;
+    type: EncryptionType;
     ciphertext: string;
     nonce: string;
     mac?: string;
