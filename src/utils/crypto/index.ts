@@ -8,6 +8,9 @@ export async function generateKeys(password: string) {
 
     // Derive Key Encryption Key
     const kek = await libsodium.deriveKeyEncryptionKey(password);
+    if (!kek) {
+        return Promise.reject("Key encryption key cannot be null!");
+    }
 
     // Encrypt the master key with the KEK and recovery key,
     // and then recovery key with master key.
