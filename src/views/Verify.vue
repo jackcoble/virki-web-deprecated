@@ -6,7 +6,7 @@
             <h1 class="text-xl text-center">We've sent a verification code to <span class="text-mountain-meadow">{{ email }}</span></h1>
             <p class="text-xs">If you haven't received a verification code within a couple of minutes, please check your spam or request for a new code to be sent.</p>
 
-            <form @submit.prevent="handleSignIn" class="space-y-2">
+            <form @submit.prevent="handleVerification" class="space-y-2">
                 <b-input type="text" v-model.number="otp" placeholder="Verification code" autofocus />
 
                 <!-- Verify button -->
@@ -57,19 +57,17 @@ export default defineComponent({
             }
         })
 
-        // Handle user login
-        const handleSignIn = async () => {
+        // Handle OTP verification
+        const handleVerification = async () => {
             isLoading.value = true;
 
-            // Using the email address, request an OTP to be sent to it
             try {
-                await userService.SendOTP(email.value);
-
-                // Set email to be stored in LocalStorage
-                setData(LS_KEYS.USER_DETAILS, { email: email.value });
-
-                // Push to OTP verification page
-                router.push("/verify");
+                // Verify the OTP with the expectation to receive a session token back!
+                const res = await userService.VerifyOTP(email.value, otp.value);
+                if (res.data && res.data.sessionToken) {
+                    // Store the sessionToken with userData
+                    setData(LS_KEYS.USER_DETAILS, { email: email.value, sessionToken: res.data.sessionToken });
+                }
             } catch (e) {
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
@@ -90,7 +88,7 @@ export default defineComponent({
 
             router,
 
-            handleSignIn
+            handleVerification
         }
     }
 })
