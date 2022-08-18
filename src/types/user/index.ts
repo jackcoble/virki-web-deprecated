@@ -8,7 +8,7 @@ export interface Keys {
 
     // The master key is used for symmetric cryptography operations
     // and is encrypted with the KEK.
-    master_encryption_key: string;
+    masterEncryptionKey: string;
 
     // X25519 keypair used for asymmetric cryptography operations
     // where the privateKey is encrypted using the master key.

@@ -37,7 +37,7 @@ export async function generateKeys(password: string): Promise<Keys> {
             opsLimit: kek.opsLimit,
             memLimit: kek.memLimit
         },
-        master_encryption_key: masterKeyEncryptedWithKekCipherString,
+        masterEncryptionKey: masterKeyEncryptedWithKekCipherString,
         keypair: {
             publicKey: keypair.publicKey,
             privateKey: encryptedKeyPairCipherString
@@ -59,7 +59,7 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
     }
 
     // Decrypt the master encryption key into Base64
-    const mekCipher = await parseCipherString(encryptedKeys.master_encryption_key);
+    const mekCipher = await parseCipherString(encryptedKeys.masterEncryptionKey);
     const masterEncryptionKey = await libsodium.decryptFromB64(
         mekCipher.ciphertext,
         mekCipher.mac,
@@ -102,7 +102,7 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
             opsLimit: kek.opsLimit,
             memLimit: kek.memLimit
         },
-        master_encryption_key: masterEncryptionKey,
+        masterEncryptionKey: masterEncryptionKey,
         keypair: {
             publicKey: encryptedKeys.keypair.publicKey,
             privateKey: kpPrivateKey
