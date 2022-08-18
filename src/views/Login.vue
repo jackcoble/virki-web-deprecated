@@ -3,7 +3,10 @@
         <div class="p-8 md:m-auto rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
             <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
-            <h1 class="text-xl text-center">Welcome to <span class="text-mountain-meadow">Virki</span>.</h1>
+            <div space-y-1>
+                <h1 class="text-xl text-center">Welcome to <span class="text-mountain-meadow">Virki</span>.</h1>
+                <p class="text-xs text-center">Your secure two-factor authentication vault.</p>
+            </div>
 
             <form @submit.prevent="handleSignIn" class="space-y-2">
                 <!-- Email input -->
@@ -27,6 +30,11 @@
                     </b-button>
                 </div>
             </form>
+
+            <div class="flex justify-center items-center space-x-1 pt-3">
+                <img src="@/assets/gb_flag.svg" class="w-5 rounded-sm" alt="GB Flag">
+                <p class="text-xs">Made in the UK.</p>
+            </div>
         </div>
     </div>
 </template>
