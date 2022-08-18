@@ -115,3 +115,17 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
 
     return Promise.resolve(decryptedKeys);
 }
+
+// Decrypt a cipher string using a symmetric key
+export async function decrypt(key: string, cipherString: string): Promise<string> {
+    const cipher = await parseCipherString(cipherString);
+
+    const decrypted = await libsodium.decryptFromB64(
+        cipher.ciphertext,
+        cipher.mac,
+        cipher.nonce,
+        key
+    );
+
+    return Promise.resolve(decrypted);
+}

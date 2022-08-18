@@ -9,6 +9,10 @@ export const Crypto = {
 
     decryptKeys (passphrase: string, keys: Keys) {
         return crypto.decryptKeys(passphrase, keys);
+    },
+
+    decrypt (key: string, cipherString: string) {
+        return crypto.decrypt(key, cipherString);
     }
 }
 
