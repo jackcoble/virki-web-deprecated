@@ -8,6 +8,13 @@ export default {
         })
     },
 
+    VerifyOTP(email: string, otp: number): Promise<AxiosResponse> {
+        return api.post("/v1/users/otp/verify", {
+            email: email,
+            otp: otp
+        })
+    },
+
     GetAccount(): Promise<AxiosResponse> {
         return api.get("/v1/account");
     }
