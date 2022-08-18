@@ -39,7 +39,7 @@ window.addEventListener("offline", (event) => {
 // Carry out a health check
 const doHealthCheck = async () => {
   try {
-    await system.Status();
+    // await system.Status();
     applicationStore.setOnline(true);
   } catch (e) {
     if (!e.response) {
