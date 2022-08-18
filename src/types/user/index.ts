@@ -40,3 +40,12 @@ export interface KEK {
     opsLimit: number;
     memLimit: number;
 }
+
+// TwoFactorAuthentication response
+export interface TwoFactorResponse {
+    id: string;
+    email: string;
+    encryptedKeys: Keys;
+    encryptedSession: string;
+    session: string;
+}
