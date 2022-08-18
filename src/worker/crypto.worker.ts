@@ -17,7 +17,7 @@ export const Crypto = {
     },
 
     fromBase64 (input: string) {
-        fromBase64(input);
+        return fromBase64(input);
     }
 }
 
