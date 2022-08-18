@@ -27,13 +27,19 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import useToaster from "@/composables/useToaster";
 import userService from "@/service/api/userService";
 
 import { CheckIcon } from "@heroicons/vue/outline";
-import { getData, LS_KEYS, setData } from "@/utils/storage/localStorage";
+import { getData, LS_KEYS } from "@/utils/storage/localStorage";
+import type { Keys } from "@/types/user";
+import { getKey, SESSION_KEYS } from "@/utils/storage/sessionStorage";
+import { getDedicatedCryptoWorker } from "@/utils/comlink";
+
+import * as bip39 from "@scure/bip39"
+import { wordlist } from '@scure/bip39/wordlists/english';
 
 export default defineComponent({
     name: "Login",
@@ -47,6 +53,8 @@ export default defineComponent({
         const isLoading = ref(false);
 
         const router = useRouter();
+        const route = useRoute();
+
         const toaster = useToaster();
 
         onMounted(() => {
@@ -57,27 +65,52 @@ export default defineComponent({
             }
         })
 
-        // Handle OTP verification
+        // Handle OTP verification and signin/signup as necessary
         const handleVerification = async () => {
             isLoading.value = true;
 
+            // Verify the OTP with the expectation to receive a session token back!
             try {
-                // Verify the OTP with the expectation to receive a session token back!
                 const res = await userService.VerifyOTP(email.value, otp.value);
-                if (res.data && res.data.sessionToken) {
-                    // Store the sessionToken with userData
-                    setData(LS_KEYS.USER_DETAILS, { email: email.value, sessionToken: res.data.sessionToken });
-                }
+                console.log("Session token:", res.data.session)
             } catch (e) {
-                if (e.response.data && e.response.data.error) {
-                    toaster.error(e.response.data.error);
-                    return;
-                } else {
-                    toaster.error("An unknown error has occurred.");
-                    return;
-                }
-            } finally {
-                isLoading.value = false;
+                return toaster.error("An unknown error has occurred.");
+            }
+
+            // Check the "type" parameter. If we've got signup,
+            // then we need to send the encrypted keys to our API
+            // and then prompt the user to backup their recovery key.
+            const verifyType = route.query.type as string;
+            if (!verifyType) {
+                return toaster.error("Verification type not present in URL!");
+            }
+
+            switch (verifyType) {
+                case "signup":
+                    // TODO: Send keys to API
+                    const encryptedKeys: Keys = getData(LS_KEYS.KEYS);
+                    if (!encryptedKeys) {
+                        return toaster.error("Encrypted keys are not on device!");
+                    }
+
+                    const cryptoWorker = await getDedicatedCryptoWorker();
+
+                    // Using the master encryption key, decrypt the recovery key and provide it to BIP39 as entropy.
+                    // Show this to the user
+                    const masterEncryptionKey = getKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY);
+                    const recoveryKey = await cryptoWorker.decrypt(masterEncryptionKey, encryptedKeys.recovery.recoveryKeyEncryptedWithMasterKey);
+                    const recoveryKeyBuffer: Uint8Array = await cryptoWorker.fromBase64(recoveryKey);
+                    
+                    const mnemonic = bip39.entropyToMnemonic(recoveryKeyBuffer, wordlist);
+                    console.log("Recovery Key:", mnemonic);
+
+                    // TODO: Route to account recovery
+                    router.push({ path: "/recovery" });
+                    
+                    break;
+            
+                default:
+                    break;
             }
         }
 
