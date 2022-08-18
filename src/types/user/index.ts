@@ -8,28 +8,21 @@ export interface Keys {
 
     // The master key is used for symmetric cryptography operations
     // and is encrypted with the KEK.
-    master: {
-        key: string;
-        nonce: string;
-    }
+    master_encryption_key: string;
 
     // X25519 keypair used for asymmetric cryptography operations
     // where the privateKey is encrypted using the master key.
     keypair: {
         publicKey: string;
         privateKey: string;
-        privateKeyNonce: string;
     }
 
     // Recovery key is used in the event the user has forgotten their password.
     // Should be encrypted with the master key for secure storage.
     // And then encrypt the master key with the recovery key.
     recovery: {
-        masterKey: string; // Master key has been encrypted with recovery key
-        masterKeyNonce: string; // Nonce used for master key encryption
-
-        recoveryKey: string // Recovery key encrypted with master key
-        recoveryKeyNonce: string // Nonce used for recovery key encryption
+        masterKeyEncryptedWithRecoveryKey: string; // Master key has been encrypted with recovery key
+        recoveryKeyEncryptedWithMasterKey: string // Recovery key encrypted with master key
     }
 }
 
