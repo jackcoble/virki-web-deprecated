@@ -15,7 +15,7 @@ export function parseCipherString(cipherString: string): Promise<Cipher> {
     */
 
     // Split the "cipher" string by the period character, so we can validate the EncryptionType.
-    const encryptionType = cipherString.split(".")[0] as EncryptionType;
+    const encryptionType = parseInt(cipherString.split(".")[0]);
     if (!Object.values(EncryptionType).includes(encryptionType)) {
         return Promise.reject("Encryption type is invalid!");
     }
@@ -58,7 +58,7 @@ export function serialiseCipherString(encryptionType: EncryptionType, cipherText
     switch (encryptionType) {
         case EncryptionType.XCHACHA20_POLY1305:
             // XChaCha20-Poly1305 ciphers must be represented in the following format:
-            // xchacha20poly1305.CipherText|Nonce|MAC
+            // 1.CipherText|Nonce|MAC
             const cipherString = `${EncryptionType.XCHACHA20_POLY1305}.${cipherText}|${nonce}|${mac}`;
             return Promise.resolve(cipherString);
     
