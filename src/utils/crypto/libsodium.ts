@@ -12,12 +12,13 @@ export async function encrypt(data: Uint8Array, key?: Uint8Array | null): Promis
 
     const uintKey: Uint8Array = key || sodium.crypto_secretbox_keygen();
     const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
-    const ciphertext = sodium.crypto_secretbox_easy(data, nonce, uintKey);
+    const box = sodium.crypto_secretbox_detached(data, nonce, uintKey);
 
     return {
         key: key,
-        ciphertext: ciphertext,
-        nonce: nonce
+        ciphertext: box.cipher,
+        nonce: nonce,
+        mac: box.mac
     }
 }
 
@@ -38,7 +39,8 @@ export async function encryptToB64(data: string, key?: string): Promise<any> {
     return {
         key: await toBase64(encrypted.key),
         ciphertext: await toBase64(encrypted.ciphertext),
-        nonce: await toBase64(encrypted.nonce)
+        nonce: await toBase64(encrypted.nonce),
+        mac: await toBase64(encrypted.mac)
     }
 }
 
