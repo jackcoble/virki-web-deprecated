@@ -21,6 +21,12 @@ export async function encrypt(data: Uint8Array, key?: Uint8Array | null): Promis
     }
 }
 
+/**
+ * Encrypts data and returns an object with Base64 Encoded values
+ * @param data 
+ * @param key 
+ * @returns 
+ */
 export async function encryptToB64(data: string, key?: string): Promise<any> {
     await sodium.ready;
     const encrypted = await encrypt(
@@ -34,6 +40,26 @@ export async function encryptToB64(data: string, key?: string): Promise<any> {
         ciphertext: await toBase64(encrypted.ciphertext),
         nonce: await toBase64(encrypted.nonce)
     }
+}
+
+/**
+ * Decrypts data with a supplied symmetric key
+ * @param data 
+ * @param nonce 
+ * @param mac 
+ * @param key 
+ */
+export async function decrypt(data: Uint8Array, mac: Uint8Array, nonce: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
+    await sodium.ready;
+
+    const decrypted = sodium.crypto_secretbox_open_detached(
+        data,
+        mac,
+        nonce,
+        key
+    )
+
+    return decrypted;
 }
 
 /**
