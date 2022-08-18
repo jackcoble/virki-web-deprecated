@@ -8,5 +8,5 @@ export interface Cipher {
     type: EncryptionType;
     ciphertext: string;
     nonce: string;
-    mac?: string;
+    mac: string;
 }
