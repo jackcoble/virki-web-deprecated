@@ -1,6 +1,7 @@
 import { expose } from "comlink";
 import * as crypto from "@/utils/crypto";
 import type { Keys } from "@/types/user";
+import { fromBase64 } from "@/utils/crypto/libsodium";
 
 export const Crypto = {
     generateKeys (passphrase: string) {
@@ -13,6 +14,10 @@ export const Crypto = {
 
     decrypt (key: string, cipherString: string) {
         return crypto.decrypt(key, cipherString);
+    },
+
+    fromBase64 (input: string) {
+        fromBase64(input);
     }
 }
 
