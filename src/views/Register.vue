@@ -111,8 +111,8 @@ export default defineComponent({
 
             isLoading.value = false;
 
-            // Push to verification page
-            router.push("/verify");
+            // Push to verification page with a query param called "type" set to "signup" (so we know it's a new user signup)
+            router.push({ path: "/verify", query: { type: "signup" } });
         }
 
         return {
