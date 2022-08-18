@@ -1,10 +1,11 @@
 <template>
-    <div class="flex justify-center items-center h-screen md:bg-gray-200 bg-white">
-        <div class="p-6 rounded-md md:shadow md:bg-white md:border md:border-gray-200 space-y-3 sm:w-3/12 w-full">
+    <div class="flex justify-center items-center h-screen bg-mine-shaft p-8">
+        <div class="p-8 md:m-auto rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
-            <div class="space-y-1">
-                <h1 class="font-medium text-xl text-purple-800 text-center">Authoriser</h1>
-                <p class="text-xs text-center">Create an account to secure your authentication tokens.</p>
+            <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
+            <div space-y-1>
+                <h1 class="text-xl text-center">Create your <span class="text-mountain-meadow">Virki</span> account.</h1>
+                <p class="text-xs text-center">Your secure two-factor authentication vault.</p>
             </div>
 
             <form @submit.prevent="registerUser" class="space-y-3">
@@ -27,7 +28,7 @@
                 </div>
 
                 <!-- Terms of Service and Privacy Policy tickbox -->
-                <div class="flex items-center space-x-2 focus:outline-none">
+                <div class="flex justify-center items-center space-x-2 focus:outline-none">
                     <input required class="border border-gray-300 rounded-sm focus:outline-none cursor-pointer" type="checkbox" v-model="acceptedTerms" id="acceptedTermsCheck">
                     <label class="text-xs inline-block text-gray-800 cursor-pointer" for="acceptedTermsCheck">
                         I agree to the Terms of Service and Privacy Policy.
@@ -51,7 +52,7 @@
 
 <script lang="ts">
 import useToaster from "@/composables/useToaster";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { getDedicatedCryptoWorker } from "@/utils/comlink";
@@ -66,7 +67,6 @@ export default defineComponent({
         const name = ref("");
         const password = ref("");
         const confirmPassword = ref("");
-        const passwordHint = ref("");
         const acceptedTerms = ref(false);
         const isLoading = ref(false);
 
@@ -78,16 +78,12 @@ export default defineComponent({
             /* 
             First we need to carry out some client-side checks:
             - Password confirmation matches password
-            - Password hint doesn't contain the master password
             - Minimum password length of 12 characters
             */
             if (confirmPassword.value !== password.value) {
                 return toaster.error("Passwords do not match!")
             }
 
-            if (passwordHint.value.includes(password.value)) {
-                return toaster.error("Password hint cannot include master password!")
-            }
 
             if (password.value.length < 12) {
                 return toaster.error("Password must be at least 12 characters long!")
@@ -98,19 +94,20 @@ export default defineComponent({
             // Store some registration details, such as email
             setData(LS_KEYS.USER_DETAILS, { email: email.value });
 
-            // Offload key generation onto CryptoWorker
-            // and set the keys in LocalStorage.
-            const cryptoWorker = getDedicatedCryptoWorker();
-            const keys = await cryptoWorker.generateKeys(password.value);
-
-            setData(LS_KEYS.KEYS, keys);
-
             // Make API request to send OTP to users email address
             try {
                 await userService.SendOTP(email.value);
             } catch (error) {
                 return toaster.error("Unexpected error sending email");
             }
+
+
+            // Offload key generation onto CryptoWorker
+            // and set the keys in LocalStorage.
+            const cryptoWorker = getDedicatedCryptoWorker();
+            const keys = await cryptoWorker.generateKeys(password.value);
+
+            setData(LS_KEYS.KEYS, keys);
 
             isLoading.value = false;
 
@@ -123,7 +120,6 @@ export default defineComponent({
             name,
             password,
             confirmPassword,
-            passwordHint,
             acceptedTerms,
             isLoading,
 
