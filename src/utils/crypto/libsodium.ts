@@ -1,13 +1,28 @@
 import sodium from "libsodium-wrappers";
 import type { KEK } from "@/types/user"
 
+// We expect encrypt/decrypt actions to return the following.
+interface RawCryptoResult {
+    key: Uint8Array;
+    ciphertext: Uint8Array;
+    nonce: Uint8Array;
+    mac: Uint8Array;
+}
+
+interface Base64CryptoResult {
+    key: string;
+    ciphertext: string;
+    nonce: string;
+    mac: string;
+}
+
 /**
  * Encrypts data with a symmetric key.
  * @param data 
  * @param key 
  * @returns 
  */
-export async function encrypt(data: Uint8Array, key?: Uint8Array | null): Promise<any> {
+export async function encrypt(data: Uint8Array, key?: Uint8Array): Promise<RawCryptoResult> {
     await sodium.ready;
 
     const uintKey: Uint8Array = key || sodium.crypto_secretbox_keygen();
@@ -15,7 +30,7 @@ export async function encrypt(data: Uint8Array, key?: Uint8Array | null): Promis
     const box = sodium.crypto_secretbox_detached(data, nonce, uintKey);
 
     return {
-        key: key,
+        key: uintKey,
         ciphertext: box.cipher,
         nonce: nonce,
         mac: box.mac
@@ -28,11 +43,13 @@ export async function encrypt(data: Uint8Array, key?: Uint8Array | null): Promis
  * @param key 
  * @returns 
  */
-export async function encryptToB64(data: string, key?: string): Promise<any> {
+export async function encryptToB64(data: string, key?: string): Promise<Base64CryptoResult> {
     await sodium.ready;
+
+    const uintKey: Uint8Array = key ? await fromBase64(key) : new Uint8Array();
     const encrypted = await encrypt(
         await fromBase64(data),
-        key ? await fromBase64(key) : null
+        uintKey 
     )
     
     // Return Base64 encoded object
