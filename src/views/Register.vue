@@ -112,7 +112,7 @@ export default defineComponent({
 
             // Store the decrypted master key in SessionStorage
             const decryptedKeys = await cryptoWorker.decryptKeys(password.value, keys);
-            setKey(SESSION_KEYS.ENCRYPTION_KEY, decryptedKeys.master_encryption_key);
+            setKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY, decryptedKeys.masterEncryptionKey);
 
             isLoading.value = false;
 
