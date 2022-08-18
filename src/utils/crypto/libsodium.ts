@@ -44,21 +44,35 @@ export async function encryptToB64(data: string, key?: string): Promise<any> {
 
 /**
  * Decrypts data with a supplied symmetric key
- * @param data 
+ * @param ciphertext 
  * @param nonce 
  * @param mac 
  * @param key 
  */
-export async function decrypt(data: Uint8Array, mac: Uint8Array, nonce: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
+export async function decrypt(ciphertext: Uint8Array, mac: Uint8Array, nonce: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
     await sodium.ready;
 
     const decrypted = sodium.crypto_secretbox_open_detached(
-        data,
+        ciphertext,
         mac,
         nonce,
         key
     )
 
+    return decrypted;
+}
+
+export async function decryptFromB64(ciphertext: string, mac: string, nonce: string, key: string): Promise<string> {
+    await sodium.ready;
+
+    const decryptedRaw = await decrypt(
+        await fromBase64(ciphertext),
+        await fromBase64(mac),
+        await fromBase64(nonce),
+        await fromBase64(key)
+    );
+
+    const decrypted = await toBase64(decryptedRaw);
     return decrypted;
 }
 
