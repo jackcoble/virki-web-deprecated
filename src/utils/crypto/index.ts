@@ -77,15 +77,6 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
     )
 
     // Decrypt the recovery keys
-    // Master key encrypted with recovery key
-    const mkewrkCipher = await parseCipherString(encryptedKeys.recovery.masterKeyEncryptedWithRecoveryKey);
-    const mkewrk = await libsodium.decryptFromB64(
-        mkewrkCipher.ciphertext,
-        mkewrkCipher.mac,
-        mkewrkCipher.nonce,
-        masterEncryptionKey
-    )
-
     // Recovery key encrypted with master key
     const rkewmkCipher = await parseCipherString(encryptedKeys.recovery.recoveryKeyEncryptedWithMasterKey);
     const rkewmk = await libsodium.decryptFromB64(
@@ -93,6 +84,15 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
         rkewmkCipher.mac,
         rkewmkCipher.nonce,
         masterEncryptionKey
+    )
+
+    // Master key encrypted with recovery key
+    const mkewrkCipher = await parseCipherString(encryptedKeys.recovery.masterKeyEncryptedWithRecoveryKey);
+    const mkewrk = await libsodium.decryptFromB64(
+        mkewrkCipher.ciphertext,
+        mkewrkCipher.mac,
+        mkewrkCipher.nonce,
+        rkewmk
     )
 
     // Construct an object to be returned containing the decrypted keys
