@@ -31,32 +31,9 @@
         <Sidebar />
       </div>
 
-      <!-- TOTP Entries -->
-      <div class="flex-col flex-grow overflow-auto" 
-        :class="[
-          showEditTokenPane && !closeMenuMobile ? 'hidden md:flex' : 'flex',
-          closeMenuMobile ? 'hidden' : ''
-        ]" >
-        <!-- Show frowny face if we've got no tokens -->
-        <div v-if="entries.length === 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
-          <EmojiSadIcon class="w-24 text-purple-800" />
-          <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ vaultStore.getActiveVault?.name }}</span> vault.</p>
-        </div>
-
-        <div v-for="entry in entries" :key="entry._id">
-          <Entry :token="entry" @tokenToEdit="handleEditToken" />
-        </div>
-      </div>
-
-      <!-- Edit column -->
-      <div v-if="showEditTokenPane" class="flex-col flex-grow bg-gray-100 overflow-auto">
-        <EditEntry :id="tokenToEdit._id" @close="showEditTokenPane = !showEditTokenPane" />
-      </div>
+     
     </div>
   </div>
-
-  <!-- Create vault modal -->
-  <CreateVaultModal v-if="showCreateVaultModal" @close="showCreateVaultModal = !showCreateVaultModal" />
 </template>
 
 <script lang="ts">
@@ -67,39 +44,28 @@ import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from "vue"
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon } from "@heroicons/vue/outline"
 import { useVaultStore } from "@/stores/vaultStore";
 import { useApplicationStore } from "@/stores/appStore";
-import CreateVaultModal from "../components/CreateVaultModal.vue";
 
-import usePouchDB from "@/composables/usePouchDB";
-import useVault from "@/composables/useVault";
 import { useEncryptionKeyStore } from "@/stores/encryptionKeyStore";
 import { useRouter } from "vue-router";
-import Entry from "@/components/Entry.vue"
 import BaseModal from "@/components/Modal/BaseModal.vue"
 import { useAuthenticationStore } from "@/stores/authenticationStore";
-import type { Token } from "@/models/token";
 import Sidebar from "../components/Sidebar.vue";
-import EditEntry from "../components/EditEntry.vue";
 
 export default defineComponent({
   name: "HomeView",
   components: {
     EmojiSadIcon,
-    CreateVaultModal,
     PlusCircleIcon,
     ClockIcon,
     XIcon,
     MenuIcon,
-    Entry,
     BaseModal,
     Sidebar,
-    EditEntry
   },
   setup() {
     const router = useRouter();
 
     const emitter = useEmitter();
-    const vault = useVault();
-    const pouchdb = usePouchDB();
 
     const authenticationStore = useAuthenticationStore();
     const applicationStore = useApplicationStore();
@@ -118,65 +84,9 @@ export default defineComponent({
     const showSidebarUserOptions = ref(false);
     const showCreateVaultModal = ref(false);
 
-    // Set token to be edited
-    const showEditTokenPane = ref(false);
-    const tokenToEdit = ref({} as Token);
-
-    const handleEditToken = (id: any) => {
-      if (!id) {
-        return;
-      }
-
-      tokenToEdit.value = {} as Token;
-
-      // Lookup the token within the vault to be edited
-      const t = vaultStore.getTokens.find(to => to._id === id)
-      if (t) {
-        tokenToEdit.value = t;
-      }
-
-      showEditTokenPane.value = true;
-    }
-
-    const isRefreshingVault = ref(false);
-    const refreshVault = async () => {
-      if (!vault) {
-        return;
-      }
-
-      isRefreshingVault.value = true;
-
-      // Synchronise, fetch and decrypt vaults
-      await pouchdb.synchronise();
-
-      const encryptedVaults = await pouchdb.getVaults();
-      encryptedVaults.forEach(async v => {
-        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.private_key, encryptionKeyStore.getMasterKeyPair.public_key);
-        vaultStore.add(decrypted)
-      })
-
-      isRefreshingVault.value = false;
-    }
-
     let interval: any;
 
     onMounted(async () => {
-      // Don't continue if no vault is set
-      if (!vault) {
-        return;
-      }
-
-      // Synchronise and create/update existing indexes if needed.
-      await pouchdb.synchronise();
-      await pouchdb.createIndexes();
-
-      // We can loop through the encrypted vaults, decrypt them and then set them in the store
-      const encryptedVaults = await pouchdb.getVaults();
-      encryptedVaults.forEach(async v => {
-        const decrypted = await vault.decryptFromVaultObject(v, encryptionKeyStore.getMasterKeyPair.private_key, encryptionKeyStore.getMasterKeyPair.public_key);
-        vaultStore.add(decrypted)
-      })
-
       // Fire off initial countdown event
       emitCountdownEvent();
 
@@ -200,7 +110,7 @@ export default defineComponent({
       emitter.emit("countdown", eventPayload);
     }
 
-    const entries = computed(() => vaultStore.getTokens);
+    const entries = [] as any;
 
     return {
       router,
@@ -209,7 +119,6 @@ export default defineComponent({
       vaults,
 
       entries,
-      isRefreshingVault,
       isOnline,
       isSyncing,
 
@@ -218,13 +127,7 @@ export default defineComponent({
       showSidebarUserOptions,
       showCreateVaultModal,
 
-      handleEditToken,
-      showEditTokenPane,
-      tokenToEdit,
-
       vaultStore,
-
-      refreshVault
     };
   }
 })

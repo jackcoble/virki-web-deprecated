@@ -1,4 +1,3 @@
-import { SYNC_TYPE } from '@/class/pouchdb';
 import { defineStore } from 'pinia'
 
 // General application state
@@ -10,7 +9,7 @@ export const useApplicationStore = defineStore({
         inactivityTimeout: localStorage.getItem("inactivityTimeout") || "10", // 10 minute default inactivity timeout
 
         sync: {
-            type: SYNC_TYPE.CLOUD,
+            type: "SYNC_TYPE.CLOUD",
             db: "",
             url: ""
         }

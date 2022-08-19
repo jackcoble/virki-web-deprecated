@@ -1,25 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import HomeView from '@/views/HomeView.vue'
 import Login from "@/views/Login.vue"
-import Verify from "@/views/Verify.vue"
-
 import Register from "@/views/Register.vue"
-import New from "@/views/new/Index.vue"
-import Scan from '@/views/new/Scan.vue'
-import NewVault from "@/views/new/Vault.vue"
-import Advanced from "@/views/new/Advanced.vue"
-import Settings from "@/views/Settings.vue"
-import SettingsSecurity from "@/views/settings/Security.vue";
-import SettingsPreferences from "@/views/settings/Preferences.vue";
-import SettingsVaults from "@/views/settings/Vaults.vue";
-import SettingsSyncing from "@/views/settings/Syncing.vue";
-import Lock from "@/views/Lock.vue"
+import Verify from "@/views/Verify.vue"
+import HomeView from '@/views/HomeView.vue'
 
 import { useEncryptionKeyStore } from '@/stores/encryptionKeyStore'
 import { useAuthenticationStore } from '@/stores/authenticationStore'
 import { useApplicationStore } from '@/stores/appStore'
-import { Crypto } from '@/class/crypto'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,140 +40,8 @@ const router = createRouter({
       path: "/lock",
       name: "lock",
       component: Lock
-    },
-    {
-      path: "/new",
-      name: "new",
-      component: New,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
-    },
-    {
-      path: "/new/qrcode",
-      name: "scan",
-      component: Scan,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
-    },
-    {
-      path: "/new/advanced",
-      name: "advanced",
-      component: Advanced,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
-    },
-    {
-      path: "/new/vault",
-      name: "newVault",
-      component: NewVault,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
-    },
-    {
-      path: "/settings",
-      name: "settings",
-      component: Settings,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      },
-    },
-    {
-      path: "/settings/security",
-      name: "securitySettings",
-      component: SettingsSecurity,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
-    },
-    {
-      path: "/settings/preferences",
-      name: "settingsPreferences",
-      component: SettingsPreferences,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
-    },
-    {
-      path: "/settings/vaults",
-      name: "settingsVaults",
-      component: SettingsVaults,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
-    },
-    {
-      path: "/settings/syncing",
-      name: "settingsSyncing",
-      component: SettingsSyncing,
-      meta: {
-        authRequired: true,
-        showTabMenu: true
-      }
     }
   ]
-})
-
-// On specified, check that user is authenticated by checking for presence of "master key"
-router.beforeEach(async (to, from, next) => {
-  const authenticationStore = useAuthenticationStore();
-  const encryptionKeyStore = useEncryptionKeyStore();
-  const applicationStore = useApplicationStore();
-
-  // Initialise the stores if possible, regardless of the route we're on.
-  applicationStore.initialise();
-  authenticationStore.initialise();
-  encryptionKeyStore.initialise();
-
-  // We don't want the user being able to go to the Lock page if they don't have any user details, password or encryption key
-  if (to.path === '/lock') {
-    if (!authenticationStore.getAccessToken || !authenticationStore.getPassword.hash || !encryptionKeyStore.getEncryptedMasterKey.private_key) {
-      return next({ path: "/login" })
-    }
-  }
-  
-  if (to.matched.some(route => route.meta.authRequired)) {
-    // If the stretched master password is set, we have the encrypted master keypair,
-    // but no decrypted master keypair, then decrypt it.
-    if (encryptionKeyStore.getStretchedPassword && encryptionKeyStore.getEncryptedMasterKey.private_key && !encryptionKeyStore.getMasterKeyPair.private_key) {
-      const encryptedMasterKeypair = encryptionKeyStore.getEncryptedMasterKey;
-      const decryptedMasterPrivateKey = await Crypto.decrypt(encryptedMasterKeypair.private_key, await Crypto.fromBase64(encryptionKeyStore.getStretchedPassword));
-
-      encryptionKeyStore.setMasterKeyPair(await Crypto.toBase64(decryptedMasterPrivateKey), encryptedMasterKeypair.public_key);
-    }
-
-    // If we have no master private key or stretched password, but have the encrypted master key, we can prompt for
-    // an unlock and then redirect the user if necessary.
-    if (!encryptionKeyStore.getMasterKeyPair.private_key && !encryptionKeyStore.getStretchedPassword && encryptionKeyStore.getEncryptedMasterKey.private_key) {
-      // Make sure we aren't going to "index" (it just looks cleaner)
-      if (to.fullPath !== "/") {
-        return next({
-          path: "/lock",
-          query: { redirect: to.fullPath }
-        });
-      } else {
-        return next({ path: "/lock" });
-      }
-    }
-
-    // If we don't have an encrypted master key (at the very least, then prompt for a login)
-    if (!encryptionKeyStore.getEncryptedMasterKey.private_key) {
-      return next({ path: "/login" });
-    }
-  }
-
-  next();
 })
 
 export default router

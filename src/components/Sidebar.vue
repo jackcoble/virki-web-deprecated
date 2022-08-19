@@ -107,7 +107,6 @@
     </div>
 
     <!-- Create vault modal -->
-    <CreateVaultModal v-if="showCreateVaultModal" @close="showCreateVaultModal = !showCreateVaultModal" />
 </template>
 
 <script lang="ts">
@@ -126,7 +125,6 @@ import {
     DotsHorizontalIcon
 
 } from "@heroicons/vue/outline";
-import CreateVaultModal from '@/components/CreateVaultModal.vue';
 
 export default defineComponent({
     name: "Sidebar",
@@ -140,7 +138,6 @@ export default defineComponent({
         ChevronRightIcon,
         PlusIcon,
         DotsHorizontalIcon,
-        CreateVaultModal
     },
     setup() {
         const authenticationStore = useAuthenticationStore();
