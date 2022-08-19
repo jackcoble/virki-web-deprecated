@@ -47,7 +47,6 @@ import useToaster from "@/composables/useToaster";
 import userService from "@/service/api/userService";
 
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
-import { LS_KEYS, setData } from "@/utils/storage/localStorage";
 import { sleep } from "@/utils/common";
 
 export default defineComponent({
@@ -71,9 +70,6 @@ export default defineComponent({
             // Using the email address, request an OTP to be sent to it
             try {
                 await userService.SendOTP(email.value);
-
-                // Set email to be stored in LocalStorage
-                setData(LS_KEYS.USER_DETAILS, { email: email.value });
 
                 // Sleep for 1.5 seconds
                 await sleep(1.5);

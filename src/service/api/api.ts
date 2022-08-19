@@ -1,4 +1,3 @@
-import { useAuthenticationStore } from "@/stores/authenticationStore";
 import axios from "axios";
 
 export const api = axios.create({
@@ -12,7 +11,6 @@ export const api = axios.create({
 // attach it to every request
 api.interceptors.request.use(
     config => {
-        const authenticationStore = useAuthenticationStore();
         const sessionToken = "XXX";
 
         if (config.headers && sessionToken) {
