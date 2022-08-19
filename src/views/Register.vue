@@ -59,6 +59,8 @@ import { getDedicatedCryptoWorker } from "@/utils/comlink";
 import { LS_KEYS, setData } from "@/utils/storage/localStorage";
 import userService from "@/service/api/userService";
 import { SESSION_KEYS, setKey } from "@/utils/storage/sessionStorage";
+import { useKeyStore } from "@/stores/keyStore";
+import type { Keys } from "@/types/user";
 
 export default defineComponent({
     name: "Login",
@@ -73,6 +75,8 @@ export default defineComponent({
 
         const toaster = useToaster();
         const router = useRouter();
+
+        const keyStore = useKeyStore();
 
         // Create a user account
         const registerUser = async () => {
@@ -111,8 +115,8 @@ export default defineComponent({
             setData(LS_KEYS.KEYS, keys);
 
             // Store the decrypted master key in SessionStorage
-            const decryptedKeys = await cryptoWorker.decryptKeys(password.value, keys);
-            setKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY, decryptedKeys.masterEncryptionKey);
+            const decryptedKeys: Keys = await cryptoWorker.decryptKeys(password.value, keys);
+            keyStore.setMasterEncryptionKey(decryptedKeys.masterEncryptionKey);
 
             isLoading.value = false;
 
