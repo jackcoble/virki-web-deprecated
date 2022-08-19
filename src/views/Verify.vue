@@ -40,6 +40,7 @@ import { getDedicatedCryptoWorker } from "@/utils/comlink";
 
 import * as bip39 from "@scure/bip39"
 import { wordlist } from '@scure/bip39/wordlists/english';
+import { useKeyStore } from "@/stores/keyStore";
 
 export default defineComponent({
     name: "Login",
@@ -54,6 +55,7 @@ export default defineComponent({
 
         const router = useRouter();
         const route = useRoute();
+        const keyStore = useKeyStore();
 
         const toaster = useToaster();
 
@@ -72,7 +74,7 @@ export default defineComponent({
             // Verify the OTP with the expectation to receive a session token back!
             try {
                 const res = await userService.VerifyOTP(email.value, otp.value);
-                console.log("Session token:", res.data.session)
+                keyStore.setSessionToken(res.data.session);
             } catch (e) {
                 return toaster.error("An unknown error has occurred.");
             }
@@ -87,16 +89,22 @@ export default defineComponent({
 
             switch (verifyType) {
                 case "signup":
-                    // TODO: Send keys to API
+                    // Send keys to API
                     const encryptedKeys: Keys = getData(LS_KEYS.KEYS);
                     if (!encryptedKeys) {
                         return toaster.error("Encrypted keys are not on device!");
                     }
 
+                    try {
+                        await userService.AddEncryptedKeys(encryptedKeys)
+                    } catch (e) {
+                        // TODO: Handle error
+                    }
+
                     const cryptoWorker = await getDedicatedCryptoWorker();
 
                     // Using the master encryption key, decrypt the recovery key and provide it to BIP39 as entropy.
-                    // Show this to the user
+                    // Show this to the user...
                     const masterEncryptionKey = getKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY);
                     const recoveryKey = await cryptoWorker.decrypt(masterEncryptionKey, encryptedKeys.recovery.recoveryKeyEncryptedWithMasterKey);
                     const recoveryKeyBuffer: Uint8Array = await cryptoWorker.fromBase64(recoveryKey);
@@ -104,7 +112,7 @@ export default defineComponent({
                     const mnemonic = bip39.entropyToMnemonic(recoveryKeyBuffer, wordlist);
                     console.log("Recovery Key:", mnemonic);
 
-                    // TODO: Route to account recovery
+                    // Route to account recovery
                     router.push({ path: "/recovery" });
                     
                     break;
