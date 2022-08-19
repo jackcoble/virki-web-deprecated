@@ -1,3 +1,4 @@
+import { useKeyStore } from "@/stores/keyStore";
 import axios from "axios";
 
 export const api = axios.create({
@@ -11,7 +12,8 @@ export const api = axios.create({
 // attach it to every request
 api.interceptors.request.use(
     config => {
-        const sessionToken = "XXX";
+        const keyStore = useKeyStore();
+        const sessionToken = keyStore.getSessionToken;
 
         if (config.headers && sessionToken) {
             config.headers.Authorization = sessionToken;
