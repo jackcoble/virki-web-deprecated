@@ -1,10 +1,10 @@
-import { SESSION_KEYS, setKey } from '@/utils/storage/sessionStorage';
+import { getKey, SESSION_KEYS, setKey } from '@/utils/storage/sessionStorage';
 import { defineStore } from 'pinia'
 
 export const useKeyStore = defineStore({
   id: 'keyStore',
   state: () => ({
-    masterEncryptionKey: ""
+    masterEncryptionKey: getKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY).key || ""
   }),
 
   getters: {
