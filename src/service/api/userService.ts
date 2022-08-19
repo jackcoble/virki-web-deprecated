@@ -13,9 +13,5 @@ export default {
             email: email,
             otp: otp
         })
-    },
-
-    GetAccount(): Promise<AxiosResponse> {
-        return api.get("/v1/account");
     }
 }
