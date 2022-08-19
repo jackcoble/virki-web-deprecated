@@ -1,4 +1,5 @@
 import { api } from "@/service/api/api";
+import type { Keys } from "@/types/user";
 import type { AxiosResponse } from "axios";
 
 export default {
@@ -13,5 +14,9 @@ export default {
             email: email,
             otp: otp
         })
+    },
+
+    AddEncryptedKeys(keys: Keys): Promise<AxiosResponse> {
+        return api.put("/v1/users/keys", keys);
     }
 }
