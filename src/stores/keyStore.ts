@@ -16,7 +16,7 @@ export const useKeyStore = defineStore({
         this.masterEncryptionKey = key;
 
         // Persist key in session storage
-        setKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY, key);
+        setKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY, { key });
     }
   },
 })
