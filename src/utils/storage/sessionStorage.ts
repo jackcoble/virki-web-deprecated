@@ -2,7 +2,7 @@ export enum SESSION_KEYS {
     MASTER_ENCRYPTION_KEY = "masterEncryptionKey"
 }
 
-export const setKey = (key: SESSION_KEYS, value: object) => {
+export const setKey = (key: SESSION_KEYS, value: any) => {
     sessionStorage.setItem(key, JSON.stringify(value));
 }
 
