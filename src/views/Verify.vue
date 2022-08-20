@@ -7,7 +7,7 @@
             <p class="text-xs">If you haven't received a verification code within a couple of minutes, please check your spam or request for a new code to be sent.</p>
 
             <form @submit.prevent="handleVerification" class="space-y-2">
-                <b-input type="text" v-model.number="otp" placeholder="Verification code" autofocus />
+                <b-input type="text" v-model.number="otp" placeholder="Verification code" autofocus required />
 
                 <!-- Verify button -->
                 <b-button class="flex justify-center items-center space-x-1" type="submit" classType="primary" :loading="isLoading">
@@ -88,6 +88,7 @@ export default defineComponent({
                     return;
                 }
             } catch (e) {
+                isLoading.value = false;
                 return toaster.error("An unknown error has occurred.");
             }
 
