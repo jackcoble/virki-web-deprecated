@@ -16,7 +16,7 @@ api.interceptors.request.use(
         const sessionToken = keyStore.getSessionToken;
 
         if (config.headers && sessionToken) {
-            config.headers.Authorization = sessionToken;
+            config.headers["X-Auth-Token"] = sessionToken;
         }
 
         return config;
