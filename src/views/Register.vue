@@ -41,7 +41,7 @@
                         Submit
                     </b-button>
 
-                    <b-button classType="light" @click="router.push('/login')">
+                    <b-button classType="light" @click="router.push('/')">
                         Cancel
                     </b-button>
                 </div>
