@@ -106,7 +106,7 @@ export default defineComponent({
                     // Using the master encryption key, decrypt the recovery key and provide it to BIP39 as entropy.
                     // Show this to the user...
                     const masterEncryptionKey = getKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY);
-                    const recoveryKey = await cryptoWorker.decrypt(masterEncryptionKey, encryptedKeys.recovery.recoveryKeyEncryptedWithMasterKey);
+                    const recoveryKey = await cryptoWorker.decrypt(masterEncryptionKey, encryptedKeys.recovery.recovery_key_encrypted_with_master_key);
                     const recoveryKeyBuffer: Uint8Array = await cryptoWorker.fromBase64(recoveryKey);
                     
                     const mnemonic = bip39.entropyToMnemonic(recoveryKeyBuffer, wordlist);
