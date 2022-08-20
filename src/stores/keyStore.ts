@@ -1,5 +1,6 @@
 import type { Keys } from '@/types/user';
-import { getKey, SESSION_KEYS, setKey } from '@/utils/storage/sessionStorage';
+import { LS_KEYS, setData } from '@/utils/storage/localStorage';
+import { SESSION_KEYS, setKey } from '@/utils/storage/sessionStorage';
 import { defineStore } from 'pinia'
 
 export const useKeyStore = defineStore({
@@ -38,6 +39,8 @@ export const useKeyStore = defineStore({
 
     setEncryptedKeys(keys: Keys) {
         this.encryptedKeys = keys;
+
+        setData(LS_KEYS.KEYS, keys);
     }
   },
 })
