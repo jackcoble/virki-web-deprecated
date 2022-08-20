@@ -34,17 +34,17 @@ export async function generateKeys(password: string): Promise<Keys> {
     const keys: Keys = {
         kek: {
             salt: kek.salt,
-            opsLimit: kek.opsLimit,
-            memLimit: kek.memLimit
+            ops_limit: kek.opsLimit,
+            mem_limit: kek.memLimit
         },
-        masterEncryptionKey: masterKeyEncryptedWithKekCipherString,
+        master_encryption_key: masterKeyEncryptedWithKekCipherString,
         keypair: {
-            publicKey: keypair.publicKey,
-            privateKey: encryptedKeyPairCipherString
+            public_key: keypair.publicKey,
+            private_key: encryptedKeyPairCipherString
         },
         recovery: {
-            masterKeyEncryptedWithRecoveryKey: masterKeyEncryptedWithRecoveryKeyCipherString,
-            recoveryKeyEncryptedWithMasterKey: recoveryKeyEncryptedWithMasterKeyCipherString,
+            master_key_encrypted_with_recovery_key: masterKeyEncryptedWithRecoveryKeyCipherString,
+            recovery_key_encrypted_with_master_key: recoveryKeyEncryptedWithMasterKeyCipherString,
         }
     }
     
@@ -53,13 +53,13 @@ export async function generateKeys(password: string): Promise<Keys> {
 
 export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Promise<Keys> {
     // Derive Key Encryption Key
-    const kek = await libsodium.deriveKeyEncryptionKey(passphrase, encryptedKeys.kek.salt, encryptedKeys.kek.opsLimit, encryptedKeys.kek.memLimit);
+    const kek = await libsodium.deriveKeyEncryptionKey(passphrase, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
     if (!kek) {
         return Promise.reject("Key encryption key cannot be null!");
     }
 
     // Decrypt the master encryption key into Base64
-    const mekCipher = await parseCipherString(encryptedKeys.masterEncryptionKey);
+    const mekCipher = await parseCipherString(encryptedKeys.master_encryption_key);
     const masterEncryptionKey = await libsodium.decryptFromB64(
         mekCipher.ciphertext,
         mekCipher.mac,
@@ -68,7 +68,7 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
     );
 
     // Decrypt the keypair with the master encryption key
-    const kpCipher = await parseCipherString(encryptedKeys.keypair.privateKey);
+    const kpCipher = await parseCipherString(encryptedKeys.keypair.private_key);
     const kpPrivateKey = await libsodium.decryptFromB64(
         kpCipher.ciphertext,
         kpCipher.mac,
@@ -78,7 +78,7 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
 
     // Decrypt the recovery keys
     // Recovery key encrypted with master key
-    const rkewmkCipher = await parseCipherString(encryptedKeys.recovery.recoveryKeyEncryptedWithMasterKey);
+    const rkewmkCipher = await parseCipherString(encryptedKeys.recovery.recovery_key_encrypted_with_master_key);
     const rkewmk = await libsodium.decryptFromB64(
         rkewmkCipher.ciphertext,
         rkewmkCipher.mac,
@@ -87,7 +87,7 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
     )
 
     // Master key encrypted with recovery key
-    const mkewrkCipher = await parseCipherString(encryptedKeys.recovery.masterKeyEncryptedWithRecoveryKey);
+    const mkewrkCipher = await parseCipherString(encryptedKeys.recovery.master_key_encrypted_with_recovery_key);
     const mkewrk = await libsodium.decryptFromB64(
         mkewrkCipher.ciphertext,
         mkewrkCipher.mac,
@@ -99,17 +99,17 @@ export async function decryptKeys(passphrase: string, encryptedKeys: Keys): Prom
     const decryptedKeys: Keys = {
         kek: {
             salt: kek.salt,
-            opsLimit: kek.opsLimit,
-            memLimit: kek.memLimit
+            ops_limit: kek.opsLimit,
+            mem_limit: kek.memLimit
         },
-        masterEncryptionKey: masterEncryptionKey,
+        master_encryption_key: masterEncryptionKey,
         keypair: {
-            publicKey: encryptedKeys.keypair.publicKey,
-            privateKey: kpPrivateKey
+            public_key: encryptedKeys.keypair.public_key,
+            private_key: kpPrivateKey
         },
         recovery: {
-            masterKeyEncryptedWithRecoveryKey: mkewrk,
-            recoveryKeyEncryptedWithMasterKey: rkewmk,
+            master_key_encrypted_with_recovery_key: mkewrk,
+            recovery_key_encrypted_with_master_key: rkewmk,
         }
     }
 
