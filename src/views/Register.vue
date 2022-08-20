@@ -60,6 +60,7 @@ import { LS_KEYS, setData } from "@/utils/storage/localStorage";
 import userService from "@/service/api/userService";
 import { useKeyStore } from "@/stores/keyStore";
 import type { Keys } from "@/types/user";
+import { useUserStore } from "@/stores/userStore";
 
 export default defineComponent({
     name: "Login",
@@ -75,6 +76,7 @@ export default defineComponent({
         const toaster = useToaster();
         const router = useRouter();
 
+        const userStore = useUserStore();
         const keyStore = useKeyStore();
 
         // Create a user account
@@ -96,7 +98,7 @@ export default defineComponent({
             isLoading.value = true;
 
             // Store some registration details, such as email
-            setData(LS_KEYS.USER_DETAILS, { email: email.value });
+            userStore.setEmail(email.value);
 
             // Make API request to send OTP to users email address
             try {
@@ -108,11 +110,10 @@ export default defineComponent({
 
 
             // Offload key generation onto CryptoWorker
-            // and set the encrypted keys in LocalStorage.
+            // and store the generated keys in the "keyStore"
             const cryptoWorker = getDedicatedCryptoWorker();
             const keys = await cryptoWorker.generateKeys(password.value);
-
-            setData(LS_KEYS.KEYS, keys);
+            keyStore.setEncryptedKeys(keys);
 
             // Store the decrypted master key in SessionStorage
             const decryptedKeys: Keys = await cryptoWorker.decryptKeys(password.value, keys);
@@ -120,8 +121,8 @@ export default defineComponent({
 
             isLoading.value = false;
 
-            // Push to verification page with a query param called "type" set to "signup" (so we know it's a new user signup)
-            router.push({ path: "/verify", query: { type: "signup" } });
+            // Push to verification page
+            router.push({ path: "/verify" });
         }
 
         return {
