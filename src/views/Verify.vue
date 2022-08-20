@@ -19,7 +19,7 @@
             <!-- Resend options -->
             <div class="flex justify-between">
                 <button class="text-sm text-mine-shaft hover:text-mountain-meadow-50 transition">Resend code</button>
-                <button class="text-sm text-mine-shaft hover:text-mountain-meadow-50 transition" @click="router.push('/login')">Change email</button>
+                <button class="text-sm text-mine-shaft hover:text-mountain-meadow-50 transition" @click="router.push('/')">Change email</button>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@ import useToaster from "@/composables/useToaster";
 import userService from "@/service/api/userService";
 
 import { CheckIcon } from "@heroicons/vue/outline";
-import { getData, LS_KEYS } from "@/utils/storage/localStorage";
+import { getData, LS_KEYS, setData } from "@/utils/storage/localStorage";
 import type { Keys } from "@/types/user";
 import { getKey, SESSION_KEYS } from "@/utils/storage/sessionStorage";
 import { getDedicatedCryptoWorker } from "@/utils/comlink";
@@ -75,6 +75,18 @@ export default defineComponent({
             try {
                 const res = await userService.VerifyOTP(email.value, otp.value);
                 keyStore.setSessionToken(res.data.session);
+
+                // Check the response data for an encrypted keys object. If it's present
+                // then the user already has an account, so we can move them straight onto
+                // entering their password for decryption.
+                if (res.data.encrypted_keys) {
+                    // Save the encrypted keys object
+                    const encryptedKeys: Keys = res.data.encrypted_keys;
+                    setData(LS_KEYS.KEYS, encryptedKeys);
+
+                    router.push({ path: "/credentials" });
+                    return;
+                }
             } catch (e) {
                 return toaster.error("An unknown error has occurred.");
             }
@@ -99,6 +111,7 @@ export default defineComponent({
                         await userService.AddEncryptedKeys(encryptedKeys)
                     } catch (e) {
                         // TODO: Handle error
+                        console.log(e);
                     }
 
                     const cryptoWorker = await getDedicatedCryptoWorker();
