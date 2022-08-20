@@ -37,7 +37,7 @@
 
                 <!-- Submit and Cancel buttons -->
                 <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-                    <b-button type="submit" classType="primary" :disabled="!acceptedTerms" :loading="isLoading">
+                    <b-button type="submit" classType="primary" :disabled="!acceptedTerms" disabledText="Generating keys..." :loading="isLoading">
                         Submit
                     </b-button>
 
