@@ -55,8 +55,7 @@ import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { getDedicatedCryptoWorker } from "@/utils/comlink";
-import { LS_KEYS, setData } from "@/utils/storage/localStorage";
+import { CryptoWorker } from "@/utils/comlink";
 import userService from "@/service/api/userService";
 import { useKeyStore } from "@/stores/keyStore";
 import type { Keys } from "@/types/user";
@@ -111,7 +110,7 @@ export default defineComponent({
 
             // Offload key generation onto CryptoWorker
             // and store the generated keys in the "keyStore"
-            const cryptoWorker = getDedicatedCryptoWorker();
+            const cryptoWorker = await new CryptoWorker();
             const keys = await cryptoWorker.generateKeys(password.value);
             keyStore.setEncryptedKeys(keys);
 
