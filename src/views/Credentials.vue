@@ -35,53 +35,40 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-
-import useToaster from "@/composables/useToaster";
-
-import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
-import { getData, LS_KEYS } from "@/utils/storage/localStorage";
+import { LoginIcon } from "@heroicons/vue/outline";
+import { useUserStore } from "@/stores/userStore";
+import { useKeyStore } from "@/stores/keyStore";
+import { computed } from "@vue/reactivity";
+import { CryptoWorker } from "@/utils/comlink";
 import type { Keys } from "@/types/user";
-import { getDedicatedCryptoWorker } from "@/utils/comlink";
 
 export default defineComponent({
-    name: "Login",
+    name: "Credentials",
     components: {
-        ClockIcon,
         LoginIcon,
-        UserAddIcon
     },
     setup() {
-        const email = ref("");
-        const password = ref("");
-        const isLoading = ref(false);
+        const userStore = useUserStore();
+        const keyStore = useKeyStore();
 
         const router = useRouter();
-        const toaster = useToaster();
 
-        // Load user data from LocalStorage
-        onMounted(() => {
-            const userData = getData(LS_KEYS.USER_DETAILS);
-            email.value = userData.email;
-        })
+        const email = computed(() => userStore.getEmail)
+        const password = ref("");
+        const isLoading = ref(false);
 
         // Handle decryption
         const handleDecryption = async () => {
             isLoading.value = true;
 
-            // Fetch encryption keys from LocalStorage
-            // and decrypt them with the CryptoWorker.
-            const encryptedKeys: Keys = getData(LS_KEYS.KEYS);
-            const cryptoWorker = getDedicatedCryptoWorker();
+            const keys = keyStore.getEncryptedKeys;
+
+            const cryptoWorker = await new CryptoWorker();
+            const decryptedKeys: Keys = await cryptoWorker.decryptKeys(password.value, keys);
             
-            // Decrypt keys
-            try {
-                const keys = await cryptoWorker.decryptKeys(password.value, encryptedKeys);
-                console.log(keys);
-            } catch (e) {
-                console.log("Error decrypting:", e);
-            } finally {
-                isLoading.value = false;
-            }
+            console.log(decryptedKeys);
+
+            isLoading.value = false;
         }
 
         return {
