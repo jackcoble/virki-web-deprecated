@@ -18,7 +18,7 @@
 
             <!-- Resend options -->
             <div class="flex justify-between">
-                <button class="text-sm text-mine-shaft hover:text-mountain-meadow-50 transition">Resend code</button>
+                <button class="text-sm text-mine-shaft hover:text-mountain-meadow-50 transition" @click="resendOTP">Resend code</button>
                 <button class="text-sm text-mine-shaft hover:text-mountain-meadow-50 transition" @click="router.push('/')">Change email</button>
             </div>
         </div>
@@ -115,6 +115,15 @@ export default defineComponent({
             router.push("/recovery");
         }
 
+        // When requested, resend an OTP code to the users email
+        const resendOTP = async () => {
+            try {
+                await userService.SendOTP(email.value)
+            } catch (e) {
+                return toaster.error("Unexpected error!");
+            }
+        }
+
         return {
             email,
             otp,
@@ -122,7 +131,8 @@ export default defineComponent({
 
             router,
 
-            handleVerification
+            handleVerification,
+            resendOTP
         }
     }
 })
