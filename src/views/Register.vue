@@ -58,7 +58,6 @@ import { useRouter } from "vue-router";
 import { getDedicatedCryptoWorker } from "@/utils/comlink";
 import { LS_KEYS, setData } from "@/utils/storage/localStorage";
 import userService from "@/service/api/userService";
-import { SESSION_KEYS, setKey } from "@/utils/storage/sessionStorage";
 import { useKeyStore } from "@/stores/keyStore";
 import type { Keys } from "@/types/user";
 
@@ -103,6 +102,7 @@ export default defineComponent({
             try {
                 await userService.SendOTP(email.value);
             } catch (error) {
+                isLoading.value = false;
                 return toaster.error("Unexpected error sending email");
             }
 
