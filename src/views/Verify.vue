@@ -26,21 +26,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import useToaster from "@/composables/useToaster";
 import userService from "@/service/api/userService";
 
 import { CheckIcon } from "@heroicons/vue/outline";
-import { getData, LS_KEYS, setData } from "@/utils/storage/localStorage";
 import type { Keys } from "@/types/user";
-import { getKey, SESSION_KEYS } from "@/utils/storage/sessionStorage";
-import { getDedicatedCryptoWorker } from "@/utils/comlink";
 
-import * as bip39 from "@scure/bip39"
-import { wordlist } from '@scure/bip39/wordlists/english';
 import { useKeyStore } from "@/stores/keyStore";
+import { useUserStore } from "@/stores/userStore";
+import { computed } from "@vue/reactivity";
 
 export default defineComponent({
     name: "Login",
@@ -48,24 +45,17 @@ export default defineComponent({
         CheckIcon
     },
     setup() {
-        const email = ref("");
+        const email = computed(() => userStore.getEmail);
         const otp = ref();
 
         const isLoading = ref(false);
 
         const router = useRouter();
-        const route = useRoute();
+
+        const userStore = useUserStore();
         const keyStore = useKeyStore();
 
         const toaster = useToaster();
-
-        onMounted(() => {
-            // Fetch the user data from LocalStorage
-            const userData = getData(LS_KEYS.USER_DETAILS);
-            if (userData) {
-                email.value = userData.email;
-            }
-        })
 
         // Handle OTP verification and signin/signup as necessary
         const handleVerification = async () => {
@@ -82,7 +72,7 @@ export default defineComponent({
                 if (res.data.encrypted_keys) {
                     // Save the encrypted keys object
                     const encryptedKeys: Keys = res.data.encrypted_keys;
-                    setData(LS_KEYS.KEYS, encryptedKeys);
+                    keyStore.setEncryptedKeys(encryptedKeys);
 
                     router.push({ path: "/credentials" });
                     return;
@@ -92,48 +82,31 @@ export default defineComponent({
                 return toaster.error("An unknown error has occurred.");
             }
 
-            // Check the "type" parameter. If we've got signup,
-            // then we need to send the encrypted keys to our API
-            // and then prompt the user to backup their recovery key.
-            const verifyType = route.query.type as string;
-            if (!verifyType) {
-                return toaster.error("Verification type not present in URL!");
+            // If we've made it this far, then the user doesn't have any encryption
+            // keys tied to their account. We should be able to retrieve the ones
+            // generated and stored in the "keyStore".
+            const encryptedKeys = keyStore.getEncryptedKeys;
+            if (!encryptedKeys) {
+                return toaster.error("Encrypted keys are not on device!");
             }
 
-            switch (verifyType) {
-                case "signup":
-                    // Send keys to API
-                    const encryptedKeys: Keys = getData(LS_KEYS.KEYS);
-                    if (!encryptedKeys) {
-                        return toaster.error("Encrypted keys are not on device!");
-                    }
-
-                    try {
-                        await userService.AddEncryptedKeys(encryptedKeys)
-                    } catch (e) {
-                        // TODO: Handle error
-                        console.log(e);
-                    }
-
-                    const cryptoWorker = await getDedicatedCryptoWorker();
-
-                    // Using the master encryption key, decrypt the recovery key and provide it to BIP39 as entropy.
-                    // Show this to the user...
-                    const masterEncryptionKey = getKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY);
-                    const recoveryKey = await cryptoWorker.decrypt(masterEncryptionKey, encryptedKeys.recovery.recovery_key_encrypted_with_master_key);
-                    const recoveryKeyBuffer: Uint8Array = await cryptoWorker.fromBase64(recoveryKey);
-                    
-                    const mnemonic = bip39.entropyToMnemonic(recoveryKeyBuffer, wordlist);
-                    console.log("Recovery Key:", mnemonic);
-
-                    // Route to account recovery
-                    router.push({ path: "/recovery" });
-                    
-                    break;
-            
-                default:
-                    break;
+            // Send them to our API for safe-keeping.
+            try {
+                await userService.AddEncryptedKeys(encryptedKeys);
+            } catch (e) {
+                return toaster.error("Unable to save encrypted keys to API.")
             }
+
+            // As we should have the master encryption key in the "keyStore",
+            // we should be able to direct the user to the recovery page
+            // where they are prompted to write down their recovery phrase in
+            // case they forget their password.
+            const masterEncryptionKey = keyStore.getMasterEncryptionKey;
+            if (!masterEncryptionKey) {
+                return toaster.error("Master encryption key is not present on device!")
+            }
+
+            router.push("/recovery");
         }
 
         return {
