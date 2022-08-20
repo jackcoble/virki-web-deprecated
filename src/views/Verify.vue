@@ -79,6 +79,12 @@ export default defineComponent({
                 }
             } catch (e) {
                 isLoading.value = false;
+
+                // We expect this from the API.
+                if (e.response && e.response.data.error) {
+                    return toaster.error(e.response.data.error);
+                }
+
                 return toaster.error("An unknown error has occurred.");
             }
 
