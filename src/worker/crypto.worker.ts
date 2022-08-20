@@ -1,24 +1,24 @@
-import { expose } from "comlink";
+import * as Comlink from "comlink";
 import * as crypto from "@/utils/crypto";
 import type { Keys } from "@/types/user";
 import { fromBase64 } from "@/utils/crypto/libsodium";
 
-export const Crypto = {
-    generateKeys (passphrase: string) {
+export class Crypto {
+    async generateKeys (passphrase: string) {
         return crypto.generateKeys(passphrase);
-    },
+    }
 
-    decryptKeys (passphrase: string, keys: Keys) {
+    async decryptKeys (passphrase: string, keys: Keys) {
         return crypto.decryptKeys(passphrase, keys);
-    },
+    }
 
-    decrypt (key: string, cipherString: string) {
+    async decrypt (key: string, cipherString: string) {
         return crypto.decrypt(key, cipherString);
-    },
+    }
 
-    fromBase64 (input: string) {
+    async fromBase64 (input: string) {
         return fromBase64(input);
     }
 }
 
-expose(Crypto)
+Comlink.expose(Crypto)
