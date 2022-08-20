@@ -41,6 +41,7 @@ import { useKeyStore } from "@/stores/keyStore";
 import { computed } from "@vue/reactivity";
 import { CryptoWorker } from "@/utils/comlink";
 import type { Keys } from "@/types/user";
+import useToaster from "@/composables/useToaster";
 
 export default defineComponent({
     name: "Credentials",
@@ -52,6 +53,7 @@ export default defineComponent({
         const keyStore = useKeyStore();
 
         const router = useRouter();
+        const toaster = useToaster();
 
         const email = computed(() => userStore.getEmail)
         const password = ref("");
@@ -62,13 +64,27 @@ export default defineComponent({
             isLoading.value = true;
 
             const keys = keyStore.getEncryptedKeys;
+            if (!keys) {
+                return toaster.error("Encrypted keys are not present on device!")
+            }
 
-            const cryptoWorker = await new CryptoWorker();
-            const decryptedKeys: Keys = await cryptoWorker.decryptKeys(password.value, keys);
-            
-            console.log(decryptedKeys);
+            // Create a new CryptoWorker and decrypt the keys using the provided password
+            try {
+                const cryptoWorker = await new CryptoWorker();
+                const decryptedKeys: Keys = await cryptoWorker.decryptKeys(password.value, keys);
 
-            isLoading.value = false;
+                // Set the master encryption key in the "keyStore"
+                keyStore.setMasterEncryptionKey(decryptedKeys.master_encryption_key);
+
+                // We can finally navigate to the vault page
+                router.push({ path: '/vault' })
+            } catch (e) {
+                // Fine tune this a bit more, but just assume for now the password is incorrect.
+                // A terrible thing to do, I know...
+                return toaster.error("Password is incorrect, please try again!")
+            } finally {
+                isLoading.value = false;
+            }
         }
 
         return {
