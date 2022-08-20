@@ -48,6 +48,7 @@ import userService from "@/service/api/userService";
 
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { sleep } from "@/utils/common";
+import { useUserStore } from "@/stores/userStore";
 
 export default defineComponent({
     name: "Login",
@@ -62,6 +63,8 @@ export default defineComponent({
 
         const router = useRouter();
         const toaster = useToaster();
+        
+        const userStore = useUserStore();
 
         // Handle user login
         const handleSignIn = async () => {
@@ -70,6 +73,7 @@ export default defineComponent({
             // Using the email address, request an OTP to be sent to it
             try {
                 await userService.SendOTP(email.value);
+                userStore.setEmail(email.value);
 
                 // Sleep for 1.5 seconds
                 await sleep(1.5);
