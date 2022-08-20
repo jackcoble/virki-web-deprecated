@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-screen">
     <!-- Header -->
-    <div class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3">
+    <div class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
       <!-- Logo -->
       <a href="/">
         <img class="w-24 hidden md:block" src="@/assets/images/virki_full_horizontal_transparent_dark.png" alt="Virki Logo" />
@@ -31,6 +31,15 @@
       <!-- Sidebar -->
       <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full" :class="closeMenuMobile ? 'block w-full' : 'hidden md:block'">
         <Sidebar />
+      </div>
+
+      <!-- Token entries -->
+      <div class="flex-col flex-grow overflow-auto" >
+        <!-- Show frowny face if we've got no tokens -->
+        <div class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+          <EmojiSadIcon class="w-24 text-mountain-meadow" />
+          <p class="text-sm">You have no authentication tokens in your vault.</p>
+        </div>
       </div>
     </div>
   </div>
