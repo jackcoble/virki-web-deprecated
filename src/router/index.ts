@@ -5,32 +5,33 @@ import Register from "@/views/Register.vue"
 import Verify from "@/views/Verify.vue"
 import Credentials from "@/views/Credentials.vue"
 import Vault from "@/views/Vault.vue"
+import { PAGES } from './pages'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: PAGES.ROOT,
       name: 'login',
       component: Login
     },
     {
-      path: "/signup",
+      path: PAGES.REGISTER,
       name: "register",
       component: Register
     },
     {
-      path: '/verify',
+      path: PAGES.VERIFY,
       name: 'verify',
       component: Verify
     },
     {
-      path: "/credentials",
+      path: PAGES.CREDENTIALS,
       name: "credentials",
       component: Credentials
     },
     {
-      path: "/vault",
+      path: PAGES.VAULT,
       name: "vault",
       component: Vault
     }
