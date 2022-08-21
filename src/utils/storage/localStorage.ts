@@ -1,6 +1,7 @@
 export enum LS_KEYS {
     KEYS = "keys",
     EMAIL = "email",
+    SESSION = "session",
     PASSWORD = "password",
     USER_DETAILS = "userDetails"
 }

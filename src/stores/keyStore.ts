@@ -1,12 +1,12 @@
 import type { Keys } from '@/types/user';
-import { LS_KEYS, setData } from '@/utils/storage/localStorage';
+import { getData, LS_KEYS, setData } from '@/utils/storage/localStorage';
 import { SESSION_KEYS, setKey } from '@/utils/storage/sessionStorage';
 import { defineStore } from 'pinia'
 
 export const useKeyStore = defineStore({
   id: 'keyStore',
   state: () => ({
-    sessionToken: "",
+    sessionToken: getData(LS_KEYS.SESSION) || "",
     masterEncryptionKey: "",
     encryptedKeys: {} as Keys
   }),
@@ -28,6 +28,8 @@ export const useKeyStore = defineStore({
   actions: {
     setSessionToken(token: string) {
         this.sessionToken = token;
+
+        setData(LS_KEYS.SESSION, token);
     },
 
     setMasterEncryptionKey(key: string) {
