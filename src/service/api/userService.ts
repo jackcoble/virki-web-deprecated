@@ -18,5 +18,9 @@ export default {
 
     AddEncryptedKeys(keys: Keys): Promise<AxiosResponse> {
         return api.put("/v1/users/keys", keys);
+    },
+
+    GetAccount(): Promise<AxiosResponse> {
+        return api.get("/v1/users/account");
     }
 }
