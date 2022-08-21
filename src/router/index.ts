@@ -59,9 +59,10 @@ presence of a session token in the store.
 router.beforeEach((to, from, next) => {
   const keyStore = useKeyStore();
   const session = keyStore.getSessionToken;
+  const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
-  // If no session token is present and the page isn't public, redirect to root (login)
-  if (!session && !to.meta.public) {
+  // If no session token or master encryption key is present and the page isn't public, redirect to root (login)
+  if (!session || !masterEncryptionKey && !to.meta.public) {
     return next({ path: PAGES.ROOT });
   }
 
