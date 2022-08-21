@@ -93,6 +93,8 @@ import {
 } from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid"
 import userService from '@/service/api/userService';
+import { useUserStore } from '@/stores/userStore';
+import { computed } from '@vue/reactivity';
 
 export default defineComponent({
     name: "Sidebar",
@@ -113,14 +115,17 @@ export default defineComponent({
         const showSidebarVaults = ref(false);
         const showCreateVaultModal = ref(false);
 
-        const email = ref("");
+        // Stores
+        const userStore = useUserStore();
+
+        const email = computed(() => userStore.getEmail);
 
         onMounted(async () => {
             // Fetch account data
             const account = await userService.GetAccount();
             if (account.data) {
                 // Set email address
-                email.value = account.data.email;
+                userStore.setEmail(account.data.email)
             }
         })
 
