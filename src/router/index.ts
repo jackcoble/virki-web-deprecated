@@ -73,6 +73,13 @@ router.beforeEach((to, from, next) => {
     return next({ path: PAGES.ROOT });
   }
 
+  // Though if both a session token and the decrypted master encryption key are available
+  // on the device, we can redirect the user straight to the "/vault" if the original
+  // path was to "/".
+  if (session && masterEncryptionKey && to.path === PAGES.ROOT) {
+    return next({ path: PAGES.VAULT });
+  }
+
   next();
 })
 
