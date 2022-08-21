@@ -26,7 +26,7 @@
         </b-button>
 
         <b-button v-if="!hasVaultsAvailable" type="submit" classType="primary">
-          <div class="flex flex-row justify-center items-center space-x-1">
+          <div class="flex flex-row justify-center items-center space-x-1" @click="showCreateVault = !showCreateVault">
             <PlusCircleIcon class="w-5 md:-ml-1" />
             <span class="hidden md:block">Create Vault</span>
           </div>
@@ -43,7 +43,7 @@
       <!-- Token entries -->
       <div class="flex-col flex-grow overflow-auto" >
         <!-- Show message if no vaults are available -->
-        <div v-if="!hasVaultsAvailable" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+        <div v-if="!hasVaultsAvailable && !showCreateVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-mountain-meadow" />
           <p class="text-sm">To get started, you need to create a Vault.</p>
           <b-button class="w-36">
@@ -59,6 +59,8 @@
           <EmojiSadIcon class="w-24 text-mountain-meadow" />
           <p class="text-sm">You have no authentication tokens in your vault.</p>
         </div>
+
+        <CreateVault v-if="showCreateVault" />
       </div>
     </div>
   </div>
@@ -72,7 +74,9 @@ import { defineComponent, ref } from "vue";
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon } from "@heroicons/vue/outline"
 import { useRouter } from "vue-router";
 
+// Components
 import Sidebar from "@/components/Sidebar.vue";
+import CreateVault from "@/components/CreateVault.vue";
 
 export default defineComponent({
   name: "HomeView",
@@ -82,7 +86,9 @@ export default defineComponent({
     ClockIcon,
     XIcon,
     MenuIcon,
-    Sidebar
+
+    Sidebar,
+    CreateVault
   },
   setup() {
     const router = useRouter();
@@ -98,7 +104,7 @@ export default defineComponent({
     const closeMenuMobile = ref(false);
     const showSidebarVaults = ref(false);
     const showSidebarUserOptions = ref(false);
-    const showCreateVaultModal = ref(false);
+    const showCreateVault = ref(false);
 
     return {
       router,
@@ -108,7 +114,7 @@ export default defineComponent({
       closeMenuMobile,
       showSidebarVaults,
       showSidebarUserOptions,
-      showCreateVaultModal,
+      showCreateVault,
     };
   }
 })
