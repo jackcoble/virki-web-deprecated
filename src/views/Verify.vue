@@ -92,7 +92,10 @@ export default defineComponent({
             // keys tied to their account. We should be able to retrieve the ones
             // generated and stored in the "keyStore".
             const encryptedKeys = keyStore.getEncryptedKeys;
-            if (!encryptedKeys) {
+            if (!encryptedKeys.master_encryption_key) {
+                isLoading.value = false;
+                router.push({ path: "/register" });
+
                 return toaster.error("Encrypted keys are not on device!");
             }
 
