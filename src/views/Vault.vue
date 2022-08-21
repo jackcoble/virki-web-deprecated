@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
       <!-- Logo -->
-      <a href="/vault">
+      <a href="/">
         <img class="w-24 hidden md:block" src="@/assets/images/virki_full_horizontal_transparent_dark.png" alt="Virki Logo" />
       </a>
 
       <!-- Menu icon (only visible on mobile) -->
-      <button class="block md:hidden text-purple-800 w-9" @click="closeMenuMobile = !closeMenuMobile">
+      <button class="block md:hidden text-mountain-meadow w-9" @click="closeMenuMobile = !closeMenuMobile">
         <MenuIcon v-if="!closeMenuMobile" />
         <XIcon v-else />
       </button>
