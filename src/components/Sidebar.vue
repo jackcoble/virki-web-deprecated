@@ -66,7 +66,7 @@
         <!-- Vaults -->
         <div class="p-4 text-gray-700">
             <div class="flex">
-                <button class="flex flex-1 justify-start space-x-2" @click="showSidebarVaults = !showSidebarVaults">
+                <button class="flex flex-1 justify-start items-center space-x-2" @click="showSidebarVaults = !showSidebarVaults">
                     <ChevronRightIcon v-if="!showSidebarVaults" class="w-4" />
                     <ChevronDownIcon v-else class="w-4" />
                     <p class="text-sm">Vaults</p>
@@ -81,7 +81,7 @@
         <!-- Tags -->
         <div class="p-4 text-gray-700">
             <div class="flex">
-                <div class="flex flex-1 justify-start space-x-2">
+                <div class="flex flex-1 justify-start items-center space-x-2">
                     <ChevronDownIcon class="w-4" />
                     <p class="text-sm">Tags</p>
                 </div>
