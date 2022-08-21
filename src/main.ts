@@ -15,9 +15,6 @@ window.Buffer = Buffer;
 import App from './App.vue'
 import router from './router'
 
-// QR Code Reader
-import QrcodeReaderVue3 from "qrcode-reader-vue3";
-
 // Notifications component
 import Toaster from "@meforma/vue-toaster";
 
@@ -32,7 +29,6 @@ app.config.globalProperties.emitter = emitter;
 
 app.use(createPinia())
 app.use(router)
-app.use(QrcodeReaderVue3)
 app.use(Toaster)
 
 // Register custom components
