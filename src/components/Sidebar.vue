@@ -8,7 +8,7 @@
                 @click="showSidebarUserOptions = !showSidebarUserOptions">
                 <div class="flex flex-1 justify-start space-x-2">
                     <UserIcon class="w-6" />
-                    <h2>Jack Coble</h2>
+                    <h2>{{ email }}</h2>
                 </div>
 
                 <div>
@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import {
     UserIcon,
     ChevronDownIcon,
@@ -92,6 +92,7 @@ import {
 
 } from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid"
+import userService from '@/service/api/userService';
 
 export default defineComponent({
     name: "Sidebar",
@@ -107,17 +108,28 @@ export default defineComponent({
         DotsHorizontalIcon
     },
     setup() {
-        // Computed properties
-
         // Refs for sidebar menus
         const showSidebarUserOptions = ref(false);
         const showSidebarVaults = ref(false);
         const showCreateVaultModal = ref(false);
 
+        const email = ref("");
+
+        onMounted(async () => {
+            // Fetch account data
+            const account = await userService.GetAccount();
+            if (account.data) {
+                // Set email address
+                email.value = account.data.email;
+            }
+        })
+
         return {
             showSidebarUserOptions,
             showSidebarVaults,
-            showCreateVaultModal
+            showCreateVaultModal,
+
+            email
         }
     }
 })
