@@ -17,17 +17,35 @@
             </div>
 
             <!-- User options -->
-            <div v-if="showSidebarUserOptions" class="flex-col mt-3 text-gray-600 space-y-1">
-                <!-- Lock -->
-                <div class="flex items-center space-x-2 p-3 cursor-pointer bg-gray-200 rounded">
-                    <LockClosedIcon class="w-4" />
-                    <h2 class="text-xs">Lock</h2>
+            <div v-if="showSidebarUserOptions" class="flex-col rounded shadow mt-3 text-gray-600 bg-white space-y-0.5 text-sm">
+                <!-- Recovery Key -->
+                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer rounded">
+                    <ShieldCheckIcon class="w-4" />
+                    <p>Recovery Key</p>
                 </div>
 
-                <!-- Sign Out -->
-                <div class="flex items-center space-x-2 p-3 cursor-pointer bg-gray-200 text-red-400 rounded">
+                <!-- Change Password -->
+                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer rounded">
+                    <KeyIcon class="w-4" />
+                    <p>Change Password</p>
+                </div>
+
+                <!-- Change Email -->
+                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer rounded">
+                    <MailIcon class="w-4" />
+                    <p>Change Email Address</p>
+                </div>
+
+                <!-- Sessions management -->
+                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer rounded">
+                    <DeviceMobileIcon class="w-4" />
+                    <p>Active Sessions</p>
+                </div>
+
+                <!-- Logout -->
+                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer text-red-400 rounded">
                     <LogoutIcon class="w-4" />
-                    <h2 class="text-xs">Sign Out</h2>
+                    <p>Logout</p>
                 </div>
             </div>
         </div>
@@ -83,12 +101,15 @@ import { defineComponent, onMounted, ref } from 'vue';
 import {
     UserIcon,
     ChevronDownIcon,
-    LockClosedIcon,
+    KeyIcon,
     LogoutIcon,
     InboxIcon,
     ChevronRightIcon,
     PlusIcon,
-    DotsHorizontalIcon
+    DotsHorizontalIcon,
+    ShieldCheckIcon,
+    DeviceMobileIcon,
+    MailIcon
 
 } from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid"
@@ -101,13 +122,16 @@ export default defineComponent({
     components: {
         UserIcon,
         ChevronDownIcon,
-        LockClosedIcon,
+        KeyIcon,
         LogoutIcon,
         InboxIcon,
         StarIcon,
         ChevronRightIcon,
         PlusIcon,
-        DotsHorizontalIcon
+        DotsHorizontalIcon,
+        ShieldCheckIcon,
+        DeviceMobileIcon,
+        MailIcon
     },
     setup() {
         // Refs for sidebar menus
