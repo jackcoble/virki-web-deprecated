@@ -62,7 +62,7 @@ router.beforeEach((to, from, next) => {
   const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
   // If no session token or master encryption key is present and the page isn't public, redirect to root (login)
-  if (!session || !masterEncryptionKey && !to.meta.public) {
+  if ((!session || !masterEncryptionKey) && !to.meta.public) {
     return next({ path: PAGES.ROOT });
   }
 
