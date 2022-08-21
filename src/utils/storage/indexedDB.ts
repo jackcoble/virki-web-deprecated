@@ -6,11 +6,6 @@ For this, we can make use of IndexedDB - which we use Dexie to help us with!
 */
 const DB_NAME = "virki";
 
-// Declare some types for the different tables
-interface VaultsTable {
-    id: string;
-}
-
 // getDB should return an existing database for us, or create one if it doesn't exist.
 export const getDB = async (): Promise<any> => {
     const db = new Dexie(DB_NAME);
