@@ -1,8 +1,8 @@
 <template>
-    <input class="hidden" type="file" accept="image/*" @change="handleImage" ref="iconInput" />
-    <div class="rounded-full bg-gray-200 border-2 border-gray-300 cursor-pointer" @click="triggerFileUploadPrompt">
-        <PhotographIcon v-if="!image" class="text-gray-500 rounded-full w-24 p-4" />
-        <img v-if="image" class="rounded-full object-cover w-24 h-24" :src="image" alt="Uploaded Icon">
+    <div class="flex flex-grow-0 items-center justify-center rounded-full bg-gray-200 border-2 border-gray-200 w-24 h-24 cursor-pointer" @click="triggerFileUploadPrompt">
+        <input class="hidden" type="file" accept="image/*" @change="handleImage" ref="iconInput" />
+        <PhotographIcon v-if="!uploadedIcon" class="text-gray-500 rounded-full w-24 p-4" />
+        <img v-if="uploadedIcon" class="rounded-full object-cover w-24 h-24" :src="uploadedIcon" alt="Uploaded Icon">
     </div>
 </template>
 
