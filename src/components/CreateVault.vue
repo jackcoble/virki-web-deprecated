@@ -5,17 +5,25 @@
 
         <form @submit.prevent class="space-y-4 pt-4 pb-2 mx-auto">
             <b-icon-upload class="mx-auto"></b-icon-upload>
-            <b-input placeholder="Vault name"></b-input>
-            <b-text-area placeholder="Description of this Vault"></b-text-area>
+            <b-input placeholder="Vault name" v-model="vault.name"></b-input>
+            <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
             <b-button type="submit">Create</b-button>
         </form>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import type { Vault } from '@/types/vault';
+import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
-    name: "CreateVault"
+    name: "CreateVault",
+    setup() {
+        const vault = ref({} as Vault);
+
+        return {
+            vault
+        }
+    }
 })
 </script>
