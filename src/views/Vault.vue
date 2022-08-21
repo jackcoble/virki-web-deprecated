@@ -2,16 +2,16 @@
   <div class="flex flex-col h-screen">
     <!-- Header -->
     <div class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
-      <!-- Logo -->
-      <a href="/">
-        <img class="w-24 hidden md:block" src="@/assets/images/virki_full_horizontal_transparent_dark.png" alt="Virki Logo" />
-      </a>
+      <div>
+        <!-- Logo -->
+        <img class="hidden md:block w-24" src="@/assets/images/virki_full_horizontal_transparent_dark.png" alt="Virki Logo" />
 
-      <!-- Menu icon (only visible on mobile) -->
-      <button class="block md:hidden text-mountain-meadow w-9" @click="closeMenuMobile = !closeMenuMobile">
-        <MenuIcon v-if="!closeMenuMobile" />
-        <XIcon v-else />
-      </button>
+        <!-- Menu icon (only visible on mobile) -->
+        <button class="block md:hidden text-mountain-meadow w-9" @click="closeMenuMobile = !closeMenuMobile">
+          <MenuIcon v-if="!closeMenuMobile" />
+          <XIcon v-else />
+        </button>
+      </div>
 
       <!-- Search input -->
       <b-input class="w-full md:w-3/6" type="search" placeholder="Search for an entry or tag..."></b-input>
@@ -49,7 +49,7 @@
           <b-button class="w-36">
             <div class="flex flex-row justify-center items-center space-x-1">
               <PlusCircleIcon class="w-5 md:-ml-1" />
-              <span class="hidden md:block">Create Vault</span>
+              <span>Create Vault</span>
             </div>
           </b-button>
         </div>
