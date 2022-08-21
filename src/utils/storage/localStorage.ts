@@ -1,5 +1,6 @@
 export enum LS_KEYS {
     KEYS = "keys",
+    EMAIL = "email",
     PASSWORD = "password",
     USER_DETAILS = "userDetails"
 }
@@ -9,7 +10,7 @@ export enum LS_KEYS {
  * @param key 
  * @param value 
  */
-export const setData = (key: LS_KEYS, value: object) => {
+export const setData = (key: LS_KEYS, value: any) => {
     localStorage.setItem(key, JSON.stringify(value));
 }
 
