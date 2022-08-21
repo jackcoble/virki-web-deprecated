@@ -8,7 +8,7 @@ export const useKeyStore = defineStore({
   state: () => ({
     sessionToken: getData(LS_KEYS.SESSION) || "",
     masterEncryptionKey: "",
-    encryptedKeys: {} as Keys
+    encryptedKeys: getData(LS_KEYS.KEYS) || {}
   }),
 
   getters: {
