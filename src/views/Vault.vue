@@ -90,6 +90,16 @@
       </div>
     </div>
   </div>
+
+  <!-- Session expired modal -->
+  <b-modal v-if="showExpiredSessionModal" @ok="handleLogout">
+    <template v-slot:body>
+      <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Session expired!</h3>
+      <div class="mt-2">
+        <p class="text-sm text-gray-500">All data on this device has been cleared, and you will be signed out.</p>
+      </div>
+    </template>
+  </b-modal>
 </template>
 
 <script lang="ts">
@@ -106,6 +116,8 @@ import { getAllVaults } from "@/utils/storage/indexedDB";
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/utils/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
+import { useUserStore } from "@/stores/userStore";
+import userService from "@/service/api/userService";
 
 export default defineComponent({
   name: "HomeView",
@@ -121,6 +133,8 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+
+    const userStore = useUserStore();
     const keyStore = useKeyStore();
     const vaultStore = useVaultStore();
 
@@ -136,9 +150,25 @@ export default defineComponent({
     const showSidebarUserOptions = ref(false);
     const showCreateVault = ref(false);
 
+    // Modal refs
+    const showExpiredSessionModal = ref(false);
+
     onMounted(async () => {
-      // Simulate first page load. What we should actually do here is decrypt the vaults and tokens
+      // First page load. What we should actually do here is fetch and set account data, decrypt the vaults and tokens
       // we already have got stored offline, then if the client is online, request for a sync.
+      try {
+        // Fetch account data
+        const account = await userService.GetAccount();
+        if (account.data) {
+            userStore.setEmail(account.data.email)
+        }
+      } catch (error) {
+        // Check for 401 unauthorised (invalid session)
+        if (error.response && error.response.status === 401) {
+          return showExpiredSessionModal.value = true;
+        }
+      }
+
       const cryptoWorker = await new CryptoWorker();
       const existingVaults = await getAllVaults();
       existingVaults.forEach(async encryptedVault => {
@@ -178,6 +208,11 @@ export default defineComponent({
       isFirstLoad.value = false;
     })
 
+    // handleLogout is called when we receive the "ok" event from the expired session modal.
+    const handleLogout = () => {
+      showExpiredSessionModal.value = false;
+    }
+
     return {
       router,
 
@@ -188,6 +223,10 @@ export default defineComponent({
       showSidebarVaults,
       showSidebarUserOptions,
       showCreateVault,
+
+      showExpiredSessionModal,
+
+      handleLogout
     };
   }
 })

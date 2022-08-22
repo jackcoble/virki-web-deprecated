@@ -109,7 +109,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import {
     UserIcon,
     ChevronDownIcon,
@@ -125,7 +125,6 @@ import {
 
 } from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid"
-import userService from '@/service/api/userService';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from '@vue/reactivity';
 import { useVaultStore } from '@/stores/vaultStore';
@@ -158,15 +157,6 @@ export default defineComponent({
 
         const email = computed(() => userStore.getEmail);
         const vaults = computed(() => vaultStore.getAll);
-
-        onMounted(async () => {
-            // Fetch account data
-            const account = await userService.GetAccount();
-            if (account.data) {
-                // Set email address
-                userStore.setEmail(account.data.email)
-            }
-        })
 
         return {
             showSidebarUserOptions,
