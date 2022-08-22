@@ -7,7 +7,7 @@
             <p class="text-xs">If you haven't received a verification code within a couple of minutes, please check your spam or request for a new code to be sent.</p>
 
             <form @submit.prevent="handleVerification" class="space-y-2">
-                <b-input type="number" v-model="otp" placeholder="Verification code" autofocus required />
+                <b-input type="number" inputmode="numeric" v-model="otp" placeholder="Verification code" autofocus required />
 
                 <!-- Verify button -->
                 <b-button class="flex justify-center items-center space-x-1" type="submit" classType="primary" :loading="isLoading">
