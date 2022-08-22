@@ -1,18 +1,15 @@
 <template>
-    <div class="flex">
-        <div class="flex-row flex-grow">
-            <input :type="showPassword ? 'text' : 'password'" :value="modelValue" @input="updateValue" :placeholder="placeholder"
-            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-mountain-meadow focus:border-mountain-meadow block w-full p-2 h-10">
-
-            <password-strength v-if="showStrength" class="mt-1" :password="modelValue" />
-        </div>
-
-        <div class="flex-col items-center justify-center">
-            <button type="button" class="m-2 w-5 text-mountain-meadow" @click="showPassword = !showPassword">
+    <div class="relative">
+        <b-input :type="showPassword ? 'text' : 'password'" :value="modelValue" @input="updateValue"
+            :placeholder="placeholder"
+            required
+        />
+        
+        <button @click="showPassword = !showPassword"
+            class="text-mountain-meadow absolute bottom w-5 h-5 bottom-2.5 right-2.5">
             <EyeOffIcon v-if="showPassword" />
             <EyeIcon v-if="!showPassword" />
         </button>
-        </div>
     </div>
 </template>
 
