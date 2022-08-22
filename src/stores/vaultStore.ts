@@ -25,6 +25,11 @@ export const useVaultStore = defineStore({
   actions: {
     add(vault: Vault) {
         this.vaults.set(vault.id, vault);
+    },
+
+    // Clear all decrypted data from the Hash Map
+    clear() {
+      this.vaults.clear();
     }
   },
 })

@@ -43,6 +43,13 @@ export const useKeyStore = defineStore({
         this.encryptedKeys = keys;
 
         setData(LS_KEYS.KEYS, keys);
+    },
+
+    // Clears entire store state
+    clear() {
+      this.sessionToken = "";
+      this.masterEncryptionKey = "";
+      this.encryptedKeys = {};
     }
   },
 })

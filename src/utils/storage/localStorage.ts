@@ -42,3 +42,10 @@ export const getData = (key: LS_KEYS) => {
         throw new Error("Unable to parse JSON for key: " + key);
     }
 }
+
+/**
+ * Clears all data in LocalStorage.
+ */
+export const clearData = () => {
+    localStorage.clear();
+}

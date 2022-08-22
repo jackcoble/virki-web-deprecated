@@ -50,3 +50,9 @@ export const getAllVaults = async (): Promise<Vault[]> => {
     const db = getDB();
     return await db.vaults.toArray();
 }
+
+// deleteDBs should delete all databases
+export const deleteDBs = async () => {
+    const db = getDB();
+    await db.delete();
+}

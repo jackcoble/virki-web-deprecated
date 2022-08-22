@@ -16,3 +16,10 @@ export const getKey = (key: SESSION_KEYS) => {
     const data = sessionStorage.getItem(key);
     return data && JSON.parse(data);
 }
+
+/**
+ * Clears all keys inside SessionStorage.
+ */
+export const clearKeys = () => {
+    sessionStorage.clear();
+}

@@ -16,6 +16,11 @@ export const useUserStore = defineStore({
         this.email = email;
 
         setData(LS_KEYS.EMAIL, email);
+    },
+
+    // Clears entire store state
+    clear() {
+      this.email = "";
     }
   },
 })
