@@ -1,6 +1,6 @@
 <template>
     <!-- Sidebar -->
-    <div class="h-full border-r-2 p-6 bg-gray-100 overflow-auto">
+    <div class="flex flex-col h-full border-r-2 p-6 bg-gray-100 overflow-auto">
 
         <!-- Avatar and user name -->
         <div class="p-4">
@@ -105,6 +105,14 @@
 
             <!-- TODO: List all tags -->
         </div>
+
+        <!-- Version information -->
+        <div class="flex flex-1 justify-center items-end p-4">
+            <p class="text-sm text-gray-400">
+                <span class="text-mountain-meadow">Virki</span>
+                v{{ version }}
+            </p>
+        </div>
     </div>
 </template>
 
@@ -128,6 +136,7 @@ import { StarIcon } from "@heroicons/vue/solid"
 import { useUserStore } from '@/stores/userStore';
 import { computed } from '@vue/reactivity';
 import { useVaultStore } from '@/stores/vaultStore';
+import { version } from "../../package.json";
 
 export default defineComponent({
     name: "Sidebar",
@@ -159,6 +168,8 @@ export default defineComponent({
         const vaults = computed(() => vaultStore.getAll);
 
         return {
+            version,
+
             showSidebarUserOptions,
             showSidebarVaults,
             showCreateVaultModal,
