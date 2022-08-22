@@ -15,6 +15,7 @@
 <script lang="ts">
 import useToaster from '@/composables/useToaster';
 import { useKeyStore } from '@/stores/keyStore';
+import { useVaultStore } from '@/stores/vaultStore';
 import { EncryptionType } from '@/types/crypto';
 import type { Vault } from '@/types/vault';
 import { CryptoWorker } from '@/utils/comlink';
@@ -27,6 +28,7 @@ export default defineComponent({
     name: "CreateVault",
     setup() {
         const keyStore = useKeyStore();
+        const vaultStore = useVaultStore();
         const toaster = useToaster();
 
         const vault = ref({} as Vault);
@@ -80,6 +82,15 @@ export default defineComponent({
 
             // Store the encrypted vault in IndexedDB.
             await insertVault(encryptedVaultObject);
+
+            // Create a copy of the encrypted vault, but put in the decrypted data again before inserting into the "vaultStore"
+            const decryptedVaultObject = {...encryptedVaultObject};
+            decryptedVaultObject.key = vaultEncryptionKey;
+            decryptedVaultObject.name = vault.value.name;
+            decryptedVaultObject.description = vault.value.description;
+            decryptedVaultObject.icon = vault.value.icon;
+
+            vaultStore.add(decryptedVaultObject);
 
             // Artificial sleep to keep the user waiting...
             await sleep(1.5);
