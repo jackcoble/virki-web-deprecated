@@ -21,6 +21,10 @@
                     <b-password-input v-model="password" :showStrength="true" />
                 </div>
 
+                <div>
+                    <password-strength :password="password" />
+                </div>
+
                 <!-- Confirm password input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Confirm Password</p>
