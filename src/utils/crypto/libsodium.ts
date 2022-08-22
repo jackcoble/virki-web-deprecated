@@ -62,6 +62,16 @@ export async function encryptToB64(data: string, key?: string): Promise<Base64Cr
 }
 
 /**
+ * Encrypt data from UTF-8 format.
+ * @param data - UTF-8 encoded data
+ * @param key - Base64 encoded encryption key
+ */
+export async function encryptUTF8(data: string, key?: string): Promise<Base64CryptoResult> {
+    const b64Data = await toBase64(await fromString(data));
+    return await encryptToB64(b64Data, key);
+}
+
+/**
  * Decrypts data with a supplied symmetric key
  * @param ciphertext 
  * @param nonce 
