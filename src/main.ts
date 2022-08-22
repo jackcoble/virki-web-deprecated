@@ -9,6 +9,7 @@ import BInput from "@/components/Input.vue";
 import BTextArea from "@/components/TextArea.vue";
 import BIconUpload from "@/components/IconUpload.vue";
 import PasswordStrength from "@/components/PasswordStrength.vue";
+import BModal from "@/components/Modal.vue";
 
 // Buffer
 import { Buffer } from 'buffer';
@@ -40,5 +41,6 @@ app.component("b-input", BInput);
 app.component("b-text-area", BTextArea);
 app.component("b-icon-upload", BIconUpload);
 app.component("password-strength", PasswordStrength);
+app.component("b-modal", BModal);
 
 app.mount('#app')
