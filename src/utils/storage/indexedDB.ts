@@ -32,3 +32,21 @@ export const insertVault = async (vault: Vault) => {
     const db = getDB();
     await db.vaults.put(vault);
 }
+
+// getVault should retrieve data for a specific vault ID
+export const getVault = async (id: string): Promise<Vault> => {
+    const db = getDB();
+
+    const vault = await db.vaults.get(id);
+    if (!vault) {
+        return Promise.reject("No vault found!");
+    }
+
+    return Promise.resolve(vault);
+}
+
+// getAllVaults should retrieve all vaults we have stored in the DB.
+export const getAllVaults = async (): Promise<Vault[]> => {
+    const db = getDB();
+    return await db.vaults.toArray();
+}
