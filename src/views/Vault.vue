@@ -20,14 +20,14 @@
 
       <!-- New Entry or Vault button -->
       <div>
-        <b-button v-if="hasVaultsAvailable" type="submit" classType="primary">
+        <b-button v-if="vaults.length !== 0" type="submit" classType="primary">
           <div class="flex flex-row justify-center items-center space-x-1">
             <PlusCircleIcon class="w-5 md:-ml-1" />
             <span class="hidden md:block">New Entry</span>
           </div>
         </b-button>
 
-        <b-button v-if="!hasVaultsAvailable" type="submit" classType="primary">
+        <b-button v-else type="submit" classType="primary">
           <div class="flex flex-row justify-center items-center space-x-1" @click="showCreateVault = !showCreateVault">
             <PlusCircleIcon class="w-5 md:-ml-1" />
             <span class="hidden md:block">Create Vault</span>
@@ -45,21 +45,19 @@
       <!-- Token entries -->
       <div class="flex-col flex-grow overflow-auto" v-if="!isFirstLoad" >
         <!-- Show message if no vaults are available -->
-        <div v-if="!hasVaultsAvailable && !showCreateVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+        <div v-if="vaults.length === 0 && !showCreateVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-mountain-meadow" />
           <p class="text-sm">To get started, you need to create a Vault.</p>
-          <b-button class="w-36">
+          <b-button class="w-36" @click="showCreateVault = !showCreateVault">
             <div class="flex flex-row justify-center items-center space-x-1">
               <PlusCircleIcon class="w-5 md:-ml-1" />
               <span>Create Vault</span>
             </div>
           </b-button>
-
-          {{ decryptedVaults }}
         </div>
 
         <!-- Show frowny face if we've got no tokens, but have vaults available -->
-        <div v-if="hasVaultsAvailable" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+        <div v-if="vaults.length !== 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-mountain-meadow" />
           <p class="text-sm">You have no authentication tokens in your vault.</p>
         </div>
@@ -95,8 +93,6 @@
 </template>
 
 <script lang="ts">
-import useEmitter from "@/composables/useEmitter";
-
 import { computed, defineComponent, onMounted, ref } from "vue";
 
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon } from "@heroicons/vue/outline"
@@ -109,7 +105,6 @@ import { sleep } from "@/utils/common";
 import { getAllVaults } from "@/utils/storage/indexedDB";
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/utils/comlink";
-import { parseCipherString } from "@/utils/crypto/cipher";
 import { useVaultStore } from "@/stores/vaultStore";
 
 export default defineComponent({
@@ -133,7 +128,7 @@ export default defineComponent({
     // has vaults available. If they have just signed up, then this value
     // should be false.
     const isFirstLoad = ref(true);
-    const hasVaultsAvailable = ref(false);
+    const vaults = computed(() => vaultStore.getAll)
 
     // Sidebar refs
     const closeMenuMobile = ref(false);
@@ -186,8 +181,8 @@ export default defineComponent({
     return {
       router,
 
-      hasVaultsAvailable,
       isFirstLoad,
+      vaults,
 
       closeMenuMobile,
       showSidebarVaults,
