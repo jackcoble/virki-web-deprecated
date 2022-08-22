@@ -5,7 +5,7 @@
 
         <form @submit.prevent="handleCreateVault" class="space-y-4 pt-4 pb-2 mx-auto">
             <b-icon-upload class="mx-auto"></b-icon-upload>
-            <b-input placeholder="Vault name" v-model="vault.name"></b-input>
+            <b-input placeholder="Vault name" v-model="vault.name" required></b-input>
             <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
             <b-button type="submit" :loading="isCreatingVault">Create</b-button>
         </form>
@@ -20,6 +20,7 @@ import type { Vault } from '@/types/vault';
 import { CryptoWorker } from '@/utils/comlink';
 import { sleep } from '@/utils/common';
 import { serialiseCipherString } from '@/utils/crypto/cipher';
+import { insertVault } from '@/utils/storage/indexedDB';
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
@@ -76,6 +77,9 @@ export default defineComponent({
                 created: createdDate,
                 modified: createdDate
             }
+
+            // Store the encrypted vault in IndexedDB.
+            await insertVault(encryptedVaultObject);
 
             // Artificial sleep to keep the user waiting...
             await sleep(1.5);
