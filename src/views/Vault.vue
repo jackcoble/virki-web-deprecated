@@ -43,7 +43,7 @@
       </div>
 
       <!-- Token entries -->
-      <div class="flex-col flex-grow overflow-auto" >
+      <div class="flex-col flex-grow overflow-auto" v-if="!isFirstLoad" >
         <!-- Show message if no vaults are available -->
         <div v-if="!hasVaultsAvailable && !showCreateVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-mountain-meadow" />
@@ -64,6 +64,30 @@
 
         <CreateVault v-if="showCreateVault" />
       </div>
+
+      <!-- Loading spinner -->
+      <div v-else class="flex flex-col flex-grow justify-center items-center h-full p-4 text-center space-y-2">
+         <svg
+                class="animate-spin h-12 w-12 text-mountain-meadow"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+            >
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                />
+                <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+            </svg>
+      </div>
     </div>
   </div>
 </template>
@@ -71,7 +95,7 @@
 <script lang="ts">
 import useEmitter from "@/composables/useEmitter";
 
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon } from "@heroicons/vue/outline"
 import { useRouter } from "vue-router";
@@ -79,6 +103,7 @@ import { useRouter } from "vue-router";
 // Components
 import Sidebar from "@/components/Sidebar.vue";
 import CreateVault from "@/components/CreateVault.vue";
+import { sleep } from "@/utils/common";
 
 export default defineComponent({
   name: "HomeView",
@@ -100,6 +125,7 @@ export default defineComponent({
     // We don't want to allow any token related actions until the user
     // has vaults available. If they have just signed up, then this value
     // should be false.
+    const isFirstLoad = ref(true);
     const hasVaultsAvailable = ref(false);
 
     // Sidebar refs
@@ -108,10 +134,19 @@ export default defineComponent({
     const showSidebarUserOptions = ref(false);
     const showCreateVault = ref(false);
 
+    onMounted(async () => {
+      // Simulate first page load. What we should actually do here is decrypt the vaults and tokens
+      // we already have got stored offline, then if the client is online, request for a sync.
+      await sleep(2);
+
+      isFirstLoad.value = false;
+    })
+
     return {
       router,
 
       hasVaultsAvailable,
+      isFirstLoad,
 
       closeMenuMobile,
       showSidebarVaults,
