@@ -16,6 +16,10 @@ export class Crypto {
         return crypto.decrypt(key, cipherString);
     }
 
+    async generateEncryptionKey() {
+        return crypto.generateEncryptionKey();
+    }
+
     async fromBase64 (input: string) {
         return fromBase64(input);
     }

@@ -129,3 +129,9 @@ export async function decrypt(key: string, cipherString: string): Promise<string
 
     return Promise.resolve(decrypted);
 }
+
+// Generate a symmetric encryption key
+export async function generateEncryptionKey(): Promise<string> {
+    const encryptionKey = await libsodium.generateEncryptionKey();
+    return Promise.resolve(encryptionKey);
+}
