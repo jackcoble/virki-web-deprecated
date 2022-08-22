@@ -76,6 +76,18 @@
                     <PlusIcon class="w-4" />
                 </button>
             </div>
+
+             <!-- List all vaults -->
+            <div v-if="showSidebarVaults" class="pt-2 space-y-1">
+                <div v-for="vault in vaults" :key="vault.id" class="flex p-2 rounded items-center space-x-2 cursor-pointer">
+                    <div
+                        class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
+                        <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon" alt="Vault Icon" />
+                        <img v-else class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon" />
+                    </div>
+                    <p class="text-sm">{{ vault.name }}</p>
+                </div>
+            </div>
         </div>
 
         <!-- Tags -->
@@ -116,6 +128,7 @@ import { StarIcon } from "@heroicons/vue/solid"
 import userService from '@/service/api/userService';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from '@vue/reactivity';
+import { useVaultStore } from '@/stores/vaultStore';
 
 export default defineComponent({
     name: "Sidebar",
@@ -141,8 +154,10 @@ export default defineComponent({
 
         // Stores
         const userStore = useUserStore();
+        const vaultStore = useVaultStore();
 
         const email = computed(() => userStore.getEmail);
+        const vaults = computed(() => vaultStore.getAll);
 
         onMounted(async () => {
             // Fetch account data
@@ -158,7 +173,8 @@ export default defineComponent({
             showSidebarVaults,
             showCreateVaultModal,
 
-            email
+            email,
+            vaults
         }
     }
 })
