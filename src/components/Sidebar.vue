@@ -11,7 +11,7 @@
                     <h2>{{ email }}</h2>
                 </div>
 
-                <div>
+                <div class="ml-2">
                     <ChevronDownIcon class="w-4" />
                 </div>
             </div>
