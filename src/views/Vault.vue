@@ -176,6 +176,7 @@ export default defineComponent({
           clearKeys();
           clearData();
 
+          isFirstLoad.value = false;
           return showExpiredSessionModal.value = true;
         }
       }
