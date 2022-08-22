@@ -72,7 +72,7 @@
                     <p class="text-sm">Vaults</p>
                 </button>
 
-                <button @click="showCreateVaultModal = !showCreateVaultModal">
+                <button @click="showCreateVaultModal = !showCreateVaultModal" class="p-1 rounded-full hover:bg-gray-200">
                     <PlusIcon class="w-4" />
                 </button>
             </div>
@@ -98,7 +98,7 @@
                     <p class="text-sm">Tags</p>
                 </div>
 
-                <button>
+                <button class="p-1 rounded-full hover:bg-gray-200">
                     <PlusIcon class="w-4" />
                 </button>
             </div>
