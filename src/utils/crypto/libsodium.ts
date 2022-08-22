@@ -71,6 +71,20 @@ export async function encryptUTF8(data: string, key?: string): Promise<Base64Cry
     return await encryptToB64(b64Data, key);
 }
 
+export async function decryptToUTF8(data: string, mac: string, nonce: string, key: string): Promise<string> {
+    await sodium.ready;
+
+    const decrypted = await decrypt(
+        await fromBase64(data),
+        await fromBase64(mac),
+        await fromBase64(nonce),
+        await fromBase64(key)
+    )
+
+    const decryptedUTF8 = sodium.to_string(decrypted);
+    return Promise.resolve(decryptedUTF8);
+}
+
 /**
  * Decrypts data with a supplied symmetric key
  * @param ciphertext 

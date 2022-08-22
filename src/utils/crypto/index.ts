@@ -129,3 +129,17 @@ export async function decrypt(key: string, cipherString: string): Promise<string
 
     return Promise.resolve(decrypted);
 }
+
+// Decrypt a UTF8 string with a Base64 encoded encryption key
+export async function decryptToUTF8(key: string, cipherString: string): Promise<string> {
+    const cipher = await parseCipherString(cipherString);
+
+    const decrypted = await libsodium.decryptToUTF8(
+        cipher.ciphertext,
+        cipher.mac,
+        cipher.nonce,
+        key
+    );
+
+    return Promise.resolve(decrypted);
+}

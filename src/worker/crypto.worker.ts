@@ -24,6 +24,10 @@ export class Crypto {
         return libsodium.encryptUTF8(data, key);
     }
 
+    async decryptToUTF8(key: string, cipherString: string) {
+        return crypto.decryptToUTF8(key, cipherString)
+    }
+
     async generateEncryptionKey() {
         return libsodium.generateEncryptionKey();
     }
