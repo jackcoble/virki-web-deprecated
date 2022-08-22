@@ -23,7 +23,7 @@
             <!-- Footer -->
             <div class="mt-5 sm:mt-6">
               <slot name="footer">
-                <b-button classType="primary">OK</b-button>
+                <b-button classType="primary" @click="$emit('ok')">OK</b-button>
               </slot>
             </div>
           </div>
@@ -34,53 +34,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from "vue";
-import { XIcon, ExclamationCircleIcon } from "@heroicons/vue/outline";
+import { defineComponent } from "vue";
+import { ExclamationCircleIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
   name: "ModalDialog",
-  props: {
-    hideCloseIcon: {
-      type: Boolean,
-      default: false,
-    },
-
-    // Footer type props
-    noFooter: {
-      type: Boolean,
-      default: false
-    },
-    okFooter: {
-      type: Boolean,
-      default: false,
-    },
-    doneFooter: {
-      type: Boolean,
-      default: false
-    }
-  },
+  emits: ["ok"],
   components: {
-    XIcon,
     ExclamationCircleIcon
-  },
-  setup(props, { emit }) {
-    const closeModal = () => {
-      emit("close");
-    };
-
-    onMounted(() => {
-      const onEscape = (e: any) => {
-        if (e.keyCode === 27) {
-          closeModal();
-        }
-      };
-
-      document.addEventListener("keydown", onEscape);
-    });
-
-    return {
-      closeModal
-    };
-  },
+  }
 });
 </script>
