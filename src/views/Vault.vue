@@ -112,12 +112,14 @@ import { useRouter } from "vue-router";
 import Sidebar from "@/components/Sidebar.vue";
 import CreateVault from "@/components/CreateVault.vue";
 import { sleep } from "@/utils/common";
-import { getAllVaults } from "@/utils/storage/indexedDB";
+import { deleteDBs, getAllVaults } from "@/utils/storage/indexedDB";
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/utils/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useUserStore } from "@/stores/userStore";
 import userService from "@/service/api/userService";
+import { clearKeys } from "@/utils/storage/sessionStorage";
+import { clearData } from "@/utils/storage/localStorage";
 
 export default defineComponent({
   name: "HomeView",
@@ -165,6 +167,15 @@ export default defineComponent({
       } catch (error) {
         // Check for 401 unauthorised (invalid session)
         if (error.response && error.response.status === 401) {
+          // Clear all of the data in the stores, IndexedDB, SessionStorage and LocalStorage
+          keyStore.clear();
+          userStore.clear();
+          vaultStore.clear();
+
+          await deleteDBs();
+          clearKeys();
+          clearData();
+
           return showExpiredSessionModal.value = true;
         }
       }
@@ -210,7 +221,7 @@ export default defineComponent({
 
     // handleLogout is called when we receive the "ok" event from the expired session modal.
     const handleLogout = () => {
-      showExpiredSessionModal.value = false;
+      router.push({ path: "/" })
     }
 
     return {
