@@ -7,7 +7,7 @@
             <p class="text-xs">If you haven't received a verification code within a couple of minutes, please check your spam or request for a new code to be sent.</p>
 
             <form @submit.prevent="handleVerification" class="space-y-2">
-                <b-input type="text" v-model.number="otp" placeholder="Verification code" autofocus required />
+                <b-input type="number" v-model="otp" placeholder="Verification code" autofocus required />
 
                 <!-- Verify button -->
                 <b-button class="flex justify-center items-center space-x-1" type="submit" classType="primary" :loading="isLoading">
@@ -46,7 +46,7 @@ export default defineComponent({
     },
     setup() {
         const email = computed(() => userStore.getEmail);
-        const otp = ref();
+        const otp = ref("");
 
         const isLoading = ref(false);
 
@@ -63,7 +63,8 @@ export default defineComponent({
 
             // Verify the OTP with the expectation to receive a session token back!
             try {
-                const res = await userService.VerifyOTP(email.value, otp.value);
+                const otpInt = parseInt(otp.value);
+                const res = await userService.VerifyOTP(email.value, otpInt);
                 keyStore.setSessionToken(res.data.session);
 
                 // Check the response data for an encrypted keys object. If it's present
