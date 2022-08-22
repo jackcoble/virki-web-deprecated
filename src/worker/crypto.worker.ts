@@ -1,7 +1,7 @@
 import * as Comlink from "comlink";
 import * as crypto from "@/utils/crypto";
 import type { Keys } from "@/types/user";
-import { fromBase64 } from "@/utils/crypto/libsodium";
+import * as libsodium from "@/utils/crypto/libsodium";
 
 export class Crypto {
     async generateKeys (passphrase: string) {
@@ -16,12 +16,16 @@ export class Crypto {
         return crypto.decrypt(key, cipherString);
     }
 
+    async encryptToB64 (data: string, key?: string) {
+        return libsodium.encryptToB64(data, key);
+    }
+
     async generateEncryptionKey() {
-        return crypto.generateEncryptionKey();
+        return libsodium.generateEncryptionKey();
     }
 
     async fromBase64 (input: string) {
-        return fromBase64(input);
+        return libsodium.fromBase64(input);
     }
 }
 
