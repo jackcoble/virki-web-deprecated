@@ -104,6 +104,10 @@ import { useRouter } from "vue-router";
 import Sidebar from "@/components/Sidebar.vue";
 import CreateVault from "@/components/CreateVault.vue";
 import { sleep } from "@/utils/common";
+import { getAllVaults } from "@/utils/storage/indexedDB";
+import { useKeyStore } from "@/stores/keyStore";
+import { CryptoWorker } from "@/utils/comlink";
+import { parseCipherString } from "@/utils/crypto/cipher";
 
 export default defineComponent({
   name: "HomeView",
@@ -119,8 +123,8 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-
     const emitter = useEmitter();
+    const keyStore = useKeyStore();
 
     // We don't want to allow any token related actions until the user
     // has vaults available. If they have just signed up, then this value
@@ -137,6 +141,39 @@ export default defineComponent({
     onMounted(async () => {
       // Simulate first page load. What we should actually do here is decrypt the vaults and tokens
       // we already have got stored offline, then if the client is online, request for a sync.
+      const cryptoWorker = await new CryptoWorker();
+      const existingVaults = await getAllVaults();
+      existingVaults.forEach(async encryptedVault => {
+        // Decrypt the vault encryption key
+        const masterEncryptionKey = keyStore.getMasterEncryptionKey;
+        if (!masterEncryptionKey) {
+          return;
+        }
+
+        // Base64 Encoded Vault Encryption Key
+        const vaultEncryptionKey = await cryptoWorker.decrypt(masterEncryptionKey, encryptedVault.key);
+
+        // We can proceed to decrypt the UTF8 text, description and icon properties
+        let decryptedName, decryptedDescription, decryptedIcon;
+        decryptedName = await cryptoWorker.decryptToUTF8(vaultEncryptionKey, encryptedVault.name);
+
+        if (encryptedVault.description) {
+          decryptedDescription = await cryptoWorker.decryptToUTF8(vaultEncryptionKey, encryptedVault.description);
+        }
+        if (encryptedVault.icon) {
+          decryptedIcon = await cryptoWorker.decryptToUTF8(vaultEncryptionKey, encryptedVault.icon);
+        }
+
+        // Create a copy of the encrypted vault and replace the data...
+        const decryptedVault = {...encryptedVault};
+        decryptedVault.key = vaultEncryptionKey;
+        decryptedVault.name = decryptedName;
+        decryptedVault.description = decryptedDescription;
+        decryptedVault.icon = decryptedIcon;
+
+        console.log(decryptedVault);
+      })
+
       await sleep(2);
 
       isFirstLoad.value = false;
