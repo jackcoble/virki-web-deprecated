@@ -20,16 +20,16 @@
 
       <!-- New Entry or Vault button -->
       <div>
-        <b-button v-if="vaults.length !== 0" type="submit" classType="primary">
+        <b-button v-if="vaults.length !== 0" type="submit" classType="primary" class="w-36" :loading="isFirstLoad" >
           <div class="flex flex-row justify-center items-center space-x-1">
-            <PlusCircleIcon class="w-5 md:-ml-1" />
+            <PlusCircleIcon class="w-4 md:-ml-1" />
             <span class="hidden md:block">New Entry</span>
           </div>
         </b-button>
 
-        <b-button v-else type="submit" classType="primary">
+        <b-button v-else type="submit" classType="primary" class="w-36" :loading="isFirstLoad" >
           <div class="flex flex-row justify-center items-center space-x-1" @click="showCreateVault = !showCreateVault">
-            <PlusCircleIcon class="w-5 md:-ml-1" />
+            <PlusCircleIcon class="w-4 md:-ml-1" />
             <span class="hidden md:block">Create Vault</span>
           </div>
         </b-button>
