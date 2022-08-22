@@ -54,6 +54,8 @@
               <span>Create Vault</span>
             </div>
           </b-button>
+
+          {{ decryptedVaults }}
         </div>
 
         <!-- Show frowny face if we've got no tokens, but have vaults available -->
@@ -95,7 +97,7 @@
 <script lang="ts">
 import useEmitter from "@/composables/useEmitter";
 
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon } from "@heroicons/vue/outline"
 import { useRouter } from "vue-router";
@@ -108,6 +110,7 @@ import { getAllVaults } from "@/utils/storage/indexedDB";
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/utils/comlink";
 import { parseCipherString } from "@/utils/crypto/cipher";
+import { useVaultStore } from "@/stores/vaultStore";
 
 export default defineComponent({
   name: "HomeView",
@@ -123,8 +126,8 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const emitter = useEmitter();
     const keyStore = useKeyStore();
+    const vaultStore = useVaultStore();
 
     // We don't want to allow any token related actions until the user
     // has vaults available. If they have just signed up, then this value
@@ -171,7 +174,8 @@ export default defineComponent({
         decryptedVault.description = decryptedDescription;
         decryptedVault.icon = decryptedIcon;
 
-        console.log(decryptedVault);
+        // Add the decrypted vault into the Vault Store
+        vaultStore.add(decryptedVault);
       })
 
       await sleep(2);
