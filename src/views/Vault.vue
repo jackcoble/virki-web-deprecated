@@ -19,7 +19,7 @@
       <b-input class="w-full md:w-3/6" type="search" placeholder="Search for an entry or tag..."></b-input>
 
       <!-- New Entry or Vault button -->
-      <div>
+      <div class="flex flex-row items-center justify-center space-x-4">
         <b-button v-if="vaults.length !== 0" type="submit" classType="primary" class="w-36" :loading="isFirstLoad" >
           <div class="flex flex-row justify-center items-center space-x-1">
             <PlusCircleIcon class="w-4 md:-ml-1" />
@@ -39,7 +39,7 @@
     <div class="flex flex-grow overflow-hidden">
       <!-- Sidebar -->
       <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full" :class="closeMenuMobile ? 'block w-full' : 'hidden md:block'">
-        <Sidebar />
+        <Sidebar @newVault="showCreateVault = !showCreateVault" />
       </div>
 
       <!-- Token entries -->
@@ -57,18 +57,18 @@
         </div>
 
         <!-- Show frowny face if we've got no tokens, but have vaults available -->
-        <div v-if="vaults.length !== 0" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
-          <EmojiSadIcon class="w-24 text-mountain-meadow" />
-          <p class="text-sm">You have no authentication tokens in your vault.</p>
+        <div v-if="vaults.length !== 0 && !showCreateVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+          <EmojiSadIcon class="w-12 text-mountain-meadow" />
+          <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ activeVault && activeVault.name }}</span> vault.</p>
         </div>
 
-        <CreateVault v-if="showCreateVault" />
+        <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault" />
       </div>
 
       <!-- Loading spinner -->
       <div v-else class="flex flex-col flex-grow justify-center items-center h-full p-4 text-center space-y-2">
          <svg
-                class="animate-spin h-12 w-12 text-mountain-meadow"
+                class="animate-spin h-10 w-10 text-mountain-meadow"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -105,12 +105,13 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
 
-import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon } from "@heroicons/vue/outline"
+import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon, StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/vue/outline"
 import { useRouter } from "vue-router";
 
 // Components
 import Sidebar from "@/components/Sidebar.vue";
 import CreateVault from "@/components/CreateVault.vue";
+
 import { sleep } from "@/utils/common";
 import { deleteDBs, getAllVaults } from "@/utils/storage/indexedDB";
 import { useKeyStore } from "@/stores/keyStore";
@@ -120,6 +121,7 @@ import { useUserStore } from "@/stores/userStore";
 import userService from "@/service/api/userService";
 import { clearKeys } from "@/utils/storage/sessionStorage";
 import { clearData } from "@/utils/storage/localStorage";
+import { useAppStore } from "@/stores/appStore";
 
 export default defineComponent({
   name: "HomeView",
@@ -129,6 +131,8 @@ export default defineComponent({
     ClockIcon,
     XIcon,
     MenuIcon,
+    StatusOnlineIcon,
+    StatusOfflineIcon,
 
     Sidebar,
     CreateVault
@@ -136,6 +140,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
 
+    const appStore = useAppStore();
     const userStore = useUserStore();
     const keyStore = useKeyStore();
     const vaultStore = useVaultStore();
@@ -144,7 +149,9 @@ export default defineComponent({
     // has vaults available. If they have just signed up, then this value
     // should be false.
     const isFirstLoad = ref(true);
-    const vaults = computed(() => vaultStore.getAll)
+    const vaults = computed(() => vaultStore.getAll);
+    const activeVault = computed(() => vaultStore.getActive);
+    const isOnline = computed(() => appStore.isOnline);
 
     // Sidebar refs
     const closeMenuMobile = ref(false);
@@ -215,7 +222,19 @@ export default defineComponent({
         vaultStore.add(decryptedVault);
       })
 
-      await sleep(2);
+      // Now we can check for an active vault. If one isn't set,
+      // then we want to get the first one available to us.
+      const activeVaultID = vaultStore.getActiveID;
+      if (!activeVaultID) {
+        const decryptedVaults = vaultStore.getAll;
+        if (decryptedVaults.length !== 0) {
+          // Set the first vault as active vault
+          vaultStore.setActive(decryptedVaults[0].id);
+        }
+      }
+
+      // Artificial sleep for a second...
+      await sleep(1);
 
       isFirstLoad.value = false;
     })
@@ -230,6 +249,8 @@ export default defineComponent({
 
       isFirstLoad,
       vaults,
+      activeVault,
+      isOnline,
 
       closeMenuMobile,
       showSidebarVaults,

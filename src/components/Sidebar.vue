@@ -72,21 +72,31 @@
                     <p class="text-sm">Vaults</p>
                 </button>
 
-                <button @click="showCreateVaultModal = !showCreateVaultModal" class="p-1 rounded-full hover:bg-gray-200">
+                <button class="p-1 rounded-full hover:bg-gray-200" @click="$emit('newVault')">
                     <PlusIcon class="w-4" />
                 </button>
             </div>
 
-             <!-- List all vaults -->
+            <!-- List all vaults -->
             <div v-if="showSidebarVaults" class="pt-2 space-y-1">
-                <div v-for="vault in vaults" :key="vault.id" class="flex p-2 rounded items-center space-x-2 cursor-pointer">
+                <div v-for="vault in vaults" :key="vault.id" class="flex p-2 rounded items-center space-x-2 cursor-pointer" :class="activeVaultID=== vault.id ? 'bg-gray-200' : ''" @click="changeVault(vault.id)">
                     <div
-                        class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-6 w-6">
+                        class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
                         <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon" alt="Vault Icon" />
-                        <img v-else class="rounded-full object-cover" src="@/assets/images/default_vault_icon.png" alt="Vault Icon" />
+                        <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png" alt="Vault Icon" />
                     </div>
                     <p class="text-sm">{{ vault.name }}</p>
                 </div>
+            </div>
+
+            <!-- Show active vault even if sidebar is closed -->
+            <div v-if="activeVault && activeVault.id && !showSidebarVaults"
+                class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
+                <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                    <img v-if="activeVault && activeVault.icon" class="rounded-full object-cover" :src="activeVault.icon" alt="Vault Icon" />
+                    <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png" alt="Vault Icon" />
+                </div>
+                <p class="text-sm">{{ activeVault && activeVault.name }}</p>
             </div>
         </div>
 
@@ -106,8 +116,16 @@
             <!-- TODO: List all tags -->
         </div>
 
+        <!-- Status information -->
+        <div class="flex flex-1 justify-center items-end">
+            <button class="flex items-center justify-center p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition" :title="isOnline ? 'Online' : 'Offline'">
+                <StatusOnlineIcon v-if="isOnline" class="w-5 h-5 text-mountain-meadow-50" />
+                <StatusOfflineIcon v-else class="w-5 h-5 text-red-400" />
+            </button>
+        </div>
+
         <!-- Version information -->
-        <div class="flex flex-1 justify-center items-end p-4">
+        <div class="flex justify-center p-4">
             <p class="text-sm text-gray-400">
                 <span class="text-mountain-meadow">Virki</span>
                 v{{ version }}
@@ -129,7 +147,9 @@ import {
     DotsHorizontalIcon,
     ShieldCheckIcon,
     DeviceMobileIcon,
-    MailIcon
+    MailIcon,
+    StatusOfflineIcon,
+    StatusOnlineIcon
 
 } from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid"
@@ -137,9 +157,11 @@ import { useUserStore } from '@/stores/userStore';
 import { computed } from '@vue/reactivity';
 import { useVaultStore } from '@/stores/vaultStore';
 import { version } from "../../package.json";
+import { useAppStore } from '@/stores/appStore';
 
 export default defineComponent({
     name: "Sidebar",
+    emits: ["newVault"],
     components: {
         UserIcon,
         ChevronDownIcon,
@@ -152,20 +174,31 @@ export default defineComponent({
         DotsHorizontalIcon,
         ShieldCheckIcon,
         DeviceMobileIcon,
-        MailIcon
+        MailIcon,
+        StatusOfflineIcon,
+        StatusOnlineIcon
     },
     setup() {
+        // Stores
+        const appStore = useAppStore();
+        const userStore = useUserStore();
+        const vaultStore = useVaultStore();
+
         // Refs for sidebar menus
         const showSidebarUserOptions = ref(false);
         const showSidebarVaults = ref(false);
         const showCreateVaultModal = ref(false);
 
-        // Stores
-        const userStore = useUserStore();
-        const vaultStore = useVaultStore();
-
+        const isOnline = computed(() => appStore.isOnline);
         const email = computed(() => userStore.getEmail);
         const vaults = computed(() => vaultStore.getAll);
+        const activeVaultID = computed(() => vaultStore.getActiveID);
+        const activeVault = computed(() => vaultStore.getActive);
+
+        // Function to handle changing vaults by updating the ID in the vault store.
+        const changeVault = (id: string) => {
+            vaultStore.setActive(id);
+        }
 
         return {
             version,
@@ -174,8 +207,14 @@ export default defineComponent({
             showSidebarVaults,
             showCreateVaultModal,
 
+            isOnline,
             email,
-            vaults
+            vaults,
+            activeVaultID,
+
+            activeVault,
+
+            changeVault
         }
     }
 })
