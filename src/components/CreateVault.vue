@@ -4,7 +4,7 @@
         <p>In order to store authentication tokens, you need a Vault. This allows you to organise your tokens and keep them in one place!</p>
 
         <form @submit.prevent="handleCreateVault" class="space-y-4 pt-4 pb-2 mx-auto">
-            <b-icon-upload class="mx-auto"></b-icon-upload>
+            <b-icon-upload class="mx-auto" @imageData="vault.icon = $event"></b-icon-upload>
             <b-input placeholder="Vault name" v-model="vault.name" required></b-input>
             <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
             <b-button type="submit" :loading="isCreatingVault">Create</b-button>
@@ -26,7 +26,8 @@ import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
     name: "CreateVault",
-    setup() {
+    emits: ["created"],
+    setup(props, { emit }) {
         const keyStore = useKeyStore();
         const vaultStore = useVaultStore();
         const toaster = useToaster();
@@ -90,19 +91,23 @@ export default defineComponent({
             decryptedVaultObject.description = vault.value.description;
             decryptedVaultObject.icon = vault.value.icon;
 
-            vaultStore.add(decryptedVaultObject);
-
             // Artificial sleep to keep the user waiting...
             await sleep(1.5);
 
+            vaultStore.add(decryptedVaultObject);
+            vaultStore.setActive(decryptedVaultObject.id);
+
             isCreatingVault.value = false;
+
+            // Emit created event to signal close in parent...
+            emit("created");
         }
 
         return {
             vault,
             isCreatingVault,
 
-            handleCreateVault
+            handleCreateVault,
         }
     }
 })
