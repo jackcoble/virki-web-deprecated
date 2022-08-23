@@ -17,7 +17,8 @@
             </div>
 
             <!-- User options -->
-            <div v-if="showSidebarUserOptions" class="flex-col rounded shadow mt-3 text-gray-600 bg-white space-y-0.5 text-sm">
+            <div v-if="showSidebarUserOptions"
+                class="flex-col rounded shadow mt-3 text-gray-600 bg-white space-y-0.5 text-sm">
                 <!-- Recovery Key -->
                 <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer rounded">
                     <ShieldCheckIcon class="w-4" />
@@ -66,7 +67,8 @@
         <!-- Vaults -->
         <div class="p-4 text-gray-700">
             <div class="flex">
-                <button class="flex flex-1 justify-start items-center space-x-2" @click="showSidebarVaults = !showSidebarVaults">
+                <button class="flex flex-1 justify-start items-center space-x-2"
+                    @click="showSidebarVaults = !showSidebarVaults">
                     <ChevronRightIcon v-if="!showSidebarVaults" class="w-4" />
                     <ChevronDownIcon v-else class="w-4" />
                     <p class="text-sm">Vaults</p>
@@ -79,11 +81,14 @@
 
             <!-- List all vaults -->
             <div v-if="showSidebarVaults" class="pt-2 space-y-1">
-                <div v-for="vault in vaults" :key="vault.id" class="flex p-2 rounded items-center space-x-2 cursor-pointer" :class="activeVaultID=== vault.id ? 'bg-gray-200' : ''" @click="changeVault(vault.id)">
+                <div v-for="vault in vaults" :key="vault.id"
+                    class="flex p-2 rounded items-center space-x-2 cursor-pointer"
+                    :class="activeVaultID === vault.id ? 'bg-gray-200' : ''" @click="changeVault(vault.id)">
                     <div
                         class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
                         <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon" alt="Vault Icon" />
-                        <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png" alt="Vault Icon" />
+                        <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
+                            alt="Vault Icon" />
                     </div>
                     <p class="text-sm">{{ vault.name }}</p>
                 </div>
@@ -93,8 +98,10 @@
             <div v-if="activeVault && activeVault.id && !showSidebarVaults"
                 class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
                 <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                    <img v-if="activeVault && activeVault.icon" class="rounded-full object-cover" :src="activeVault.icon" alt="Vault Icon" />
-                    <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png" alt="Vault Icon" />
+                    <img v-if="activeVault && activeVault.icon" class="rounded-full object-cover"
+                        :src="activeVault.icon" alt="Vault Icon" />
+                    <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
+                        alt="Vault Icon" />
                 </div>
                 <p class="text-sm">{{ activeVault && activeVault.name }}</p>
             </div>
@@ -118,7 +125,10 @@
 
         <!-- Status information -->
         <div class="flex flex-1 justify-center items-end">
-            <button class="flex items-center justify-center p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition" :title="isOnline ? 'Online' : 'Offline'">
+            <button class="flex items-center justify-center p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                :title="isOnline ? 'Online' : 'Offline'"
+                @click="isOnline ? showOnlineModal = !showOnlineModal : showOfflineModal = !showOfflineModal"
+            >
                 <StatusOnlineIcon v-if="isOnline" class="w-5 h-5 text-mountain-meadow-50" />
                 <StatusOfflineIcon v-else class="w-5 h-5 text-red-400" />
             </button>
@@ -132,6 +142,33 @@
             </p>
         </div>
     </div>
+
+    <!-- Online alert modal -->
+    <b-modal v-if="showOnlineModal" @ok="showOnlineModal = !showOnlineModal">
+        <template v-slot:icon>
+            <StatusOnlineIcon class="h-6 w-6 text-mountain-meadow" />
+        </template>
+        <template v-slot:body>
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">You're online!</h3>
+            <div class="mt-2">
+                <p class="text-sm text-gray-500">This device is online and can reach the Virki sync server.</p>
+            </div>
+        </template>
+    </b-modal>
+
+    <!-- Offline alert modal -->
+    <b-modal v-if="showOfflineModal" @ok="showOfflineModal = !showOfflineModal">
+        <template v-slot:icon>
+            <StatusOfflineIcon class="h-6 w-6 text-red-400" />
+        </template>
+        <template v-slot:body>
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">You're offline!</h3>
+            <div class="mt-2">
+                <p class="text-sm text-gray-500">It appears this device is offline! Any features that require internet
+                    connectivity have been disabled.</p>
+            </div>
+        </template>
+    </b-modal>
 </template>
 
 <script lang="ts">
@@ -189,6 +226,10 @@ export default defineComponent({
         const showSidebarVaults = ref(false);
         const showCreateVaultModal = ref(false);
 
+        // Refs for online/offline modals
+        const showOnlineModal = ref(false);
+        const showOfflineModal = ref(false);
+
         const isOnline = computed(() => appStore.isOnline);
         const email = computed(() => userStore.getEmail);
         const vaults = computed(() => vaultStore.getAll);
@@ -206,6 +247,9 @@ export default defineComponent({
             showSidebarUserOptions,
             showSidebarVaults,
             showCreateVaultModal,
+
+            showOnlineModal,
+            showOfflineModal,
 
             isOnline,
             email,
