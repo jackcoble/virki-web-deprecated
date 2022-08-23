@@ -1,9 +1,9 @@
 export enum LS_KEYS {
-    KEYS = "keys",
+    ENCRYPTED_KEYS = "encrypted_keys",
     EMAIL = "email",
     SESSION = "session",
-    PASSWORD = "password",
-    USER_DETAILS = "userDetails"
+    USER_DETAILS = "userDetails",
+    ACTIVE_VAULT = "activeVault"
 }
 
 /**

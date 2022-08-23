@@ -8,7 +8,7 @@ export const useKeyStore = defineStore({
   state: () => ({
     sessionToken: getData(LS_KEYS.SESSION) || "",
     masterEncryptionKey: getKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY) || "",
-    encryptedKeys: getData(LS_KEYS.KEYS) || {}
+    encryptedKeys: getData(LS_KEYS.ENCRYPTED_KEYS) || {}
   }),
 
   getters: {
@@ -42,7 +42,7 @@ export const useKeyStore = defineStore({
     setEncryptedKeys(keys: Keys) {
         this.encryptedKeys = keys;
 
-        setData(LS_KEYS.KEYS, keys);
+        setData(LS_KEYS.ENCRYPTED_KEYS, keys);
     },
 
     // Clears entire store state
