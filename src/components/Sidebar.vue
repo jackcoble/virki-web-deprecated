@@ -82,15 +82,24 @@
             <!-- List all vaults -->
             <div v-if="showSidebarVaults" class="pt-2 space-y-1">
                 <div v-for="vault in vaults" :key="vault.id"
-                    class="flex p-2 rounded items-center space-x-2 cursor-pointer"
+                    class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer"
                     :class="activeVaultID === vault.id ? 'bg-gray-200' : ''" @click="changeVault(vault.id)">
-                    <div
-                        class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                        <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon" alt="Vault Icon" />
-                        <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
-                            alt="Vault Icon" />
+                    <!-- Vault icon and name -->
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                            <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon"
+                                alt="Vault Icon" />
+                            <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
+                                alt="Vault Icon" />
+                        </div>
+                        <p class="text-sm">{{ vault.name }}</p>
                     </div>
-                    <p class="text-sm">{{ vault.name }}</p>
+
+                    <!-- More icon (3 dots) -->
+                    <button class="rounded-full p-1 hover:bg-gray-300 transition">
+                        <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
+                    </button>
                 </div>
             </div>
 
@@ -127,8 +136,7 @@
         <div class="flex flex-1 justify-center items-end">
             <button class="flex items-center justify-center p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition"
                 :title="isOnline ? 'Online' : 'Offline'"
-                @click="isOnline ? showOnlineModal = !showOnlineModal : showOfflineModal = !showOfflineModal"
-            >
+                @click="isOnline ? showOnlineModal = !showOnlineModal : showOfflineModal = !showOfflineModal">
                 <StatusOnlineIcon v-if="isOnline" class="w-5 h-5 text-mountain-meadow-50" />
                 <StatusOfflineIcon v-else class="w-5 h-5 text-red-400" />
             </button>
