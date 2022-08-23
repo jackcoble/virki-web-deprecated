@@ -7,7 +7,11 @@
             <b-icon-upload class="mx-auto" @imageData="vault.icon = $event"></b-icon-upload>
             <b-input placeholder="Vault name" v-model="vault.name" required></b-input>
             <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
-            <b-button type="submit" :loading="isCreatingVault">Create</b-button>
+            
+            <div class="flex space-x-2">
+                <b-button type="submit" :loading="isCreatingVault">Create</b-button>
+                <b-button classType="danger" @click="$emit('cancel')">Cancel</b-button>
+            </div>
         </form>
     </div>
 </template>
@@ -26,7 +30,7 @@ import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
     name: "CreateVault",
-    emits: ["created"],
+    emits: ["created", "cancel"],
     setup(props, { emit }) {
         const keyStore = useKeyStore();
         const vaultStore = useVaultStore();

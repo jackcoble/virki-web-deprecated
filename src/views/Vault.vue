@@ -62,7 +62,7 @@
           <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ activeVault && activeVault.name }}</span> vault.</p>
         </div>
 
-        <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault" />
+        <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault" @cancel="showCreateVault = !showCreateVault" />
       </div>
 
       <!-- Loading spinner -->
