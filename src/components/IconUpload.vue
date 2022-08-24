@@ -2,7 +2,7 @@
     <div class="flex flex-grow-0 items-center justify-center rounded-full bg-gray-200 border-2 border-gray-200 w-24 h-24 cursor-pointer" @click="triggerFileUploadPrompt">
         <input class="hidden" type="file" accept="image/*" @change="handleImage" ref="iconInput" />
         <PhotographIcon v-if="!uploadedIcon" class="text-gray-500 rounded-full w-24 p-4" />
-        <img v-if="uploadedIcon" class="rounded-full object-cover w-24 h-24" :src="uploadedIcon" alt="Uploaded Icon">
+        <img v-else class="rounded-full object-cover w-24 h-24" :src="uploadedIcon" alt="Uploaded Icon">
     </div>
 </template>
 
