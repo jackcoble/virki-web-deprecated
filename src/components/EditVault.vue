@@ -8,7 +8,7 @@
             <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
             
             <div class="flex space-x-2">
-                <b-button type="submit">Update</b-button>
+                <b-button type="submit" :loading="isUpdating">Update</b-button>
                 <b-button classType="danger" @click="$emit('cancel')">Cancel</b-button>
             </div>
         </form>
@@ -20,6 +20,7 @@ import { useVaultStore } from '@/stores/vaultStore';
 import { EncryptionType } from '@/types/crypto';
 import type { Vault } from '@/types/vault';
 import { CryptoWorker } from '@/utils/comlink';
+import { sleep } from '@/utils/common';
 import { serialiseCipherString } from '@/utils/crypto/cipher';
 import { getAllVaults, insertVault } from '@/utils/storage/indexedDB';
 import { defineComponent, onMounted, ref, watch } from 'vue';
@@ -37,6 +38,7 @@ export default defineComponent({
         const vaultStore = useVaultStore();
 
         const vault = ref({} as Vault);
+        const isUpdating = ref(false);
 
         onMounted(() => {
             // Lookup the decrypted vault object for the provided ID
@@ -66,6 +68,8 @@ export default defineComponent({
 
         // Handle when we want to update the vault. This involves re-encrypting the data
         const updateVault = async () => {
+            isUpdating.value = true;
+
             // Fetch the encrypted copy of the vault so we don't have to re-encrypt certain data
             const encryptedVaults = await getAllVaults();
             const originalEncryptedVault = encryptedVaults.find(v => v.id === props.vaultId);
@@ -110,11 +114,16 @@ export default defineComponent({
             // Update the decrypted vault in the vault store
             vaultStore.add(vault.value);
 
+            await sleep(1)
+
+            isUpdating.value = false;
+
             emit("updated");
         }
 
         return {
             vault,
+            isUpdating,
 
             updateVault
         }
