@@ -26,6 +26,7 @@ import { defineComponent, onMounted, ref, watch } from 'vue';
 
 export default defineComponent({
     name: "EditVault",
+    emits: ["updated", "cancel"],
     props: {
         vaultId: {
             type: String
@@ -109,6 +110,7 @@ export default defineComponent({
             // Update the decrypted vault in the vault store
             vaultStore.add(vault.value);
 
+            emit("updated");
         }
 
         return {

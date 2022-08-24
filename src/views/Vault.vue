@@ -66,7 +66,7 @@
         </div>
 
         <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault" @cancel="showCreateVault = !showCreateVault" />
-        <EditVault v-if="showEditVault" :vaultId="vaultToEdit" />
+        <EditVault v-if="showEditVault" :vaultId="vaultToEdit" @updated="showEditVault = false" @cancel="showEditVault = false" />
       </div>
 
       <!-- Loading spinner -->
