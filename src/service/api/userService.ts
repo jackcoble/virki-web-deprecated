@@ -22,5 +22,9 @@ export default {
 
     GetAccount(): Promise<AxiosResponse> {
         return api.get("/v1/users/account");
+    },
+
+    Logout(): Promise<AxiosResponse> {
+        return api.post("/v1/users/sessions/logout");
     }
 }

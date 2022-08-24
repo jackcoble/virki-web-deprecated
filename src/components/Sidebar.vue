@@ -206,6 +206,7 @@ import { useAppStore } from '@/stores/appStore';
 import { useLogout } from '@/composables/useLogout';
 import { useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
+import userService from '@/service/api/userService';
 
 export default defineComponent({
     name: "Sidebar",
@@ -256,18 +257,16 @@ export default defineComponent({
 
         // Function to handle when the user wants to logout
         const doLogout = async () => {
-            // TODO: POST request to /users/sessions/logout endpoint
+            // Post to logout
             try {
-                // TODO...
+                await userService.Logout();
             } catch (error) {
-                // TODO...
-            }
-
-            // Clear all state in browser
-            await useLogout();
-
-            // Push to login
-            router.push({ path: PAGES.ROOT })
+                console.log("There was an error logging user out:", e.response);
+            } finally {
+                // Regardless of the outcome, clear all state in the browser to be safe
+                await useLogout();
+                router.push({ path: PAGES.ROOT })
+            } 
         }
 
         return {
