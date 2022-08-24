@@ -39,13 +39,16 @@
     <div class="flex flex-grow overflow-hidden">
       <!-- Sidebar -->
       <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full" :class="closeMenuMobile ? 'block w-full' : 'hidden md:block'">
-        <Sidebar @newVault="showCreateVault = !showCreateVault" />
+        <Sidebar
+          @newVault="showCreateVault = !showCreateVault"
+          @editVault="vaultToEdit = $event; showEditVault = true"
+        />
       </div>
 
       <!-- Token entries -->
       <div class="flex-col flex-grow overflow-auto" v-if="!isFirstLoad" >
         <!-- Show message if no vaults are available -->
-        <div v-if="vaults.length === 0 && !showCreateVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+        <div v-if="vaults.length === 0 && !showCreateVault && !showEditVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-24 text-mountain-meadow" />
           <p class="text-sm">To get started, you need to create a Vault.</p>
           <b-button class="w-36" @click="showCreateVault = !showCreateVault">
@@ -57,12 +60,13 @@
         </div>
 
         <!-- Show frowny face if we've got no tokens, but have vaults available -->
-        <div v-if="vaults.length !== 0 && !showCreateVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+        <div v-if="vaults.length !== 0 && !showCreateVault && !showEditVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
           <EmojiSadIcon class="w-12 text-mountain-meadow" />
           <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ activeVault && activeVault.name }}</span> vault.</p>
         </div>
 
         <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault" @cancel="showCreateVault = !showCreateVault" />
+        <EditVault v-if="showEditVault" :vaultId="vaultToEdit" />
       </div>
 
       <!-- Loading spinner -->
@@ -111,6 +115,7 @@ import { useRouter } from "vue-router";
 // Components
 import Sidebar from "@/components/Sidebar.vue";
 import CreateVault from "@/components/CreateVault.vue";
+import EditVault from "@/components/EditVault.vue";
 
 import { sleep } from "@/utils/common";
 import { deleteDBs, getAllVaults } from "@/utils/storage/indexedDB";
@@ -135,7 +140,8 @@ export default defineComponent({
     StatusOfflineIcon,
 
     Sidebar,
-    CreateVault
+    CreateVault,
+    EditVault
   },
   setup() {
     const router = useRouter();
@@ -158,6 +164,8 @@ export default defineComponent({
     const showSidebarVaults = ref(false);
     const showSidebarUserOptions = ref(false);
     const showCreateVault = ref(false);
+    const showEditVault = ref(false);
+    const vaultToEdit = ref("");
 
     // Modal refs
     const showExpiredSessionModal = ref(false);
@@ -256,6 +264,8 @@ export default defineComponent({
       showSidebarVaults,
       showSidebarUserOptions,
       showCreateVault,
+      showEditVault,
+      vaultToEdit,
 
       showExpiredSessionModal,
 

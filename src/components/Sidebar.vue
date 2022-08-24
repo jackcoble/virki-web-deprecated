@@ -97,7 +97,7 @@
                     </div>
 
                     <!-- More icon (3 dots) -->
-                    <button class="rounded-full p-1 hover:bg-gray-300 transition">
+                    <button class="rounded-full p-1 hover:bg-gray-300 transition" @click="$emit('editVault', vault.id)">
                         <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
                     </button>
                 </div>
@@ -206,7 +206,7 @@ import { useAppStore } from '@/stores/appStore';
 
 export default defineComponent({
     name: "Sidebar",
-    emits: ["newVault"],
+    emits: ["newVault", "editVault"],
     components: {
         UserIcon,
         ChevronDownIcon,
