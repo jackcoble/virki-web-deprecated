@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Logout -->
-                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer text-red-400 rounded">
+                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer text-red-400 rounded" @click="doLogout">
                     <LogoutIcon class="w-4" />
                     <p>Logout</p>
                 </div>
@@ -203,6 +203,9 @@ import { computed } from '@vue/reactivity';
 import { useVaultStore } from '@/stores/vaultStore';
 import { version } from "../../package.json";
 import { useAppStore } from '@/stores/appStore';
+import { useLogout } from '@/composables/useLogout';
+import { useRouter } from 'vue-router';
+import { PAGES } from '@/router/pages';
 
 export default defineComponent({
     name: "Sidebar",
@@ -229,6 +232,8 @@ export default defineComponent({
         const userStore = useUserStore();
         const vaultStore = useVaultStore();
 
+        const router = useRouter();
+
         // Refs for sidebar menus
         const showSidebarUserOptions = ref(false);
         const showSidebarVaults = ref(false);
@@ -249,6 +254,22 @@ export default defineComponent({
             vaultStore.setActive(id);
         }
 
+        // Function to handle when the user wants to logout
+        const doLogout = async () => {
+            // TODO: POST request to /users/sessions/logout endpoint
+            try {
+                // TODO...
+            } catch (error) {
+                // TODO...
+            }
+
+            // Clear all state in browser
+            await useLogout();
+
+            // Push to login
+            router.push({ path: PAGES.ROOT })
+        }
+
         return {
             version,
 
@@ -266,7 +287,8 @@ export default defineComponent({
 
             activeVault,
 
-            changeVault
+            changeVault,
+            doLogout
         }
     }
 })

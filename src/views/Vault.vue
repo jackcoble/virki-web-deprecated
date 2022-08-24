@@ -127,6 +127,7 @@ import userService from "@/service/api/userService";
 import { clearKeys } from "@/utils/storage/sessionStorage";
 import { clearData } from "@/utils/storage/localStorage";
 import { useAppStore } from "@/stores/appStore";
+import { useLogout } from "@/composables/useLogout";
 
 export default defineComponent({
   name: "HomeView",
@@ -182,14 +183,7 @@ export default defineComponent({
       } catch (error) {
         // Check for 401 unauthorised (invalid session)
         if (error.response && error.response.status === 401) {
-          // Clear all of the data in the stores, IndexedDB, SessionStorage and LocalStorage
-          keyStore.clear();
-          userStore.clear();
-          vaultStore.clear();
-
-          await deleteDBs();
-          clearKeys();
-          clearData();
+          await useLogout();
 
           isFirstLoad.value = false;
           return showExpiredSessionModal.value = true;
