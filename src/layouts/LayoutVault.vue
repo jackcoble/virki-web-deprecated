@@ -1,0 +1,40 @@
+<template>
+    <div class="flex flex-col h-screen">
+        <!-- Header -->
+        <div
+            class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
+            <div>
+                <!-- Logo -->
+                <a href="/" class="hidden md:block">
+                    <img class="w-24" src="@/assets/images/virki_full_horizontal_transparent_dark.png"
+                        alt="Virki Logo" />
+                </a>
+            </div>
+        </div>
+
+        <div class="flex flex-grow overflow-hidden">
+            <!-- Sidebar -->
+            <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full">
+                <Sidebar />
+            </div>
+
+            <!-- Main content -->
+            <div class="flex-col flex-grow overflow-auto">
+                <slot />
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import Sidebar from '@/components/Sidebar.vue';
+
+export default defineComponent({
+    name: "LayoutVault",
+    components: {
+        Sidebar
+    }
+})
+</script>
