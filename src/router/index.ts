@@ -26,9 +26,14 @@ const router = createRouter({
       },
       children: [
         {
-          path: "/vault",
+          path: PAGES.VAULT,
           name: "VaultView",
           component: Vault
+        },
+        {
+          path: PAGES.SESSIONS,
+          name: "sessions",
+          component: Sessions
         }
       ]
     },
@@ -63,11 +68,6 @@ const router = createRouter({
       meta: {
         public: true
       }
-    },
-    {
-      path: PAGES.SESSIONS,
-      name: "sessions",
-      component: Sessions
     }
   ]
 })
