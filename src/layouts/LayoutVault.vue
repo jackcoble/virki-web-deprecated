@@ -12,7 +12,7 @@
             </div>
 
             <!-- Avatar -->
-            <div class="flex items-center justify-center space-x-2 rounded px-3 py-1.5 hover:bg-gray-200 transition cursor-pointer">
+            <div class="flex items-center justify-center space-x-2 rounded px-3 py-1.5 hover:bg-gray-200 transition cursor-pointer" @click="router.push(PAGES.PROFILE)">
                 <img class="w-8 h-8 rounded-full" src="https://avatars.githubusercontent.com/u/26122014?v=4" alt="">
                 <p class="text-sm">Jack Coble</p>
             </div>
@@ -34,13 +34,26 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 
+// Components
 import Sidebar from '@/components/Sidebar.vue';
+
+import { PAGES } from '@/router/pages';
 
 export default defineComponent({
     name: "LayoutVault",
     components: {
         Sidebar
+    },
+    setup() {
+        const router = useRouter();
+
+        return {
+            router,
+
+            PAGES
+        }
     }
 })
 </script>
