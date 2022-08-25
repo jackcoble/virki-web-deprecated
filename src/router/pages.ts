@@ -3,6 +3,7 @@ export enum PAGES {
     REGISTER = "/signup",
     VERIFY = "/verify",
     CREDENTIALS = "/credentials",
-    VAULT = "/vault",
-    SESSIONS = "/sessions"
+    VAULT = "/vaults",
+    NEW_VAULT = "/vaults/new",
+    PROFILE = "/profile"
 }

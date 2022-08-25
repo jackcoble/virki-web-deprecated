@@ -12,7 +12,8 @@ import Register from "@/views/Register.vue"
 import Verify from "@/views/Verify.vue"
 import Credentials from "@/views/Credentials.vue"
 import Vault from "@/views/Vault.vue"
-import Sessions from "@/views/Sessions.vue"
+import NewVault from "@/views/vaults/New.vue"
+import Profile from "@/views/Profile.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,9 +32,14 @@ const router = createRouter({
           component: Vault
         },
         {
-          path: PAGES.SESSIONS,
-          name: "sessions",
-          component: Sessions
+          path: PAGES.NEW_VAULT,
+          name: "NewVault",
+          component: NewVault
+        },
+        {
+          path: PAGES.PROFILE,
+          name: "profile",
+          component: Profile
         }
       ]
     },
