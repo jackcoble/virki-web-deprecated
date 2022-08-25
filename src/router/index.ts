@@ -1,8 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, RouterView } from 'vue-router'
 
 import { useKeyStore } from '@/stores/keyStore'
 import { PAGES } from './pages'
 
+// Layouts
+import LayoutVault from '@/layouts/LayoutVault.vue'
+
+// Views
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
 import Verify from "@/views/Verify.vue"
@@ -13,6 +17,21 @@ import Sessions from "@/views/Sessions.vue"
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "",
+      name: "LayoutVault",
+      component: RouterView,
+      meta: {
+        layout: LayoutVault
+      },
+      children: [
+        {
+          path: "/vault",
+          name: "VaultView",
+          component: Vault
+        }
+      ]
+    },
     {
       path: PAGES.ROOT,
       name: 'login',
@@ -44,11 +63,6 @@ const router = createRouter({
       meta: {
         public: true
       }
-    },
-    {
-      path: PAGES.VAULT,
-      name: "vault",
-      component: Vault
     },
     {
       path: PAGES.SESSIONS,
