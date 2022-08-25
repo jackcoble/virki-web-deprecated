@@ -10,6 +10,12 @@
                         alt="Virki Logo" />
                 </a>
             </div>
+
+            <!-- Avatar -->
+            <div class="flex items-center justify-center space-x-2 rounded px-3 py-1.5">
+                <img class="w-8 h-8 rounded-full" src="https://avatars.githubusercontent.com/u/26122014?v=4" alt="">
+                <p class="text-sm">Jack Coble</p>
+            </div>
         </div>
 
         <div class="flex flex-grow overflow-hidden">
