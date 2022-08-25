@@ -19,8 +19,8 @@
         </div>
 
         <div class="flex flex-grow overflow-hidden">
-            <!-- Sidebar -->
-            <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full">
+            <!-- Sidebar (controllable with a meta property) -->
+            <div v-if="route.meta.sidebar" class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full">
                 <Sidebar />
             </div>
 
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 // Components
 import Sidebar from '@/components/Sidebar.vue';
@@ -48,9 +48,11 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter();
+        const route = useRoute();
 
         return {
             router,
+            route,
 
             PAGES
         }

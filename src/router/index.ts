@@ -24,7 +24,8 @@ const router = createRouter({
       name: "LayoutVault",
       component: RouterView,
       meta: {
-        layout: LayoutVault
+        layout: LayoutVault,
+        sidebar: true
       },
       children: [
         {
@@ -36,21 +37,14 @@ const router = createRouter({
           path: PAGES.NEW_VAULT,
           name: "NewVault",
           component: NewVault
-        }
-      ]
-    },
-    {
-      path: "",
-      name: "LayoutProfile",
-      component: RouterView,
-      meta: {
-        layout: LayoutProfile
-      },
-      children: [
+        },
         {
           path: PAGES.PROFILE,
           name: "profile",
-          component: Profile
+          component: Profile,
+          meta: {
+            sidebar: false
+          }
         }
       ]
     },
