@@ -33,7 +33,7 @@ const router = createRouter({
           component: Vault
         },
         {
-          path: PAGES.EDIT_VAULT,
+          path: PAGES.EDIT_VAULT + "/:id",
           name: "EditVault",
           component: EditVault
         },

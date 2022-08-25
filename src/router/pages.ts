@@ -4,7 +4,7 @@ export enum PAGES {
     VERIFY = "/verify",
     CREDENTIALS = "/credentials",
     VAULT = "/vaults",
-    EDIT_VAULT = "/vaults/edit/:id",
+    EDIT_VAULT = "/vaults/edit",
     NEW_VAULT = "/vaults/new",
     PROFILE = "/profile"
 }
