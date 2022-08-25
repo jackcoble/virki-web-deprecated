@@ -25,8 +25,6 @@
 
     <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault"
       @cancel="showCreateVault = !showCreateVault" />
-    <EditVault v-if="showEditVault" :vaultId="vaultToEdit" @updated="showEditVault = false"
-      @cancel="showEditVault = false" />
   </div>
 
   <!-- Loading spinner -->
@@ -59,7 +57,6 @@ import { useRouter } from "vue-router";
 // Components
 import Sidebar from "@/components/Sidebar.vue";
 import CreateVault from "@/components/CreateVault.vue";
-import EditVault from "@/components/EditVault.vue";
 
 import { sleep } from "@/utils/common";
 import { getAllVaults } from "@/utils/storage/indexedDB";
@@ -84,7 +81,6 @@ export default defineComponent({
 
     Sidebar,
     CreateVault,
-    EditVault
   },
   setup() {
     const router = useRouter();
