@@ -38,7 +38,7 @@
                 </div>
 
                 <!-- Sessions management -->
-                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer rounded">
+                <div class="flex items-center space-x-2 px-3 py-2 cursor-pointer rounded" @click="router.push(PAGES.SESSIONS)">
                     <DeviceMobileIcon class="w-4" />
                     <p>Active Sessions</p>
                 </div>
@@ -270,7 +270,10 @@ export default defineComponent({
         }
 
         return {
+            router,
             version,
+
+            PAGES,
 
             showSidebarUserOptions,
             showSidebarVaults,

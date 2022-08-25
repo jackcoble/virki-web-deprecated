@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { useKeyStore } from '@/stores/keyStore'
+import { PAGES } from './pages'
+
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
 import Verify from "@/views/Verify.vue"
 import Credentials from "@/views/Credentials.vue"
 import Vault from "@/views/Vault.vue"
-import { PAGES } from './pages'
-import { useKeyStore } from '@/stores/keyStore'
+import Sessions from "@/views/Sessions.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +49,11 @@ const router = createRouter({
       path: PAGES.VAULT,
       name: "vault",
       component: Vault
+    },
+    {
+      path: PAGES.SESSIONS,
+      name: "sessions",
+      component: Sessions
     }
   ]
 })
