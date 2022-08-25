@@ -1,98 +1,42 @@
 <template>
-  <div class="flex flex-col h-screen">
-    <!-- Header -->
-    <div class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
-      <div>
-        <!-- Logo -->
-        <a href="/" class="hidden md:block">
-          <img class="w-24" src="@/assets/images/virki_full_horizontal_transparent_dark.png" alt="Virki Logo" />
-        </a>
-
-        <!-- Menu icon (only visible on mobile) -->
-        <button class="block md:hidden text-mountain-meadow w-9" @click="closeMenuMobile = !closeMenuMobile">
-          <MenuIcon v-if="!closeMenuMobile" />
-          <XIcon v-else />
-        </button>
-      </div>
-
-      <!-- Search input -->
-      <b-input class="w-full md:w-3/6" type="search" placeholder="Search for an entry or tag..."></b-input>
-
-      <!-- New Entry or Vault button -->
-      <div class="flex flex-row items-center justify-center space-x-4">
-        <b-button v-if="vaults.length !== 0" type="submit" classType="primary" class="w-36" :loading="isFirstLoad" >
-          <div class="flex flex-row justify-center items-center space-x-1">
-            <PlusCircleIcon class="w-4 md:-ml-1" />
-            <span class="hidden md:block">New Entry</span>
-          </div>
-        </b-button>
-
-        <b-button v-else type="submit" classType="primary" class="w-36" :loading="isFirstLoad" >
-          <div class="flex flex-row justify-center items-center space-x-1" @click="showCreateVault = !showCreateVault">
-            <PlusCircleIcon class="w-4 md:-ml-1" />
-            <span class="hidden md:block">Create Vault</span>
-          </div>
-        </b-button>
-      </div>
+  <!-- Token entries -->
+  <div class="h-full" v-if="!isFirstLoad">
+    <!-- Show message if no vaults are available -->
+    <div v-if="vaults.length === 0 && !showCreateVault && !showEditVault"
+      class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+      <EmojiSadIcon class="w-24 text-mountain-meadow" />
+      <p class="text-sm">To get started, you need to create a Vault.</p>
+      <b-button class="w-36" @click="showCreateVault = !showCreateVault">
+        <div class="flex flex-row justify-center items-center space-x-1">
+          <PlusCircleIcon class="w-5 md:-ml-1" />
+          <span>Create Vault</span>
+        </div>
+      </b-button>
     </div>
 
-    <div class="flex flex-grow overflow-hidden">
-      <!-- Sidebar -->
-      <div class="flex-col flex-shrink-0 xl:w-1/6 md:w-1/4 sm:w-full" :class="closeMenuMobile ? 'block w-full' : 'hidden md:block'">
-        <Sidebar
-          @newVault="showCreateVault = !showCreateVault"
-          @editVault="vaultToEdit = $event; showEditVault = true"
-        />
-      </div>
-
-      <!-- Token entries -->
-      <div class="flex-col flex-grow overflow-auto" v-if="!isFirstLoad" >
-        <!-- Show message if no vaults are available -->
-        <div v-if="vaults.length === 0 && !showCreateVault && !showEditVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
-          <EmojiSadIcon class="w-24 text-mountain-meadow" />
-          <p class="text-sm">To get started, you need to create a Vault.</p>
-          <b-button class="w-36" @click="showCreateVault = !showCreateVault">
-            <div class="flex flex-row justify-center items-center space-x-1">
-              <PlusCircleIcon class="w-5 md:-ml-1" />
-              <span>Create Vault</span>
-            </div>
-          </b-button>
-        </div>
-
-        <!-- Show frowny face if we've got no tokens, but have vaults available -->
-        <div v-if="vaults.length !== 0 && !showCreateVault && !showEditVault" class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
-          <EmojiSadIcon class="w-12 text-mountain-meadow" />
-          <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ activeVault && activeVault.name }}</span> vault.</p>
-        </div>
-
-        <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault" @cancel="showCreateVault = !showCreateVault" />
-        <EditVault v-if="showEditVault" :vaultId="vaultToEdit" @updated="showEditVault = false" @cancel="showEditVault = false" />
-      </div>
-
-      <!-- Loading spinner -->
-      <div v-else class="flex flex-col flex-grow justify-center items-center h-full p-4 text-center space-y-2">
-         <svg
-                class="animate-spin h-10 w-10 text-mountain-meadow"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-            >
-                <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                />
-                <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-            </svg>
-      </div>
+    <!-- Show frowny face if we've got no tokens, but have vaults available -->
+    <div v-if="vaults.length !== 0 && !showCreateVault && !showEditVault"
+      class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
+      <EmojiSadIcon class="w-12 text-mountain-meadow" />
+      <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ activeVault &&
+          activeVault.name
+      }}</span> vault.</p>
     </div>
+
+    <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault"
+      @cancel="showCreateVault = !showCreateVault" />
+    <EditVault v-if="showEditVault" :vaultId="vaultToEdit" @updated="showEditVault = false"
+      @cancel="showEditVault = false" />
+  </div>
+
+  <!-- Loading spinner -->
+  <div v-else class="flex flex-col flex-grow justify-center items-center h-full p-4 text-center space-y-2">
+    <svg class="animate-spin h-10 w-10 text-mountain-meadow" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    </svg>
   </div>
 
   <!-- Session expired modal -->
@@ -118,14 +62,12 @@ import CreateVault from "@/components/CreateVault.vue";
 import EditVault from "@/components/EditVault.vue";
 
 import { sleep } from "@/utils/common";
-import { deleteDBs, getAllVaults } from "@/utils/storage/indexedDB";
+import { getAllVaults } from "@/utils/storage/indexedDB";
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/utils/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useUserStore } from "@/stores/userStore";
 import userService from "@/service/api/userService";
-import { clearKeys } from "@/utils/storage/sessionStorage";
-import { clearData } from "@/utils/storage/localStorage";
 import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";
 
@@ -178,7 +120,7 @@ export default defineComponent({
         // Fetch account data
         const account = await userService.GetAccount();
         if (account.data) {
-            userStore.setEmail(account.data.email)
+          userStore.setEmail(account.data.email)
         }
       } catch (error) {
         // Check for 401 unauthorised (invalid session)
@@ -214,7 +156,7 @@ export default defineComponent({
         }
 
         // Create a copy of the encrypted vault and replace the data...
-        const decryptedVault = {...encryptedVault};
+        const decryptedVault = { ...encryptedVault };
         decryptedVault.key = vaultEncryptionKey;
         decryptedVault.name = decryptedName;
         decryptedVault.description = decryptedDescription;
