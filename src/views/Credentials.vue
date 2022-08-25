@@ -77,7 +77,7 @@ export default defineComponent({
                 keyStore.setMasterEncryptionKey(decryptedKeys.master_encryption_key);
 
                 // We can finally navigate to the vault page
-                router.push({ path: '/vault' })
+                router.push({ path: '/vaults' })
             } catch (e) {
                 // Fine tune this a bit more, but just assume for now the password is incorrect.
                 // A terrible thing to do, I know...
