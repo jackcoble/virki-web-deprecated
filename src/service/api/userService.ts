@@ -24,6 +24,14 @@ export default {
         return api.get("/v1/users/account");
     },
 
+    WebAuthnRegister(): Promise<AxiosResponse> {
+        return api.post("/v1/users/webauthn/register")
+    },
+
+    WebAuthnFinishRegister(sessionId: string, attestationObject: any): Promise<AxiosResponse> {
+        return api.post(`/v1/users/webauthn/register/${sessionId}`, attestationObject)
+    },
+
     Logout(): Promise<AxiosResponse> {
         return api.post("/v1/users/sessions/logout");
     }
