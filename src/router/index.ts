@@ -29,7 +29,7 @@ const router = createRouter({
       },
       children: [
         {
-          path: PAGES.VAULT,
+          path: `${PAGES.VAULT}/:id?`,
           name: "VaultView",
           component: Vault
         },
@@ -39,7 +39,7 @@ const router = createRouter({
           component: NewVault
         },
         {
-          path: PAGES.EDIT_VAULT + "/:id",
+          path: `${PAGES.VAULT}/:id/edit`,
           name: "EditVault",
           component: EditVault
         },
