@@ -5,10 +5,10 @@
             class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
             <div>
                 <!-- Logo -->
-                <a href="/" class="hidden md:block">
+                <router-link :to="PAGES.ROOT" class="hidden md:block">
                     <img class="w-24" src="@/assets/images/virki_full_horizontal_transparent_dark.png"
                         alt="Virki Logo" />
-                </a>
+                </router-link>
             </div>
 
             <!-- Avatar -->
