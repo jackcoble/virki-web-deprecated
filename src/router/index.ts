@@ -13,6 +13,7 @@ import Verify from "@/views/Verify.vue"
 import Credentials from "@/views/Credentials.vue"
 import Vault from "@/views/Vault.vue"
 import Profile from "@/views/Profile.vue"
+import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
 
 const router = createRouter({
@@ -31,6 +32,11 @@ const router = createRouter({
           path: PAGES.VAULT,
           name: "VaultView",
           component: Vault
+        },
+        {
+          path: PAGES.NEW_VAULT,
+          name: "NewVault",
+          component: NewVault
         },
         {
           path: PAGES.EDIT_VAULT + "/:id",

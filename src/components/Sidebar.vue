@@ -24,7 +24,7 @@
                     <p class="text-sm">Vaults</p>
                 </button>
 
-                <button class="p-1 rounded-full hover:bg-gray-200" @click="$emit('newVault')">
+                <button class="p-1 rounded-full hover:bg-gray-200" @click="router.push(PAGES.NEW_VAULT)">
                     <PlusIcon class="w-4" />
                 </button>
             </div>
