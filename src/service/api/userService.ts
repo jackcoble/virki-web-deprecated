@@ -24,6 +24,10 @@ export default {
         return api.get("/v1/users/account");
     },
 
+    GetSessions(): Promise<AxiosResponse> {
+        return api.get("/v1/users/sessions")
+    },
+
     WebAuthnRegister(): Promise<AxiosResponse> {
         return api.post("/v1/users/webauthn/register")
     },
