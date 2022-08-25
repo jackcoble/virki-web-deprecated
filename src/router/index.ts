@@ -5,6 +5,7 @@ import { PAGES } from './pages'
 
 // Layouts
 import LayoutVault from '@/layouts/LayoutVault.vue'
+import LayoutProfile from "@/layouts/LayoutProfile.vue"
 
 // Views
 import Login from "@/views/Login.vue"
@@ -35,7 +36,17 @@ const router = createRouter({
           path: PAGES.NEW_VAULT,
           name: "NewVault",
           component: NewVault
-        },
+        }
+      ]
+    },
+    {
+      path: "",
+      name: "LayoutProfile",
+      component: RouterView,
+      meta: {
+        layout: LayoutProfile
+      },
+      children: [
         {
           path: PAGES.PROFILE,
           name: "profile",
