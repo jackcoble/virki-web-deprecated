@@ -47,7 +47,7 @@
                     </div>
 
                     <!-- More icon (3 dots) -->
-                    <button class="rounded-full p-1 hover:bg-gray-300 transition" @click="router.push(PAGES.EDIT_VAULT + '/' + vault.id)">
+                    <button class="rounded-full p-1 hover:bg-gray-300 transition" @click="router.push(`/vaults/${vault.id}/edit`)">
                         <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
                     </button>
                 </div>

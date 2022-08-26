@@ -170,8 +170,11 @@ export default defineComponent({
         if (decryptedVaults.length !== 0) {
           // Set the first vault as active vault
           vaultStore.setActive(decryptedVaults[0].id);
+          router.push("/vaults/" + decryptedVaults[0].id)
         }
       }
+
+      router.push("/vaults/" + activeVaultID)
 
       // Artificial sleep for a second...
       await sleep(1);
