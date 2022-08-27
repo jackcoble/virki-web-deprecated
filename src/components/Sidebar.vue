@@ -200,6 +200,7 @@ export default defineComponent({
         // Function to handle changing vaults by updating the ID in the vault store.
         const changeVault = (id: string) => {
             vaultStore.setActive(id);
+            router.push({ path: `${PAGES.VAULT}/${id}` })
         }
 
         // Function to handle when the user wants to logout
