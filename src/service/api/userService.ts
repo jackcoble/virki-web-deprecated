@@ -29,7 +29,7 @@ export default {
     },
 
     RevokeSession(sessionID: string): Promise<AxiosResponse> {
-        return api.delete("/v1/users/sessions", {
+        return api.post("/v1/users/sessions/revoke", {
             session_id: sessionID
         })
     },

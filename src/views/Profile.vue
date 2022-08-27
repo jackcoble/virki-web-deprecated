@@ -74,7 +74,7 @@
                                             </td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <a href="#" class="text-red-500 hover:text-red-600 transition">Revoke</a>
+                                                <button class="text-red-500 hover:text-red-600 transition" @click="revokeSession(session.id)">Revoke</button>
                                             </td>
                                         </tr>
 
@@ -107,6 +107,15 @@ export default defineComponent({
             })
         })
 
+        // Revoke an individual user session by ID
+        const revokeSession = async(id: string) => {
+            try {
+                await userService.RevokeSession(id)
+            } catch (error) {
+                console.log("Error revoking session...")
+            }
+        }
+
         // Return a relative human readable date
         const formatDate = (unix: any) => {
             const formatted = formatRelative(subDays(fromUnixTime(unix), 0), new Date())
@@ -116,6 +125,7 @@ export default defineComponent({
         return {
             sessions,
 
+            revokeSession,
             formatDate
         }
     }
