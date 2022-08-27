@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col h-full p-4" v-if="!isFirstLoad">
-    <div class="flex justify-end">
+    <div class="flex justify-end" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
       <b-button class="w-36" @click="router.push(`${PAGES.VAULT}/${activeVault && activeVault.id}/tokens/new`)">
         <div class="flex flex-row justify-center items-center space-x-1">
           <PlusCircleIcon class="w-4" />
