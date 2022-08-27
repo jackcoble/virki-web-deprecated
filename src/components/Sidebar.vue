@@ -30,7 +30,7 @@
             </div>
 
             <!-- List all vaults -->
-            <div v-if="showSidebarVaults" class="pt-2 space-y-1">
+            <div v-if="showSidebarVaults && vaults.length !== 0" class="pt-2 space-y-1">
                 <div v-for="vault in vaults" :key="vault.id"
                     class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition"
                     :class="activeVaultID === vault.id ? 'bg-gray-200' : ''">
