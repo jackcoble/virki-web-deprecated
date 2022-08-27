@@ -31,21 +31,21 @@
                         <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded">
                                 <table class="min-w-full divide-y divide-gray-300">
-                                    <thead class="bg-gray-50">
+                                    <thead class="bg-gray-200 text-gray-700">
                                         <tr>
                                             <th scope="col"
-                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold sm:pl-6">
                                                 IP Address</th>
-                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold">
                                                 Device
                                             </th>
-                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold">
                                                 Operating System
                                             </th>
-                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold">
                                                 Issued
                                             </th>
-                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold">
                                                 Last Active
                                             </th>
                                             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
