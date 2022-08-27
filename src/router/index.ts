@@ -19,6 +19,12 @@ import EditVault from '@/views/vaults/Edit.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // Handle 404 redirect
+    {
+      path: "/:pathMatch(.*)*",
+      beforeEnter: (to, from, next) => next(PAGES.ROOT)
+    },
+
     {
       path: "/vault",
       name: "LayoutVault",
