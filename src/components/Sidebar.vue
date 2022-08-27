@@ -47,7 +47,8 @@
                     </div>
 
                     <!-- More icon (3 dots) -->
-                    <button class="rounded-full p-1 hover:bg-gray-300 transition" @click="router.push(`/vaults/${vault.id}/edit`)">
+                    <button class="rounded-full p-1 hover:bg-gray-300 transition"
+                        @click="router.push(`/vaults/${vault.id}/edit`)">
                         <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
                     </button>
                 </div>
@@ -56,13 +57,24 @@
             <!-- Show active vault even if sidebar is closed -->
             <div v-if="activeVault && activeVault.id && !showSidebarVaults"
                 class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
-                <div class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                    <img v-if="activeVault && activeVault.icon" class="rounded-full object-cover"
-                        :src="activeVault.icon" alt="Vault Icon" />
-                    <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
-                        alt="Vault Icon" />
+
+                <!-- Vault icon and name -->
+                <div class="flex flex-1 items-center space-x-2" @click="changeVault(activeVaultID)">
+                    <div
+                        class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                        <img v-if="activeVault && activeVault.icon" class="rounded-full object-cover"
+                            :src="activeVault.icon" alt="Vault Icon" />
+                        <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
+                            alt="Vault Icon" />
+                    </div>
+                    <p class="text-sm">{{ activeVault && activeVault.name }}</p>
                 </div>
-                <p class="text-sm">{{ activeVault && activeVault.name }}</p>
+
+                <!-- More icon (3 dots) -->
+                    <button class="rounded-full p-1 hover:bg-gray-300 transition"
+                        @click="router.push(`/vaults/${activeVaultID}/edit`)">
+                        <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
+                    </button>
             </div>
         </div>
 
@@ -216,7 +228,7 @@ export default defineComponent({
                 // Regardless of the outcome, clear all state in the browser to be safe
                 await useLogout();
                 router.push({ path: PAGES.ROOT })
-            } 
+            }
         }
 
         return {
