@@ -1,12 +1,20 @@
 <template>
-  <!-- Token entries -->
-  <div class="h-full" v-if="!isFirstLoad">
+  <div class="flex flex-col h-full p-4" v-if="!isFirstLoad">
+    <div class="flex justify-end">
+      <b-button class="w-36" @click="router.push(`${PAGES.VAULT}/${activeVault && activeVault.id}/tokens/new`)">
+        <div class="flex flex-row justify-center items-center space-x-1">
+          <PlusCircleIcon class="w-4" />
+          <span>Add</span>
+        </div>
+      </b-button>
+    </div>
+
     <!-- Show message if no vaults are available -->
     <div v-if="vaults.length === 0 && !showCreateVault && !showEditVault"
       class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
       <EmojiSadIcon class="w-24 text-mountain-meadow" />
       <p class="text-sm">To get started, you need to create a Vault.</p>
-      <b-button class="w-36" @click="showCreateVault = !showCreateVault">
+      <b-button class="w-36" @click="router.push(PAGES.NEW_VAULT)">
         <div class="flex flex-row justify-center items-center space-x-1">
           <PlusCircleIcon class="w-5 md:-ml-1" />
           <span>Create Vault</span>
@@ -22,9 +30,6 @@
           activeVault.name
       }}</span> vault.</p>
     </div>
-
-    <CreateVault v-if="showCreateVault" @created="showCreateVault = !showCreateVault"
-      @cancel="showCreateVault = !showCreateVault" />
   </div>
 
   <!-- Loading spinner -->
@@ -54,10 +59,6 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon, StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/vue/outline"
 import { useRouter } from "vue-router";
 
-// Components
-import Sidebar from "@/components/Sidebar.vue";
-import CreateVault from "@/components/CreateVault.vue";
-
 import { sleep } from "@/utils/common";
 import { getAllVaults } from "@/utils/storage/indexedDB";
 import { useKeyStore } from "@/stores/keyStore";
@@ -68,19 +69,15 @@ import userService from "@/service/api/userService";
 import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";
 
+import { PAGES } from "@/router/pages";
+
 export default defineComponent({
   name: "HomeView",
   components: {
     EmojiSadIcon,
     PlusCircleIcon,
     ClockIcon,
-    XIcon,
-    MenuIcon,
-    StatusOnlineIcon,
-    StatusOfflineIcon,
-
-    Sidebar,
-    CreateVault,
+    XIcon
   },
   setup() {
     const router = useRouter();
@@ -184,11 +181,13 @@ export default defineComponent({
 
     // handleLogout is called when we receive the "ok" event from the expired session modal.
     const handleLogout = () => {
-      router.push({ path: "/" })
+      router.push({ path: PAGES.ROOT })
     }
 
     return {
       router,
+
+      PAGES,
 
       isFirstLoad,
       vaults,
