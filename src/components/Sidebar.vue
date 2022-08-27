@@ -53,6 +53,12 @@
                     </button>
                 </div>
             </div>
+            <div v-if="showSidebarVaults && vaults.length === 0" class="p-2">
+                <div class="flex py-2 items-center space-x-2">
+                    <EmojiSadIcon class="w-6 text-mountain-meadow" />
+                    <h2 class="text-sm">No vaults available...</h2>
+                </div>
+            </div>
 
             <!-- Show active vault even if sidebar is closed -->
             <div v-if="activeVault && activeVault.id && !showSidebarVaults"
@@ -71,10 +77,10 @@
                 </div>
 
                 <!-- More icon (3 dots) -->
-                    <button class="rounded-full p-1 hover:bg-gray-300 transition"
-                        @click="router.push(`/vaults/${activeVaultID}/edit`)">
-                        <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
-                    </button>
+                <button class="rounded-full p-1 hover:bg-gray-300 transition"
+                    @click="router.push(`/vaults/${activeVaultID}/edit`)">
+                    <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
+                </button>
             </div>
         </div>
 
@@ -156,7 +162,8 @@ import {
     DeviceMobileIcon,
     MailIcon,
     StatusOfflineIcon,
-    StatusOnlineIcon
+    StatusOnlineIcon,
+    EmojiSadIcon
 
 } from "@heroicons/vue/outline";
 import { StarIcon } from "@heroicons/vue/solid"
@@ -187,7 +194,8 @@ export default defineComponent({
         DeviceMobileIcon,
         MailIcon,
         StatusOfflineIcon,
-        StatusOnlineIcon
+        StatusOnlineIcon,
+        EmojiSadIcon
     },
     setup() {
         // Stores
