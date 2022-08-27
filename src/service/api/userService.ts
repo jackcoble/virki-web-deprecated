@@ -28,6 +28,12 @@ export default {
         return api.get("/v1/users/sessions")
     },
 
+    RevokeSession(sessionID: string): Promise<AxiosResponse> {
+        return api.delete("/v1/users/sessions", {
+            session_id: sessionID
+        })
+    },
+
     WebAuthnRegister(): Promise<AxiosResponse> {
         return api.post("/v1/users/webauthn/register")
     },
