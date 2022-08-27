@@ -3,7 +3,7 @@
     <div class="flex flex-col h-full border-r-2 p-6 bg-gray-100 overflow-auto">
         <!-- All Items -->
         <div class="flex-col space-y-2 p-4 text-gray-700">
-            <div class="flex py-2 items-center space-x-2">
+            <div class="flex py-2 items-center space-x-2 cursor-pointer" @click="router.push('/vaults/all')">
                 <InboxIcon class="w-6" />
                 <h2 class="text-sm">All Items</h2>
             </div>
