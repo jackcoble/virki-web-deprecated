@@ -15,6 +15,7 @@ import Vault from "@/views/Vault.vue"
 import Profile from "@/views/Profile.vue"
 import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
+import NewToken from "@/views/vaults/tokens/New.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,11 @@ const router = createRouter({
           path: `${PAGES.VAULT}/:id/edit`,
           name: "EditVault",
           component: EditVault
+        },
+        {
+          path: `${PAGES.VAULT}/:id/tokens/new`,
+          name: "newTokens",
+          component: NewToken
         },
         {
           path: PAGES.PROFILE,
