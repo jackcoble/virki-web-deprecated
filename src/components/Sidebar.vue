@@ -1,16 +1,11 @@
 <template>
     <!-- Sidebar -->
     <div class="flex flex-col h-full border-r-2 p-6 bg-gray-100 overflow-auto">
-        <!-- All Items and Favourites -->
+        <!-- All Items -->
         <div class="flex-col space-y-2 p-4 text-gray-700">
             <div class="flex py-2 items-center space-x-2">
                 <InboxIcon class="w-6" />
                 <h2 class="text-sm">All Items</h2>
-            </div>
-
-            <div class="flex py-2 items-center space-x-2">
-                <StarIcon class="w-6 text-yellow-400" />
-                <h2 class="text-sm">Favourites</h2>
             </div>
         </div>
 
@@ -84,22 +79,6 @@
             </div>
         </div>
 
-        <!-- Tags -->
-        <div class="p-4 text-gray-700">
-            <div class="flex">
-                <div class="flex flex-1 justify-start items-center space-x-2">
-                    <ChevronDownIcon class="w-4" />
-                    <p class="text-sm">Tags</p>
-                </div>
-
-                <button class="p-1 rounded-full hover:bg-gray-200">
-                    <PlusIcon class="w-4" />
-                </button>
-            </div>
-
-            <!-- TODO: List all tags -->
-        </div>
-
         <!-- Status information -->
         <div class="flex flex-1 justify-center items-end">
             <button class="flex items-center justify-center p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition"
@@ -166,7 +145,6 @@ import {
     EmojiSadIcon
 
 } from "@heroicons/vue/outline";
-import { StarIcon } from "@heroicons/vue/solid"
 import { useUserStore } from '@/stores/userStore';
 import { computed } from '@vue/reactivity';
 import { useVaultStore } from '@/stores/vaultStore';
@@ -186,7 +164,6 @@ export default defineComponent({
         KeyIcon,
         LogoutIcon,
         InboxIcon,
-        StarIcon,
         ChevronRightIcon,
         PlusIcon,
         DotsHorizontalIcon,
