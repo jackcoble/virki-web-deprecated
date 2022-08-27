@@ -60,8 +60,12 @@
                                             <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                                                 {{ session.ip_address }}
                                             </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                {{ session.device }}
+                                            <td class="flex space-x-2 whitespace-nowrap items-center px-3 py-4 text-sm text-gray-500">
+                                                <span v-if="session.this_device" title="This device" class="text-mountain-meadow">
+                                                    &#x25cf;
+                                                </span>
+
+                                                <span>{{ session.device }}</span>
                                             </td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                 {{ session.operating_system }}
@@ -109,11 +113,17 @@ export default defineComponent({
 
         // Revoke an individual user session by ID
         const revokeSession = async(id: string) => {
+            // Revoke the session
             try {
                 await userService.RevokeSession(id)
             } catch (error) {
                 console.log("Error revoking session...")
             }
+
+            // Update the sessions list
+            await userService.GetSessions().then(res => {
+                sessions.value = res.data;
+            })
         }
 
         // Return a relative human readable date
