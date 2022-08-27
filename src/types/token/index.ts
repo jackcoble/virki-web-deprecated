@@ -14,13 +14,14 @@ export interface Token {
     id: string; // Unique identifier for this token
     vault_id: string; // Vault ID the token belongs to
 
+    key: string; // Random key used for encryption
     issuer: string;
     label: string; // This is the username value
     icon?: string;
     secret: string;
     algorithm: OTPAlgorithm;
     length: number;
-    otp_type: OTPType;
+    type: OTPType;
     period?: number;
     counter?: number;
 
