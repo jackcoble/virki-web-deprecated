@@ -78,7 +78,7 @@
                                             </td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <button class="text-red-500 hover:text-red-600 transition" @click="revokeSession(session.id)">Revoke</button>
+                                                <button class="text-red-500 hover:text-red-600 transition" @click="revokeSession(session)">Revoke</button>
                                             </td>
                                         </tr>
 
@@ -98,10 +98,15 @@
 import userService from '@/service/api/userService';
 import { defineComponent, onMounted, ref } from 'vue';
 import { fromUnixTime, formatRelative, subDays } from "date-fns";
+import { useLogout } from '@/composables/useLogout';
+import { useRouter } from 'vue-router';
+import { PAGES } from '@/router/pages';
 
 export default defineComponent({
     name: "Sessions",
     setup() {
+        const router = useRouter();
+
         const sessions = ref();
 
         onMounted(async () => {
@@ -112,12 +117,20 @@ export default defineComponent({
         })
 
         // Revoke an individual user session by ID
-        const revokeSession = async(id: string) => {
+        const revokeSession = async(session: any) => {
             // Revoke the session
             try {
-                await userService.RevokeSession(id)
+                await userService.RevokeSession(session.id);
             } catch (error) {
                 console.log("Error revoking session...")
+            }
+
+            // If it's this device we're revoking, do a logout
+            if (session.this_device) {
+                await useLogout();
+                router.push(PAGES.ROOT);
+
+                return;
             }
 
             // Update the sessions list
