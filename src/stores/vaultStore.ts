@@ -48,6 +48,7 @@ export const useVaultStore = defineStore({
 
     // Clear all decrypted data from the Hash Map
     clear() {
+      this.active = "";
       this.vaults.clear();
     }
   },
