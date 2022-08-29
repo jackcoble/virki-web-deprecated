@@ -181,6 +181,10 @@ export async function generateEncryptionKey(): Promise<string> {
     return await toBase64(sodium.crypto_kdf_keygen())
 }
 
+/**
+ * Generates an X25519 keypair used for asymmetric encryption.
+ * @returns {sodium.KeyPair}
+ */
 export async function generateKeypair(): Promise<any> {
     await sodium.ready;
     const keypair = sodium.crypto_box_keypair();
@@ -189,6 +193,29 @@ export async function generateKeypair(): Promise<any> {
         publicKey: await toBase64(keypair.publicKey),
         privateKey: await toBase64(keypair.privateKey)
     }
+}
+
+/**
+ * Opens a Box
+ * @param input 
+ * @param publicKey 
+ * @param privateKey 
+ * @returns 
+ */
+export async function boxSealOpen(
+    input: string,
+    publicKey: string,
+    privateKey: string
+) {
+    await sodium.ready;
+
+    return await toBase64(
+        sodium.crypto_box_seal_open(
+            await fromBase64(input),
+            await fromBase64(publicKey),
+            await fromBase64(privateKey)
+        )
+    )
 }
 
 /**
