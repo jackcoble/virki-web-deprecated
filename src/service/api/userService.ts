@@ -16,6 +16,13 @@ export default {
         })
     },
 
+    Register(email: string, keys: Keys): Promise<AxiosResponse> {
+        return api.post("/v1/users/register", {
+            email: email,
+            encrypted_keys: keys
+        })
+    },
+
     AddEncryptedKeys(keys: Keys): Promise<AxiosResponse> {
         return api.put("/v1/users/keys", keys);
     },
