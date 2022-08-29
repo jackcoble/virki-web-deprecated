@@ -32,6 +32,10 @@ export class Crypto {
         return libsodium.generateEncryptionKey();
     }
 
+    async boxSealOpen(input: string, publicKey: string, privateKey: string) {
+        return libsodium.boxSealOpen(input, publicKey, privateKey);
+    }
+
     async fromBase64 (input: string) {
         return libsodium.fromBase64(input);
     }
