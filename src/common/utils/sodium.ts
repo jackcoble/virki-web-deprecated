@@ -103,12 +103,12 @@ export async function generateKeypair(): Promise<sodium.StringKeyPair> {
 }
 
 /**
- * Return a SHA-256 hash of provided data.
+ * Return a SHA-512 hash of provided data.
  * @param input - Data to be hashed
  * @returns {string}
  */
-export async function sha256hash(input: Uint8Array): Promise<string> {
-    const hash = await self.crypto.subtle.digest("SHA-256", input);
+export async function sha512hash(input: Uint8Array): Promise<string> {
+    const hash = await self.crypto.subtle.digest("SHA-512", input);
     const hashBuffer = new Uint8Array(hash)
 
     return await toBase64(hashBuffer);

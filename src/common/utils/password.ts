@@ -31,8 +31,8 @@ import sodium from "libsodium-wrappers";
         try {
             const key = sodium.crypto_pwhash(sodium.crypto_secretbox_KEYBYTES, password, saltBuffer, opsLimit, memLimit, sodium.crypto_pwhash_ALG_DEFAULT);
 
-            // Generate SHA-256 hash of the stretched password
-            const hashedKey = await sodiumUtils.sha256hash(key)
+            // Generate SHA-512 hash of the stretched password
+            const hashedKey = await sodiumUtils.sha512hash(key)
 
             const stretchedPassword: StretchedPassword = {
                 hash: hashedKey,
