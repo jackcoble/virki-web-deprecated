@@ -1,5 +1,5 @@
 import type { StretchedPassword } from "@/common/interfaces/password";
-import { Sodium } from "./sodium";
+import * as sodiumUtils from "./sodium";
 import sodium from "libsodium-wrappers";
 
 /**
@@ -11,13 +11,15 @@ import sodium from "libsodium-wrappers";
  * @returns {StretchedPassword}
  */
  export async function stretchPassword(password: string, salt?: string, opsLimit?: number, memLimit?: number): Promise<StretchedPassword> {
+    await sodium.ready;
+
     // Default algorithm can change in future, so added this in as a safeguard.
     if (sodium.crypto_pwhash_ALG_DEFAULT !== sodium.crypto_pwhash_ALG_ARGON2ID13) {
         return Promise.reject("Mismatch with expected password hashing algorithm!");
     }
 
     // Generate salt if not provided as parameter
-    const saltBuffer = salt ? await Sodium.fromBase64(salt) : await Sodium.fromBase64(await Sodium.generateSalt());
+    const saltBuffer = salt ? await sodiumUtils.fromBase64(salt) : await sodiumUtils.fromBase64(await sodiumUtils.generateSalt());
 
     // Determine opsLimit and memLimit
     opsLimit = opsLimit ? opsLimit : sodium.crypto_pwhash_OPSLIMIT_SENSITIVE;
@@ -30,12 +32,12 @@ import sodium from "libsodium-wrappers";
             const key = sodium.crypto_pwhash(sodium.crypto_secretbox_KEYBYTES, password, saltBuffer, opsLimit, memLimit, sodium.crypto_pwhash_ALG_DEFAULT);
 
             // Generate SHA-256 hash of the stretched password
-            const hashedKey = await Sodium.sha256hash(key)
+            const hashedKey = await sodiumUtils.sha256hash(key)
 
             const stretchedPassword: StretchedPassword = {
                 hash: hashedKey,
-                key: await Sodium.toBase64(key),
-                salt: await Sodium.toBase64(saltBuffer),
+                key: await sodiumUtils.toBase64(key),
+                salt: await sodiumUtils.toBase64(saltBuffer),
                 opsLimit: opsLimit,
                 memLimit: memLimit
             }
