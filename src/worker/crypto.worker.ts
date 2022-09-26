@@ -1,4 +1,3 @@
-import * as Comlink from "comlink";
 import { stretchPassword } from "@/common/utils/password";
 import { encryptToB64, encryptUTF8, generateEncryptionKey } from "@/common/utils/sodium";
 
@@ -19,5 +18,3 @@ export class Crypto {
         return encryptUTF8(data, key);
     }
 }
-
-Comlink.expose(Crypto)
