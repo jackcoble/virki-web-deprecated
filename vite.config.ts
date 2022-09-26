@@ -21,10 +21,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  optimizeDeps: {
-    // @ts-ignore
-    allowNodeBuiltins: ["pouchdb-browser", "pouchdb-utils"]
-  },
   server: {
     host: true,
     proxy: {
