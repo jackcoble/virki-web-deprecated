@@ -8,11 +8,5 @@
     },
     "types": ["node"],
     "allowSyntheticDefaultImports": true
-  },
-
-  "references": [
-    {
-      "path": "./tsconfig.config.json"
-    }
-  ]
+  }
 }
