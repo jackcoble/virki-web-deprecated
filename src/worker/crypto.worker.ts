@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 import { stretchPassword } from "@/common/utils/password";
-import { encryptToB64, encryptUTF8, generateEncryptionKey } from "@/common/utils/sodium";
+import { encryptToB64, encryptUTF8, generateEncryptionKey, generateKeypair } from "@/common/utils/sodium";
 
 export class Crypto {
     async stretchPassword(password: string) {
@@ -9,6 +9,10 @@ export class Crypto {
 
     async generateEncryptionKey() {
         return generateEncryptionKey();
+    }
+
+    async generateKeypair() {
+        return generateKeypair();
     }
 
     async encryptToB64(data: string, key?: string) {
