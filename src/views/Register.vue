@@ -59,11 +59,16 @@ import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { CryptoWorker } from "@/utils/comlink";
-import userService from "@/service/api/userService";
+import { CryptoWorker, getDedicatedCryptoWorker } from "@/utils/comlink";
 import { useKeyStore } from "@/stores/keyStore";
-import type { Keys } from "@/types/user";
 import { useUserStore } from "@/stores/userStore";
+import type { StretchedPassword } from "@/common/interfaces/password";
+import type { EncryptionResult } from "@/common/interfaces/encryption";
+import { serialiseCipherString } from "@/utils/crypto/cipher";
+import { EncryptionType } from "@/types/crypto";
+import type { Crypto } from "@/worker/crypto.worker";
+import type { Keys } from "@/common/interfaces/keys";
+import type { StringKeyPair } from "libsodium-wrappers";
 
 export default defineComponent({
     name: "Login",
@@ -93,39 +98,43 @@ export default defineComponent({
                 return toaster.error("Passwords do not match!")
             }
 
-
             if (password.value.length < 12) {
                 return toaster.error("Password must be at least 12 characters long!")
             }
 
             isLoading.value = true;
 
-            // Store some registration details, such as email
-            userStore.setEmail(email.value);
-
-            // Make API request to send OTP to users email address
-            try {
-                await userService.SendOTP(email.value);
-            } catch (error) {
-                isLoading.value = false;
-                return toaster.error("Unexpected error sending email");
-            }
-
-
-            // Offload key generation onto CryptoWorker
-            // and store the generated keys in the "keyStore"
+            // Stretch the provided password into a Key Encryption Key (KEK)
             const cryptoWorker = await new CryptoWorker();
-            const keys = await cryptoWorker.generateKeys(password.value);
-            keyStore.setEncryptedKeys(keys);
+            const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value)
+            
+            // Generate a standalone encryption key and encrypt it with the KEK
+            const encryptionKey = await cryptoWorker.generateEncryptionKey();
+            const encryptedMasterKey: EncryptionResult = await cryptoWorker.encryptToB64(encryptionKey, stretchedPassword.key);
+            const encryptedMasterKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedMasterKey.ciphertext, encryptedMasterKey.nonce, encryptedMasterKey.mac);
 
-            // Store the decrypted master key in SessionStorage
-            const decryptedKeys: Keys = await cryptoWorker.decryptKeys(password.value, keys);
-            keyStore.setMasterEncryptionKey(decryptedKeys.master_encryption_key);
+            // Generate an X25519 keypair, and encrypt the private key with the encryption key
+            const keypair: StringKeyPair = await cryptoWorker.generateKeypair();
+            const keypairEncryptedPrivateKey: EncryptionResult = await cryptoWorker.encryptToB64(keypair.privateKey, encryptionKey);
+            const keypairEncryptedCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, keypairEncryptedPrivateKey.ciphertext, keypairEncryptedPrivateKey.nonce, keypairEncryptedPrivateKey.mac);
+
+            const keys = {
+                kek: {
+                    hash: stretchedPassword.hash,
+                    salt: stretchedPassword.salt,
+                    ops_limit: stretchedPassword.opsLimit,
+                    mem_limit: stretchedPassword.memLimit
+                },
+                master_encryption_key: encryptedMasterKeyCipherString,
+                keypair: {
+                    public_key: keypair.publicKey,
+                    private_key: keypairEncryptedCipherString
+                }
+            } as Keys;
+
+            console.log(keys);
 
             isLoading.value = false;
-
-            // Push to verification page
-            router.push({ path: "/verify" });
         }
 
         return {
