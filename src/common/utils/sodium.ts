@@ -97,9 +97,14 @@ export async function generateEncryptionKey(): Promise<string> {
  */
 export async function generateKeypair(): Promise<sodium.StringKeyPair> {
     await sodium.ready;
-    const keypair = sodium.crypto_box_keypair("base64");
+    const keypair = sodium.crypto_box_keypair();
 
-    return Promise.resolve(keypair);
+    const stringKeypair = {
+        publicKey: await toBase64(keypair.publicKey),
+        privateKey: await toBase64(keypair.privateKey)
+    } as sodium.StringKeyPair;
+
+    return Promise.resolve(stringKeypair);
 }
 
 /**
