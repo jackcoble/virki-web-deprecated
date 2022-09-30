@@ -31,6 +31,9 @@
                     <b-password-input v-model="confirmPassword" />
                 </div>
 
+                <!-- Cloudflare Turnstile -->
+                <div id="cf-turnstile-challenge"></div>
+
                 <!-- Terms of Service and Privacy Policy tickbox -->
                 <div class="flex justify-center items-center space-x-2 focus:outline-none">
                     <input required class="border border-gray-300 rounded-sm focus:outline-none cursor-pointer" type="checkbox" v-model="acceptedTerms" id="acceptedTermsCheck">
@@ -56,7 +59,7 @@
 
 <script lang="ts">
 import useToaster from "@/composables/useToaster";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { CryptoWorker, getDedicatedCryptoWorker } from "@/utils/comlink";
@@ -136,6 +139,28 @@ export default defineComponent({
 
             isLoading.value = false;
         }
+
+        onMounted(() => {
+            if (window.turnstile) {
+                window.turnstile.render('#cf-turnstile-challenge', {
+                    sitekey: '0x4AAAAAAAAp_uCeOoj1R-By',
+                    theme: 'light',
+                });
+
+                // Append "mx-auto" class to the Turnstile iFrame
+                const cfTurnstile = document.getElementById("cf-turnstile-challenge");
+                if (cfTurnstile) {
+                    const iframes = cfTurnstile.getElementsByTagName("iframe");
+                    for (let i = 0; i < iframes.length; i++) {
+                        const challengeElement = iframes[i];
+                        if (challengeElement) {
+                            challengeElement.style.removeProperty("width")
+                            challengeElement.classList.add("mx-auto");
+                        }
+                    }
+                }
+            }
+        })
 
         return {
             email,
