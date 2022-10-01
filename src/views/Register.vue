@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Cloudflare Turnstile -->
-                <div id="cf-turnstile-challenge"></div>
+                <CloudflareTurnstile />
 
                 <!-- Terms of Service and Privacy Policy tickbox -->
                 <div class="flex justify-center items-center space-x-2 focus:outline-none">
@@ -59,22 +59,25 @@
 
 <script lang="ts">
 import useToaster from "@/composables/useToaster";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { CryptoWorker, getDedicatedCryptoWorker } from "@/utils/comlink";
+import { CryptoWorker } from "@/utils/comlink";
 import { useKeyStore } from "@/stores/keyStore";
 import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import type { EncryptionResult } from "@/common/interfaces/encryption";
 import { serialiseCipherString } from "@/utils/crypto/cipher";
 import { EncryptionType } from "@/types/crypto";
-import type { Crypto } from "@/worker/crypto.worker";
 import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers";
+import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
 
 export default defineComponent({
     name: "Login",
+    components: {
+        CloudflareTurnstile
+    },
     setup() {
         // Refs to keep track of user data
         const email = ref("");
@@ -139,28 +142,6 @@ export default defineComponent({
 
             isLoading.value = false;
         }
-
-        onMounted(() => {
-            if (window.turnstile) {
-                window.turnstile.render('#cf-turnstile-challenge', {
-                    sitekey: '0x4AAAAAAAAp_uCeOoj1R-By',
-                    theme: 'light',
-                });
-
-                // Append "mx-auto" class to the Turnstile iFrame
-                const cfTurnstile = document.getElementById("cf-turnstile-challenge");
-                if (cfTurnstile) {
-                    const iframes = cfTurnstile.getElementsByTagName("iframe");
-                    for (let i = 0; i < iframes.length; i++) {
-                        const challengeElement = iframes[i];
-                        if (challengeElement) {
-                            challengeElement.style.removeProperty("width")
-                            challengeElement.classList.add("mx-auto");
-                        }
-                    }
-                }
-            }
-        })
 
         return {
             email,
