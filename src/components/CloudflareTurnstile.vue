@@ -15,6 +15,10 @@ export default defineComponent({
         theme: {
             type: String,
             default: "auto"
+        },
+        centered: {
+            type: Boolean,
+            default: true
         }
     },
     emits: ["success", "expired", "error"],
@@ -59,10 +63,28 @@ export default defineComponent({
             if (!scriptPresent) {
                 window.onloadTurnstileCallback = () => {
                     window.turnstile.render('#cf-turnstile-challenge', options);
+                    if (props.centered) {
+                        centerWidget();
+                    }
                 }
             } else {
                 // Otherwise render as normal
                 window.turnstile.render('#cf-turnstile-challenge', options);
+                if (props.centered) {
+                    centerWidget();
+                }
+            }
+        }
+
+        // Append "mx-auto" class to the Turnstile iFrame to make it centered
+        const centerWidget = () => {
+            const cfTurnstile = document.getElementById("cf-turnstile-challenge");
+            if (cfTurnstile) {
+                const iframes = cfTurnstile.getElementsByTagName("iframe");
+                for (let iframe of iframes) {
+                    iframe.style.removeProperty("width");
+                    iframe.classList.add("mx-auto");
+                }
             }
         }
     }
