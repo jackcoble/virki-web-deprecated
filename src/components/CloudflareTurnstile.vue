@@ -7,7 +7,17 @@ import { defineComponent, onMounted, onUnmounted } from 'vue';
 
 export default defineComponent({
     name: "CloudflareTurnstile",
-    setup() {
+    props: {
+        siteKey: {
+            type: String,
+            required: true
+        },
+        theme: {
+            type: String,
+            default: "auto"
+        }
+    },
+    setup(props) {
         const scriptId = "cloudflare-turnstile-script-id";
 
         // On mounted, we want to import the Turnstile client JS if it isn't already present
@@ -29,8 +39,8 @@ export default defineComponent({
 
             // Render the component on the load callback
             const options = {
-                sitekey: '0x4AAAAAAAAp_uCeOoj1R-By',
-                theme: 'auto',
+                sitekey: props.siteKey,
+                theme: props.theme,
                 callback: function(token: string) {
                     console.log(`Challenge Success ${token}`);
                 }

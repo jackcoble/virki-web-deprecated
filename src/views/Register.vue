@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Cloudflare Turnstile -->
-                <CloudflareTurnstile />
+                <CloudflareTurnstile site-key="0x4AAAAAAAAp_uCeOoj1R-By" />
 
                 <!-- Terms of Service and Privacy Policy tickbox -->
                 <div class="flex justify-center items-center space-x-2 focus:outline-none">
