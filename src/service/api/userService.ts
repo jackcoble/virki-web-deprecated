@@ -16,11 +16,15 @@ export default {
         })
     },
 
-    Register(email: string, keys: Keys): Promise<AxiosResponse> {
+    Register(email: string, keys: Keys, turnstileToken: string): Promise<AxiosResponse> {
+        const headers = {
+            "X-Turnstile-Token": turnstileToken
+        }
+
         return api.post("/v1/users/register", {
             email: email,
             encrypted_keys: keys
-        })
+        }, { headers })
     },
 
     AddEncryptedKeys(keys: Keys): Promise<AxiosResponse> {
