@@ -176,3 +176,68 @@ export async function encryptUTF8(data: string, key?: string): Promise<Encryptio
 
     return await encryptToB64(base64);
 }
+
+/**
+ * Decrypts data with a supplied symmetric key
+ * @param ciphertext 
+ * @param nonce 
+ * @param mac 
+ * @param key 
+ */
+ export async function decrypt(ciphertext: Uint8Array, mac: Uint8Array, nonce: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
+    await sodium.ready;
+
+    const decrypted = sodium.crypto_secretbox_open_detached(
+        ciphertext,
+        mac,
+        nonce,
+        key
+    )
+
+    return decrypted;
+}
+
+/**
+ * Decrypts Base64 encoded data
+ * @param ciphertext 
+ * @param mac 
+ * @param nonce 
+ * @param key 
+ * @returns 
+ */
+export async function decryptFromB64(ciphertext: string, mac: string, nonce: string, key: string): Promise<string> {
+    await sodium.ready;
+
+    const decryptedRaw = await decrypt(
+        await fromBase64(ciphertext),
+        await fromBase64(mac),
+        await fromBase64(nonce),
+        await fromBase64(key)
+    );
+
+    const decrypted = await toBase64(decryptedRaw);
+    return decrypted;
+}
+
+
+/**
+ * Decrypts Base64 encoded data into UTF8
+ * @param data 
+ * @param mac 
+ * @param nonce 
+ * @param key 
+ * @returns 
+ */
+export async function decryptToUTF8(data: string, mac: string, nonce: string, key: string): Promise<string> {
+    await sodium.ready;
+
+    const decrypted = await decrypt(
+        await fromBase64(data),
+        await fromBase64(mac),
+        await fromBase64(nonce),
+        await fromBase64(key)
+    )
+
+    const decryptedUTF8 = sodium.to_string(decrypted);
+    return Promise.resolve(decryptedUTF8);
+}
