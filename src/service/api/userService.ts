@@ -3,6 +3,23 @@ import type { Keys } from "@/types/user";
 import type { AxiosResponse } from "axios";
 
 export default {
+    PreLogin(email: string, turnstileToken: string): Promise<AxiosResponse> {
+        const headers = {
+            "X-Turnstile-Token": turnstileToken
+        }
+
+        return api.post("/v1/users/prelogin", {
+            email: email
+        }, { headers })
+    },
+
+    Login(email: string, password: string): Promise<AxiosResponse> {
+        return api.post("/v1/users/login", {
+            email: email,
+            password: password
+        })
+    },
+
     SendOTP(email: string): Promise<AxiosResponse> {
         return api.post("/v1/users/otp", {
             email: email
