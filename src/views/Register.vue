@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Cloudflare Turnstile -->
-                <CloudflareTurnstile site-key="0x4AAAAAAAAp_uCeOoj1R-By" />
+                <CloudflareTurnstile site-key="0x4AAAAAAAAp_uCeOoj1R-By" @success="turnstileToken = $event" />
 
                 <!-- Terms of Service and Privacy Policy tickbox -->
                 <div class="flex justify-center items-center space-x-2 focus:outline-none">
@@ -63,8 +63,6 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { CryptoWorker } from "@/utils/comlink";
-import { useKeyStore } from "@/stores/keyStore";
-import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import type { EncryptionResult } from "@/common/interfaces/encryption";
 import { serialiseCipherString } from "@/utils/crypto/cipher";
@@ -86,12 +84,10 @@ export default defineComponent({
         const confirmPassword = ref("");
         const acceptedTerms = ref(false);
         const isLoading = ref(false);
+        const turnstileToken = ref("");
 
         const toaster = useToaster();
         const router = useRouter();
-
-        const userStore = useUserStore();
-        const keyStore = useKeyStore();
 
         // Create a user account
         const registerUser = async () => {
@@ -150,6 +146,7 @@ export default defineComponent({
             confirmPassword,
             acceptedTerms,
             isLoading,
+            turnstileToken,
 
             router,
 
