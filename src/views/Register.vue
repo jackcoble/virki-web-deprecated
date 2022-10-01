@@ -70,6 +70,7 @@ import { EncryptionType } from "@/types/crypto";
 import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers";
 import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
+import userService from "@/service/api/userService";
 
 export default defineComponent({
     name: "Login",
@@ -120,6 +121,17 @@ export default defineComponent({
             const keypairEncryptedPrivateKey: EncryptionResult = await cryptoWorker.encryptToB64(keypair.privateKey, encryptionKey);
             const keypairEncryptedCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, keypairEncryptedPrivateKey.ciphertext, keypairEncryptedPrivateKey.nonce, keypairEncryptedPrivateKey.mac);
 
+            // Generate recovery keys...
+            // Encrypt the master key with the recovery key,
+            // and then recovery key with master key.
+            const recoveryKey = await cryptoWorker.generateEncryptionKey();
+            const masterKeyEncryptedWithRecoveryKey = await cryptoWorker.encryptToB64(encryptionKey, recoveryKey);
+            const recoveryKeyEncryptedWithMasterKey = await cryptoWorker.encryptToB64(recoveryKey, encryptionKey);
+
+            // Generate cipher strings for all of the keys
+            const masterKeyEncryptedWithRecoveryKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, masterKeyEncryptedWithRecoveryKey.ciphertext, masterKeyEncryptedWithRecoveryKey.nonce, masterKeyEncryptedWithRecoveryKey.mac);
+            const recoveryKeyEncryptedWithMasterKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, recoveryKeyEncryptedWithMasterKey.ciphertext, recoveryKeyEncryptedWithMasterKey.nonce, recoveryKeyEncryptedWithMasterKey.mac);
+            
             const keys = {
                 kek: {
                     hash: stretchedPassword.hash,
@@ -131,10 +143,16 @@ export default defineComponent({
                 keypair: {
                     public_key: keypair.publicKey,
                     private_key: keypairEncryptedCipherString
+                },
+                recovery: {
+                    master_key_encrypted_with_recovery_key: masterKeyEncryptedWithRecoveryKeyCipherString,
+                    recovery_key_encrypted_with_master_key: recoveryKeyEncryptedWithMasterKeyCipherString
                 }
             } as Keys;
 
             console.log(keys);
+
+            await userService.Register(email.value, keys, turnstileToken.value);
 
             isLoading.value = false;
         }
