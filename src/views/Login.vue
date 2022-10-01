@@ -13,6 +13,13 @@
                 <p class="font-bold text-sm">Email Address</p>
                 <b-input type="email" v-model="email" placeholder="hello@virki.io" autofocus />
 
+                <!-- Password input -->
+                <p class="font-bold text-sm">Password</p>
+                <b-password-input v-model="password" placeholder="Master password" />
+
+                <!-- Cloudflare Turnstile -->
+                <CloudflareTurnstile site-key="0x4AAAAAAAAp_uCeOoj1R-By" @success="turnstileToken = $event" />
+
                 <!-- Login and Create buttons -->
                 <div class="flex flex-wrap md:flex-nowrap justify-center items-center md:space-x-2 space-y-2 md:space-y-0 pt-3">
                     <b-button type="submit" classType="primary" :loading="isLoading">
@@ -43,22 +50,30 @@
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
+import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
+
 import useToaster from "@/composables/useToaster";
 import userService from "@/service/api/userService";
 
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { sleep } from "@/utils/common";
 import { useUserStore } from "@/stores/userStore";
+import type { StretchedPassword } from "@/common/interfaces/password";
+import { CryptoWorker } from "@/utils/comlink";
+import { parseCipherString } from "@/utils/crypto/cipher";
 
 export default defineComponent({
     name: "Login",
     components: {
         ClockIcon,
         LoginIcon,
-        UserAddIcon
+        UserAddIcon,
+        CloudflareTurnstile
     },
     setup() {
         const email = ref("");
+        const password = ref("");
+        const turnstileToken = ref("")
         const isLoading = ref(false);
 
         const router = useRouter();
@@ -70,17 +85,31 @@ export default defineComponent({
         const handleSignIn = async () => {
             isLoading.value = true;
 
-            // Using the email address, request an OTP to be sent to it
+            // Using the email address, request the prelogin (password salt), and stretch the password
             try {
-                await userService.SendOTP(email.value);
-                userStore.setEmail(email.value);
+                let res = await userService.PreLogin(email.value, turnstileToken.value);
+                const argon = {
+                    salt: res.data.salt,
+                    opsLimit: res.data.ops_limit,
+                    memLimit: res.data.mem_limit
+                } as StretchedPassword;
 
-                // Sleep for 1.5 seconds
-                await sleep(1.5);
+                // Stretch password
+                const cryptoWorker = await new CryptoWorker();
+                const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, argon.salt, argon.opsLimit, argon.memLimit);
+                
+                // Request for the encrypted key material
+                const res2 = await userService.Login(email.value, stretchedPassword.hash);
+                const encryptedMasterKey = res2.data.master_encryption_key;
 
-                // Push to OTP verification page
-                router.push("/verify");
+                // Parse cipher string for master encryption key
+                const encryptionKeyCipher = await parseCipherString(encryptedMasterKey);
+                const decrypted = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
+
+                console.log(decrypted);
             } catch (e) {
+                console.log(e);
+                
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
                     return;
@@ -95,6 +124,8 @@ export default defineComponent({
 
         return {
             email,
+            password,
+            turnstileToken,
             isLoading,
 
             router,
