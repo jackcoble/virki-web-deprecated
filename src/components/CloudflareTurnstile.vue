@@ -17,7 +17,8 @@ export default defineComponent({
             default: "auto"
         }
     },
-    setup(props) {
+    emits: ["success", "expired", "error"],
+    setup(props, { emit }) {
         const scriptId = "cloudflare-turnstile-script-id";
 
         // On mounted, we want to import the Turnstile client JS if it isn't already present
@@ -41,8 +42,16 @@ export default defineComponent({
             const options = {
                 sitekey: props.siteKey,
                 theme: props.theme,
-                callback: function(token: string) {
-                    console.log(`Challenge Success ${token}`);
+
+                // Callbacks
+                "callback": function(token: string) {
+                    emit("success", token);
+                },
+                "expired-callback": function() {
+                    emit("expired");
+                },
+                "error-callback": function() {
+                    emit("error");
                 }
             }
 
