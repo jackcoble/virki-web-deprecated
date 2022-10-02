@@ -152,9 +152,15 @@ export default defineComponent({
 
             console.log(keys);
 
-            await userService.Register(email.value, keys, turnstileToken.value);
-
-            isLoading.value = false;
+            // Submit the encrypted keys to the API
+            try {
+                // In this response we're expecting encrypted key data, as well as a session token
+                const res = await userService.Register(email.value, keys, turnstileToken.value);
+            } catch (e) {
+                toaster.error(e.response.data.error);
+            } finally {
+                isLoading.value = false;
+            }
         }
 
         return {
