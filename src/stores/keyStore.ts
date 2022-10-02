@@ -1,14 +1,19 @@
+import { LocalStorageKeys } from '@/common/enums/localStorage';
+import { SessionStorageKeys } from '@/common/enums/sessionStorage';
+import { LocalStorageService } from '@/common/services/localStorage.service';
+import { SessionStorageService } from '@/common/services/sessionStorage.service';
 import type { Keys } from '@/types/user';
-import { getData, LS_KEYS, setData } from '@/utils/storage/localStorage';
-import { getKey, SESSION_KEYS, setKey } from '@/utils/storage/sessionStorage';
 import { defineStore } from 'pinia'
+
+const localStorage = new LocalStorageService();
+const sessionStorage = new SessionStorageService();
 
 export const useKeyStore = defineStore({
   id: 'keyStore',
   state: () => ({
-    sessionToken: getData(LS_KEYS.SESSION) || "",
-    masterEncryptionKey: getKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY) || "",
-    encryptedKeys: getData(LS_KEYS.ENCRYPTED_KEYS) || {}
+    sessionToken: localStorage.get(LocalStorageKeys.SESSION) || "",
+    masterEncryptionKey: sessionStorage.get(SessionStorageKeys.MASTER_ENCRYPTION_KEY) || "",
+    encryptedKeys: localStorage.get(LocalStorageKeys.ENCRYPTED_KEYS)
   }),
 
   getters: {
@@ -28,28 +33,26 @@ export const useKeyStore = defineStore({
   actions: {
     setSessionToken(token: string) {
         this.sessionToken = token;
-
-        setData(LS_KEYS.SESSION, token);
+        localStorage.add(LocalStorageKeys.SESSION, token);
     },
 
     setMasterEncryptionKey(key: string) {
         this.masterEncryptionKey = key;
 
         // Persist key in session storage
-        setKey(SESSION_KEYS.MASTER_ENCRYPTION_KEY, key);
+        sessionStorage.add(SessionStorageKeys.MASTER_ENCRYPTION_KEY, key);
     },
 
     setEncryptedKeys(keys: Keys) {
-        this.encryptedKeys = keys;
-
-        setData(LS_KEYS.ENCRYPTED_KEYS, keys);
+        this.encryptedKeys = keys as any;
+        localStorage.add(LocalStorageKeys.ENCRYPTED_KEYS, JSON.stringify(keys))
     },
 
     // Clears entire store state
     clear() {
       this.sessionToken = "";
       this.masterEncryptionKey = "";
-      this.encryptedKeys = {};
+      this.encryptedKeys = null;
     }
   },
 })

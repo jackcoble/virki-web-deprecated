@@ -1,15 +1,18 @@
+import type { LocalStorageKeys } from '@/common/enums/localStorage';
+import { LocalStorageService } from '@/common/services/localStorage.service';
 import type { Vault } from '@/types/vault';
-import { getData, LS_KEYS, setData } from '@/utils/storage/localStorage';
 import { defineStore } from 'pinia'
 
 /*
 The vault store is dedicated to hold a decrypted copy of the vault data.
 */
 
+const localStorage = new LocalStorageService();
+
 export const useVaultStore = defineStore({
   id: 'vaultStore',
   state: () => ({
-    active: getData(LS_KEYS.ACTIVE_VAULT) || "",
+    active: localStorage.get("" as LocalStorageKeys) || "",
     vaults: new Map<string, Vault>
   }),
 
@@ -43,7 +46,7 @@ export const useVaultStore = defineStore({
     setActive(id: string) {
       this.active = id;
 
-      setData(LS_KEYS.ACTIVE_VAULT, id);
+      // TODO: Store in LocalStorage
     },
 
     // Clear all decrypted data from the Hash Map
