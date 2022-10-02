@@ -87,7 +87,7 @@ export default defineComponent({
 
             // Using the email address, request the prelogin (password salt), and stretch the password
             try {
-                let res = await userService.PreLogin(email.value, turnstileToken.value);
+                let res = await userService.PreLogin(email.value);
                 const argon = {
                     salt: res.data.salt,
                     opsLimit: res.data.ops_limit,
@@ -99,7 +99,7 @@ export default defineComponent({
                 const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, argon.salt, argon.opsLimit, argon.memLimit);
                 
                 // Request for the encrypted key material
-                const res2 = await userService.Login(email.value, stretchedPassword.hash);
+                const res2 = await userService.Login(email.value, stretchedPassword.hash, turnstileToken.value);
                 const encryptedMasterKey = res2.data.master_encryption_key;
 
                 // Parse cipher string for master encryption key
