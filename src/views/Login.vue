@@ -61,6 +61,10 @@ import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import { CryptoWorker } from "@/utils/comlink";
 import { parseCipherString } from "@/utils/crypto/cipher";
+import { LocalStorageService } from "@/common/services/localStorage.service";
+import { LocalStorageKeys } from "@/common/enums/localStorage";
+import { SessionStorageService } from "@/common/services/sessionStorage.service";
+import { SessionStorageKeys } from "@/common/enums/sessionStorage";
 
 export default defineComponent({
     name: "Login",
@@ -99,14 +103,21 @@ export default defineComponent({
                 const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, argon.salt, argon.opsLimit, argon.memLimit);
                 
                 // Request for the encrypted key material
-                const res2 = await userService.Login(email.value, stretchedPassword.hash, turnstileToken.value);
-                const encryptedMasterKey = res2.data.master_encryption_key;
+                res = await userService.Login(email.value, stretchedPassword.hash, turnstileToken.value);
+                const encryptedMasterKey = res.data.encrypted_keys.master_encryption_key;
 
                 // Parse cipher string for master encryption key
                 const encryptionKeyCipher = await parseCipherString(encryptedMasterKey);
-                const decrypted = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
+                const encryptionKey = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
 
-                console.log(decrypted);
+                // Store encrypted keys and session token in LocalStorage
+                const localStorage = new LocalStorageService();
+                localStorage.add(LocalStorageKeys.ENCRYPTED_KEYS, JSON.stringify(res.data.encrypted_keys));
+                localStorage.add(LocalStorageKeys.SESSION, res.data.session_token);
+
+                // Store the decrypted master encryption key in SessionStorage
+                const sessionStorage = new SessionStorageService();
+                sessionStorage.add(SessionStorageKeys.MASTER_ENCRYPTION_KEY, encryptionKey)
             } catch (e) {
                 console.log(e);
                 
