@@ -1,4 +1,5 @@
 import * as Comlink from "comlink";
+import CWorker from "@/worker/crypto.worker?worker&inline"
 
 export interface ComlinkWorker {
     comlink: any;
@@ -8,8 +9,7 @@ export interface ComlinkWorker {
 
 // Returns a Crypto worker
 export const getDedicatedCryptoWorker = (): ComlinkWorker => {
-    const workerFile = new URL("../../worker/crypto.worker.ts", import.meta.url);
-    const worker = new Worker(workerFile, { type: "module" });
+    const worker = new CWorker()
 
     const comlink = Comlink.wrap(worker);
     return { comlink, worker };

@@ -21,6 +21,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  optimizeDeps: {
+    include: ["@/worker/crypto.worker"]
+  },
   server: {
     host: true,
     proxy: {
