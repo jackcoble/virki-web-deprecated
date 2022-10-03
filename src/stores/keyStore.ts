@@ -45,7 +45,7 @@ export const useKeyStore = defineStore({
 
     setEncryptedKeys(keys: Keys) {
         this.encryptedKeys = keys as any;
-        localStorage.add(LocalStorageKeys.ENCRYPTED_KEYS, JSON.stringify(keys))
+        localStorage.add(LocalStorageKeys.ENCRYPTED_KEYS, keys)
     },
 
     // Clears entire store state

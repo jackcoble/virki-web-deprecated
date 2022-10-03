@@ -65,6 +65,7 @@ import { LocalStorageService } from "@/common/services/localStorage.service";
 import { LocalStorageKeys } from "@/common/enums/localStorage";
 import { SessionStorageService } from "@/common/services/sessionStorage.service";
 import { SessionStorageKeys } from "@/common/enums/sessionStorage";
+import { useKeyStore } from "@/stores/keyStore";
 
 export default defineComponent({
     name: "Login",
@@ -83,6 +84,7 @@ export default defineComponent({
         const router = useRouter();
         const toaster = useToaster();
         
+        const keyStore = useKeyStore()
         const userStore = useUserStore();
 
         // Handle user login
@@ -110,14 +112,10 @@ export default defineComponent({
                 const encryptionKeyCipher = await parseCipherString(encryptedMasterKey);
                 const encryptionKey = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
 
-                // Store encrypted keys and session token in LocalStorage
                 const localStorage = new LocalStorageService();
-                localStorage.add(LocalStorageKeys.ENCRYPTED_KEYS, JSON.stringify(res.data.encrypted_keys));
-                localStorage.add(LocalStorageKeys.SESSION, res.data.session_token);
-
-                // Store the decrypted master encryption key in SessionStorage
-                const sessionStorage = new SessionStorageService();
-                sessionStorage.add(SessionStorageKeys.MASTER_ENCRYPTION_KEY, encryptionKey)
+                localStorage.add(LocalStorageKeys.ENCRYPTED_KEYS, res.data.encrypted_keys);
+                keyStore.setSessionToken(res.data.session_token);
+                keyStore.setMasterEncryptionKey(encryptionKey);
             } catch (e) {
                 console.log(e);
                 
