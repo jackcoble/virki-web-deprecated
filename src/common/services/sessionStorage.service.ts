@@ -13,8 +13,8 @@ export class SessionStorageService {
      * @param key 
      * @param value 
      */
-    add(key: SessionStorageKeys, value: string) {
-        sessionStorage.setItem(key, value);
+    add(key: SessionStorageKeys, value: any) {
+        sessionStorage.setItem(key, JSON.stringify(value));
     }
 
     /**
@@ -36,7 +36,7 @@ export class SessionStorageService {
             return null;
         }
 
-        return data;
+        return JSON.stringify(data);
     }
 
     /**

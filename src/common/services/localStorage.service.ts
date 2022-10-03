@@ -13,8 +13,8 @@ export class LocalStorageService {
      * @param key 
      * @param value 
      */
-    add(key: LocalStorageKeys, value: string) {
-        localStorage.setItem(key, value);
+    add(key: LocalStorageKeys, value: any) {
+        localStorage.setItem(key, JSON.stringify(value));
     }
 
     /**
@@ -36,7 +36,7 @@ export class LocalStorageService {
             return null;
         }
 
-        return data;
+        return JSON.parse(data);
     }
 
     /**
