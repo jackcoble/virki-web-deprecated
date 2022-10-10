@@ -59,8 +59,8 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon, StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/vue/outline"
 import { useRouter } from "vue-router";
 
-import { sleep } from "@/utils/common";
 import { getAllVaults } from "@/utils/storage/indexedDB";
+import { sleep } from '@/common/utils/sleep';
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/utils/comlink";
 import { useVaultStore } from "@/stores/vaultStore";

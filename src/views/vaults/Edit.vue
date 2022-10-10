@@ -20,7 +20,7 @@ import { useVaultStore } from '@/stores/vaultStore';
 import { EncryptionType } from '@/types/crypto';
 import type { Vault } from '@/types/vault';
 import { CryptoWorker } from '@/utils/comlink';
-import { sleep } from '@/utils/common';
+import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/utils/crypto/cipher';
 import { getAllVaults, insertVault } from '@/utils/storage/indexedDB';
 import { defineComponent, onMounted, ref, watch } from 'vue';
