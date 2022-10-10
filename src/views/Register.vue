@@ -71,6 +71,9 @@ import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers";
 import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
 import userService from "@/service/api/userService";
+import { LocalStorageService } from "@/common/services/localStorage.service";
+import { LocalStorageKeys } from "@/common/enums/localStorage";
+import { PAGES } from "@/router/pages";
 
 export default defineComponent({
     name: "Login",
@@ -92,6 +95,8 @@ export default defineComponent({
 
         // Create a user account
         const registerUser = async () => {
+            const localStorageService = new LocalStorageService();
+
             /* 
             First we need to carry out some client-side checks:
             - Password confirmation matches password
@@ -154,8 +159,11 @@ export default defineComponent({
 
             // Submit the encrypted keys to the API
             try {
-                // In this response we're expecting encrypted key data, as well as a session token
+                // In this response we're expecting a session token to be returned
                 const res = await userService.Register(email.value, keys, turnstileToken.value);
+                localStorageService.add(LocalStorageKeys.SESSION, res.data.token);
+
+                router.push(PAGES.ROOT)
             } catch (e) {
                 toaster.error(e.response.data.error);
             } finally {
