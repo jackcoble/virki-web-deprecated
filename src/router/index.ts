@@ -117,10 +117,7 @@ router.beforeEach((to, from, next) => {
 
   // So we have a session token present, but if we don't have encrypted keys on the device,
   // we might not want to allow the user to visit a certain page, such as the "credentials" for decryption.
-  const encryptedKeys = keyStore.getEncryptedKeys;
-  if (!encryptedKeys.master_encryption_key && to.path === PAGES.CREDENTIALS) {
-    return next({ path: PAGES.ROOT });
-  }
+  
 
   // Though if both a session token and the decrypted master encryption key are available
   // on the device, we can redirect the user straight to the "/vault" if the original
