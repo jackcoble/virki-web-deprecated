@@ -71,8 +71,6 @@ import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers";
 import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
 import userService from "@/service/api/userService";
-import { LocalStorageService } from "@/common/services/localStorage.service";
-import { LocalStorageKeys } from "@/common/enums/localStorage";
 import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
 
@@ -165,6 +163,11 @@ export default defineComponent({
                 const res = await userService.Register(email.value, keys, turnstileToken.value);
                 keyStore.setSessionToken(res.data.token);
                 keyStore.setMasterEncryptionKey(encryptionKey);
+
+                // Retrieve encrypted keys to store locally
+                await userService.GetKeys().then(res => {
+                    keyStore.setEncryptedKeys(res.data as Keys);
+                })
 
                 router.push(PAGES.ROOT);
             } catch (e) {
