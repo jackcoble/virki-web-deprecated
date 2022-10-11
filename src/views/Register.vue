@@ -154,8 +154,6 @@ export default defineComponent({
                 }
             } as Keys;
 
-            console.log(keys);
-
             // Submit the encrypted keys to the API
             try {
                 // In this response we're expecting a session token to be returned
