@@ -20,18 +20,6 @@ export default {
         }, { headers })
     },
 
-    SendOTP(email: string): Promise<AxiosResponse> {
-        return api.post("/v1/users/otp", {
-            email: email
-        })
-    },
-
-    VerifyOTP(email: string, otp: number): Promise<AxiosResponse> {
-        return api.post("/v1/users/otp/verify", {
-            email: email,
-            otp: otp
-        })
-    },
 
     Register(email: string, keys: Keys, turnstileToken: string): Promise<AxiosResponse> {
         const headers = {
@@ -42,10 +30,6 @@ export default {
             email: email,
             encrypted_keys: keys
         }, { headers })
-    },
-
-    AddEncryptedKeys(keys: Keys): Promise<AxiosResponse> {
-        return api.put("/v1/users/keys", keys);
     },
 
     GetAccount(): Promise<AxiosResponse> {
@@ -60,14 +44,6 @@ export default {
         return api.post("/v1/users/sessions/revoke", {
             session_id: sessionID
         })
-    },
-
-    WebAuthnRegister(): Promise<AxiosResponse> {
-        return api.post("/v1/users/webauthn/register")
-    },
-
-    WebAuthnFinishRegister(sessionId: string, attestationObject: any): Promise<AxiosResponse> {
-        return api.post(`/v1/users/webauthn/register/${sessionId}`, attestationObject)
     },
 
     Logout(): Promise<AxiosResponse> {
