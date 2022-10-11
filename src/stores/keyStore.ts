@@ -2,7 +2,7 @@ import { LocalStorageKeys } from '@/common/enums/localStorage';
 import { SessionStorageKeys } from '@/common/enums/sessionStorage';
 import { LocalStorageService } from '@/common/services/localStorage.service';
 import { SessionStorageService } from '@/common/services/sessionStorage.service';
-import type { Keys } from '@/types/user';
+import type { Keys } from '@/common/interfaces/keys';
 import { defineStore } from 'pinia'
 
 const localStorage = new LocalStorageService();
