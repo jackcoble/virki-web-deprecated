@@ -32,6 +32,10 @@ export default {
         }, { headers })
     },
 
+    GetKeys(): Promise<AxiosResponse> {
+        return api.get("/v1/users/keys");
+    },
+
     GetAccount(): Promise<AxiosResponse> {
         return api.get("/v1/users/account");
     },
