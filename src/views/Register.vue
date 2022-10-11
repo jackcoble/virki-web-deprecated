@@ -74,6 +74,7 @@ import userService from "@/service/api/userService";
 import { LocalStorageService } from "@/common/services/localStorage.service";
 import { LocalStorageKeys } from "@/common/enums/localStorage";
 import { PAGES } from "@/router/pages";
+import { useKeyStore } from "@/stores/keyStore";
 
 export default defineComponent({
     name: "Login",
@@ -93,10 +94,10 @@ export default defineComponent({
         const toaster = useToaster();
         const router = useRouter();
 
+        const keyStore = useKeyStore();
+
         // Create a user account
         const registerUser = async () => {
-            const localStorageService = new LocalStorageService();
-
             /* 
             First we need to carry out some client-side checks:
             - Password confirmation matches password
@@ -160,10 +161,12 @@ export default defineComponent({
             // Submit the encrypted keys to the API
             try {
                 // In this response we're expecting a session token to be returned
+                // so set that in the store as well as the master key
                 const res = await userService.Register(email.value, keys, turnstileToken.value);
-                localStorageService.add(LocalStorageKeys.SESSION, res.data.token);
+                keyStore.setSessionToken(res.data.token);
+                keyStore.setMasterEncryptionKey(encryptionKey);
 
-                router.push(PAGES.ROOT)
+                router.push(PAGES.ROOT);
             } catch (e) {
                 toaster.error(e.response.data.error);
             } finally {
