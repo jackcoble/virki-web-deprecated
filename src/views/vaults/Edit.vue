@@ -21,7 +21,7 @@ import { EncryptionType } from '@/types/crypto';
 import type { Vault } from '@/types/vault';
 import { CryptoWorker } from '@/utils/comlink';
 import { sleep } from '@/common/utils/sleep';
-import { serialiseCipherString } from '@/utils/crypto/cipher';
+import { serialiseCipherString } from '@/common/utils/cipher';
 import { getAllVaults, insertVault } from '@/utils/storage/indexedDB';
 import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';

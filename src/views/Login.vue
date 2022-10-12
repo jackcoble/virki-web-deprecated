@@ -59,7 +59,7 @@ import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import { CryptoWorker } from "@/utils/comlink";
-import { parseCipherString } from "@/utils/crypto/cipher";
+import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
 

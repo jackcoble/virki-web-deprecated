@@ -65,7 +65,7 @@ import { useRouter } from "vue-router";
 import { CryptoWorker } from "@/utils/comlink";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import type { EncryptionResult } from "@/common/interfaces/encryption";
-import { serialiseCipherString } from "@/utils/crypto/cipher";
+import { serialiseCipherString } from "@/common/utils/cipher";
 import { EncryptionType } from "@/types/crypto";
 import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers";
