@@ -60,11 +60,8 @@ import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import { CryptoWorker } from "@/utils/comlink";
 import { parseCipherString } from "@/utils/crypto/cipher";
-import { LocalStorageService } from "@/common/services/localStorage.service";
-import { LocalStorageKeys } from "@/common/enums/localStorage";
-import { SessionStorageService } from "@/common/services/sessionStorage.service";
-import { SessionStorageKeys } from "@/common/enums/sessionStorage";
 import { useKeyStore } from "@/stores/keyStore";
+import { PAGES } from "@/router/pages";
 
 export default defineComponent({
     name: "Login",
@@ -111,13 +108,12 @@ export default defineComponent({
                 const encryptionKeyCipher = await parseCipherString(encryptedMasterKey);
                 const encryptionKey = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
 
-                const localStorage = new LocalStorageService();
-                localStorage.add(LocalStorageKeys.ENCRYPTED_KEYS, res.data.encrypted_keys);
+                keyStore.setEncryptedKeys(res.data.encrypted_keys);
                 keyStore.setSessionToken(res.data.session_token);
                 keyStore.setMasterEncryptionKey(encryptionKey);
+
+                router.push(PAGES.VAULT);
             } catch (e) {
-                console.log(e);
-                
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
                     return;
