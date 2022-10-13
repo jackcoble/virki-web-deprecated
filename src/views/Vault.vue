@@ -12,7 +12,7 @@
     <!-- Show message if no vaults are available -->
     <div v-if="vaults.length === 0 && !showCreateVault && !showEditVault"
       class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
-      <EmojiSadIcon class="w-24 text-mountain-meadow" />
+      <img src="@/assets/images/eyes_emoji.gif" alt="Eyes emoji" class="w-16">
       <p class="text-sm">To get started, you need to create a Vault.</p>
       <b-button class="w-36" @click="router.push(PAGES.NEW_VAULT)">
         <div class="flex flex-row justify-center items-center space-x-1">
