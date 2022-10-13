@@ -4,11 +4,8 @@
         <div class="flex flex-col flex-shrink-0 space-y-4">
             <div
                 class="flex flex-col items-center justify-center p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">
-                <img src="https://avatars.githubusercontent.com/u/26122014?v=4" class="w-28 rounded-full" />
+                <img src="@/assets/images/default_user_icon.png" class="w-28 rounded-full" />
                 <p>{{ email }}</p>
-
-                <!-- Button to edit Avatar and Name -->
-                <b-button>Edit Details</b-button>
             </div>
 
             <div class="p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">

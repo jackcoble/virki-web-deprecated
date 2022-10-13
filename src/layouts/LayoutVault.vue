@@ -13,7 +13,7 @@
 
             <!-- Avatar -->
             <div class="flex items-center justify-center space-x-2 rounded px-3 py-1.5 hover:bg-gray-200 transition cursor-pointer" @click="router.push(PAGES.PROFILE)">
-                <img class="w-8 h-8 rounded-full" src="https://avatars.githubusercontent.com/u/26122014?v=4" alt="">
+                <img class="w-8 h-8 rounded-full" src="@/assets/images/default_user_icon.png" alt="User icon">
                 <p class="text-sm">{{ email }}</p>
             </div>
         </div>
