@@ -5,7 +5,7 @@
             <div
                 class="flex flex-col items-center justify-center p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">
                 <img src="https://avatars.githubusercontent.com/u/26122014?v=4" class="w-28 rounded-full" />
-                <p>Jack Coble</p>
+                <p>{{ email }}</p>
 
                 <!-- Button to edit Avatar and Name -->
                 <b-button>Edit Details</b-button>
@@ -101,11 +101,16 @@ import { fromUnixTime, formatRelative, subDays } from "date-fns";
 import { useLogout } from '@/composables/useLogout';
 import { useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
+import { computed } from '@vue/reactivity';
+import { useUserStore } from '@/stores/userStore';
 
 export default defineComponent({
     name: "Sessions",
     setup() {
+        const userStore = useUserStore();
         const router = useRouter();
+
+        const email = computed(() => userStore.getEmail);
 
         const sessions = ref();
 
@@ -146,6 +151,7 @@ export default defineComponent({
         }
 
         return {
+            email,
             sessions,
 
             revokeSession,
