@@ -11,8 +11,8 @@ const sessionStorage = new SessionStorageService();
 export const useKeyStore = defineStore({
   id: 'keyStore',
   state: () => ({
-    sessionToken: localStorage.get(LocalStorageKeys.SESSION) || "",
-    masterEncryptionKey: sessionStorage.get(SessionStorageKeys.MASTER_ENCRYPTION_KEY) || "",
+    sessionToken: localStorage.get(LocalStorageKeys.SESSION),
+    masterEncryptionKey: sessionStorage.get(SessionStorageKeys.MASTER_ENCRYPTION_KEY),
     encryptedKeys: localStorage.get(LocalStorageKeys.ENCRYPTED_KEYS)
   }),
 
