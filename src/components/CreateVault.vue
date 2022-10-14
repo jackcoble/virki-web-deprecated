@@ -21,7 +21,7 @@ import useToaster from '@/composables/useToaster';
 import { useKeyStore } from '@/stores/keyStore';
 import { useVaultStore } from '@/stores/vaultStore';
 import { EncryptionType } from '@/types/crypto';
-import type { Vault } from '@/types/vault';
+import type { Vault } from '@/common/interfaces/vault';
 import { CryptoWorker } from '@/utils/comlink';
 import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/common/utils/cipher';

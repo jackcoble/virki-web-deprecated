@@ -1,4 +1,4 @@
-import type { Vault } from '@/types/vault';
+import type { Vault } from '@/common/interfaces/vault';
 import { defineStore } from 'pinia'
 import { useUserStore } from './userStore';
 

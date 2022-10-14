@@ -1,4 +1,4 @@
-import type { Vault } from "@/types/vault";
+import type { Vault } from "@/common/interfaces/vault";
 import { Dexie, type Table } from "dexie";
 
 /*
