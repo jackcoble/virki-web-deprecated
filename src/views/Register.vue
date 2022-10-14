@@ -73,6 +73,8 @@ import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
 import userService from "@/service/api/userService";
 import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
+import type { Account } from "@/common/interfaces/account";
+import { useUserStore } from "@/stores/userStore";
 
 export default defineComponent({
     name: "Login",
@@ -92,6 +94,7 @@ export default defineComponent({
         const toaster = useToaster();
         const router = useRouter();
 
+        const userStore = useUserStore();
         const keyStore = useKeyStore();
 
         // Create a user account
@@ -159,13 +162,19 @@ export default defineComponent({
                 // In this response we're expecting a session token to be returned
                 // so set that in the store as well as the master key
                 const res = await userService.Register(email.value, keys, turnstileToken.value);
-                keyStore.setSessionToken(res.data.token);
-                keyStore.setMasterEncryptionKey(encryptionKey);
 
-                // Retrieve encrypted keys to store locally
-                await userService.GetKeys().then(res => {
-                    keyStore.setEncryptedKeys(res.data as Keys);
-                })
+                // Set account details
+                const accountDetails: Account = {
+                    id: res.data.user_id,
+                    email: res.data.email,
+                    session_token: res.data.session_token
+                }
+                
+                userStore.setAccount(accountDetails);
+
+                // Store the decrypted master encryption key, as well as the encrypted material
+                keyStore.setMasterEncryptionKey(encryptionKey);
+                keyStore.setEncryptedKeys(res.data.encrypted_keys);
 
                 router.push(PAGES.ROOT);
             } catch (e) {
