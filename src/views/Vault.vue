@@ -110,11 +110,7 @@ export default defineComponent({
       // First page load. What we should actually do here is fetch and set account data, decrypt the vaults and tokens
       // we already have got stored offline, then if the client is online, request for a sync.
       try {
-        // Fetch account data
-        const account = await userService.GetAccount();
-        if (account.data) {
-          userStore.setEmail(account.data.email)
-        }
+        await userService.GetAccount();
       } catch (error) {
         // Check for 401 unauthorised (invalid session)
         if (error.response && error.response.status === 401) {
@@ -158,20 +154,6 @@ export default defineComponent({
         // Add the decrypted vault into the Vault Store
         vaultStore.add(decryptedVault);
       })
-
-      // Now we can check for an active vault. If one isn't set,
-      // then we want to get the first one available to us.
-      const activeVaultID = vaultStore.getActiveID;
-      if (!activeVaultID) {
-        const decryptedVaults = vaultStore.getAll;
-        if (decryptedVaults.length !== 0) {
-          // Set the first vault as active vault
-          vaultStore.setActiveVault(decryptedVaults[0].id);
-          router.push("/vaults/" + decryptedVaults[0].id)
-        }
-      }
-
-      router.push("/vaults/" + activeVaultID)
 
       // Artificial sleep for a second...
       await sleep(1);
