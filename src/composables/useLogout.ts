@@ -1,5 +1,3 @@
-import { LocalStorageService } from "@/common/services/localStorage.service";
-import { SessionStorageService } from "@/common/services/sessionStorage.service";
 import { useKeyStore } from "@/stores/keyStore";
 import { useUserStore } from "@/stores/userStore";
 import { useVaultStore } from "@/stores/vaultStore";
@@ -13,15 +11,10 @@ export async function useLogout() {
     const userStore = useUserStore();
     const vaultStore = useVaultStore();
 
-    const localStorage = new LocalStorageService();
-    const sessionStorage = new SessionStorageService();
-
     // Clear all the data...
-    keyStore.clear();
-    userStore.clear();
-    vaultStore.clear();
+    keyStore.$reset();
+    userStore.$reset();
+    vaultStore.$reset();
 
     await deleteDBs();
-    localStorage.clear();
-    sessionStorage.clear();
 }
