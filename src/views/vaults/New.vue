@@ -102,7 +102,7 @@ export default defineComponent({
             await sleep(1.5);
 
             vaultStore.add(decryptedVaultObject);
-            vaultStore.setActive(decryptedVaultObject.id);
+            vaultStore.setActiveVault(decryptedVaultObject.id);
 
             isCreatingVault.value = false;
 
