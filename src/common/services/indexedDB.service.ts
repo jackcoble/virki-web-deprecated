@@ -32,4 +32,12 @@ export class IndexedDBService extends Dexie {
             return Promise.reject(e)
         }
     }
+
+    /**
+     * Retrieve all of the encrypted vaults
+     * @returns {Vault[]}
+     */
+    async getAllVaults(): Promise<Vault[]> {
+        return await this.vaults.toArray();
+    }
 }
