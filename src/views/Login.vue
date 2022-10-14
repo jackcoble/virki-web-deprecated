@@ -58,7 +58,7 @@ import userService from "@/service/api/userService";
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
-import { CryptoWorker } from "@/utils/comlink";
+import { CryptoWorker } from "@/common/comlink";
 import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";

@@ -1,5 +1,5 @@
 import * as Comlink from "comlink";
-import CWorker from "@/worker/crypto.worker?worker&inline"
+import CWorker from "@/common/worker/crypto.worker?worker&inline"
 
 export interface ComlinkWorker {
     comlink: any;

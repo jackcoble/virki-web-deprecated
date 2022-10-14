@@ -22,7 +22,7 @@ import { useKeyStore } from '@/stores/keyStore';
 import { useVaultStore } from '@/stores/vaultStore';
 import { EncryptionType } from '@/types/crypto';
 import type { Vault } from '@/common/interfaces/vault';
-import { CryptoWorker } from '@/utils/comlink';
+import { CryptoWorker } from '@/common/comlink';
 import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/common/utils/cipher';
 import { insertVault } from '@/utils/storage/indexedDB';

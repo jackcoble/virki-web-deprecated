@@ -62,7 +62,7 @@ import { useRouter } from "vue-router";
 import { getAllVaults } from "@/utils/storage/indexedDB";
 import { sleep } from '@/common/utils/sleep';
 import { useKeyStore } from "@/stores/keyStore";
-import { CryptoWorker } from "@/utils/comlink";
+import { CryptoWorker } from "@/common/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useUserStore } from "@/stores/userStore";
 import userService from "@/service/api/userService";

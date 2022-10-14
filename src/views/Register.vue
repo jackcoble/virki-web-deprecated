@@ -62,7 +62,7 @@ import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { CryptoWorker } from "@/utils/comlink";
+import { CryptoWorker } from "@/common/comlink";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import type { EncryptionResult } from "@/common/interfaces/encryption";
 import { serialiseCipherString } from "@/common/utils/cipher";
@@ -169,7 +169,7 @@ export default defineComponent({
                     email: res.data.email,
                     session_token: res.data.session_token
                 }
-                
+
                 userStore.setAccount(accountDetails);
 
                 // Store the decrypted master encryption key, as well as the encrypted material
