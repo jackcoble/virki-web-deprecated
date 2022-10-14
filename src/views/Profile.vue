@@ -4,7 +4,7 @@
         <div class="flex flex-col flex-shrink-0 space-y-4">
             <div
                 class="flex flex-col items-center justify-center p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">
-                <img src="@/assets/images/default_user_icon.png" class="w-28 rounded-full" />
+                <UserCircleIcon class="text-mountain-meadow w-28" />
                 <p>{{ email }}</p>
             </div>
 
@@ -100,9 +100,13 @@ import { useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import { computed } from '@vue/reactivity';
 import { useUserStore } from '@/stores/userStore';
+import { UserCircleIcon } from "@heroicons/vue/solid"
 
 export default defineComponent({
     name: "Sessions",
+    components: {
+        UserCircleIcon
+    },
     setup() {
         const userStore = useUserStore();
         const router = useRouter();
