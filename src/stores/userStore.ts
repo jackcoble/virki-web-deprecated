@@ -1,14 +1,11 @@
-import { LocalStorageKeys } from '@/common/enums/localStorage';
 import type { Account } from '@/common/interfaces/account';
-import { LocalStorageService } from '@/common/services/localStorage.service';
 import { defineStore } from 'pinia'
-
-const localStorage = new LocalStorageService();
+import { useStorage } from "@vueuse/core"
 
 export const useUserStore = defineStore({
   id: 'userStore',
   state: () => ({
-    account: {} as Account
+    account: useStorage("account", {} as Account)
   }),
 
   getters: {
@@ -20,7 +17,6 @@ export const useUserStore = defineStore({
   actions: {
     setAccount(account: Account) {
       this.account = account;
-      localStorage.add(LocalStorageKeys.ACCOUNT, account);
     },
 
     // Clears entire store state
