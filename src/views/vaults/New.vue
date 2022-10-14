@@ -1,18 +1,22 @@
 <template>
-    <div class="p-9 lg:w-4/5 xl:w-2/5 mx-auto space-y-2">
-        <h1 class="text-2xl text-center">Create a new Vault</h1>
-        <p>In order to store authentication tokens, you need a Vault. This allows you to organise your tokens and keep them in one place!</p>
+    <div class="flex justify-center items-center h-full">
+        <div class="flex-col w-3/4 lg:w-4/5 xl:w-2/5 text-center">
+            <LockClosedIcon class="text-mountain-meadow w-16 mx-auto" />
+            <h1 class="text-2xl text-center font-bold">Create a new Vault</h1>
+            <p class="font-medium">A vault allows you to securely store and organise your authentication tokens with
+                End-to-End Encryption.</p>
 
-        <form @submit.prevent="handleCreateVault" class="space-y-4 pt-4 pb-2 mx-auto">
-            <b-icon-upload class="mx-auto" @imageData="vault.icon = $event"></b-icon-upload>
-            <b-input placeholder="Vault name" v-model="vault.name" required></b-input>
-            <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
-            
-            <div class="flex space-x-2">
-                <b-button type="submit" :loading="isCreatingVault">Create</b-button>
-                <b-button classType="danger" @click="router.push(PAGES.ROOT)">Cancel</b-button>
-            </div>
-        </form>
+            <form @submit.prevent="handleCreateVault" class="space-y-4 pt-4 pb-2 mx-auto">
+                <b-icon-upload class="mx-auto" @imageData="vault.icon = $event"></b-icon-upload>
+                <b-input placeholder="Vault name" v-model="vault.name" required></b-input>
+                <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
+
+                <div class="flex space-x-2">
+                    <b-button type="submit" :loading="isCreatingVault">Create</b-button>
+                    <b-button classType="danger" @click="router.push(PAGES.ROOT)">Cancel</b-button>
+                </div>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -29,12 +33,19 @@ import { serialiseCipherString } from '@/common/utils/cipher';
 import { insertVault } from '@/utils/storage/indexedDB';
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { LockClosedIcon } from "@heroicons/vue/solid"
+import vaultService from "@/service/api/vaultService";
+import { useAppStore } from '@/stores/appStore';
 
 export default defineComponent({
     name: "CreateVault",
+    components: {
+        LockClosedIcon
+    },
     setup() {
         const router = useRouter();
 
+        const appStore = useAppStore();
         const keyStore = useKeyStore();
         const vaultStore = useVaultStore();
         const toaster = useToaster();
@@ -64,7 +75,7 @@ export default defineComponent({
             let encryptedName, encryptedDescription, encryptedIcon;
             const encryptedNameObject = await cryptoWorker.encryptUTF8(vault.value.name, vaultEncryptionKey);
             encryptedName = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedNameObject.ciphertext, encryptedNameObject.nonce, encryptedNameObject.mac);
-            
+
             if (vault.value.description) {
                 const encryptedDescriptionObject = await cryptoWorker.encryptUTF8(vault.value.description, vaultEncryptionKey);
                 encryptedDescription = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedDescriptionObject.ciphertext, encryptedDescriptionObject.nonce, encryptedDescriptionObject.mac);
@@ -88,11 +99,20 @@ export default defineComponent({
                 modified: createdDate
             }
 
+            // If online, send the encrypted vault to the API
+            if (appStore.isOnline) {
+                try {
+                    await vaultService.addVault(encryptedVaultObject);
+                } catch (e) {
+                    return toaster.error("An unknown error occurred storing your vault on the Virki Sync server!");
+                }
+            }
+
             // Store the encrypted vault in IndexedDB.
             await insertVault(encryptedVaultObject);
 
             // Create a copy of the encrypted vault, but put in the decrypted data again before inserting into the "vaultStore"
-            const decryptedVaultObject = {...encryptedVaultObject};
+            const decryptedVaultObject = { ...encryptedVaultObject };
             decryptedVaultObject.key = vaultEncryptionKey;
             decryptedVaultObject.name = vault.value.name;
             decryptedVaultObject.description = vault.value.description;
