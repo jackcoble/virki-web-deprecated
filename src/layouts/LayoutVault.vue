@@ -13,7 +13,7 @@
 
             <!-- Avatar -->
             <div class="flex items-center justify-center space-x-2 rounded px-3 py-1.5 hover:bg-gray-200 transition cursor-pointer" @click="router.push(PAGES.PROFILE)">
-                <img class="w-8 h-8 rounded-full" src="@/assets/images/default_user_icon.png" alt="User icon">
+                <UserCircleIcon class="w-7 text-mountain-meadow" />
                 <p class="text-sm">{{ email }}</p>
             </div>
         </div>
@@ -39,6 +39,8 @@ import { useRoute, useRouter } from 'vue-router';
 // Components
 import Sidebar from '@/components/Sidebar.vue';
 
+import { UserCircleIcon } from "@heroicons/vue/solid"
+
 import { PAGES } from '@/router/pages';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from '@vue/reactivity';
@@ -46,7 +48,8 @@ import { computed } from '@vue/reactivity';
 export default defineComponent({
     name: "LayoutVault",
     components: {
-        Sidebar
+        Sidebar,
+        UserCircleIcon
     },
     setup() {
         const router = useRouter();
