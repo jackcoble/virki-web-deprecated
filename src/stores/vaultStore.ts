@@ -1,18 +1,14 @@
-import type { LocalStorageKeys } from '@/common/enums/localStorage';
-import { LocalStorageService } from '@/common/services/localStorage.service';
 import type { Vault } from '@/types/vault';
 import { defineStore } from 'pinia'
+import { useUserStore } from './userStore';
 
 /*
 The vault store is dedicated to hold a decrypted copy of the vault data.
 */
 
-const localStorage = new LocalStorageService();
-
 export const useVaultStore = defineStore({
   id: 'vaultStore',
   state: () => ({
-    active: localStorage.get("" as LocalStorageKeys) || "",
     vaults: new Map<string, Vault>
   }),
 
@@ -26,33 +22,34 @@ export const useVaultStore = defineStore({
         return vaults;
     },
 
-    getActiveID: (state) => state.active,
+    getActiveID: () => {
+      const userStore = useUserStore();
+      return userStore.account.active_vault_id;
+    },
     getActive: (state) => {
-      const vault = state.vaults.get(state.active);
-      if (!vault) {
-        return;
-      }
+      const userStore = useUserStore();
+      const activeVaultID = userStore.account.active_vault_id;
 
-      return vault;
+      if (activeVaultID) {
+        const vault = state.vaults.get(activeVaultID);
+        if (!vault) {
+          return;
+        }
+
+        return vault;
+      }
     }
   },
 
   actions: {
     add(vault: Vault) {
-        this.vaults.set(vault.id, vault);
+      this.vaults.set(vault.id, vault);
     },
 
-    // Stores the ID of the last active vault
-    setActive(id: string) {
-      this.active = id;
-
-      // TODO: Store in LocalStorage
-    },
-
-    // Clear all decrypted data from the Hash Map
-    clear() {
-      this.active = "";
-      this.vaults.clear();
+    // Stores the ID of the active vault
+    setActiveVault(id: string) {
+      const userStore = useUserStore();
+      userStore.setActiveVault(id);
     }
   },
 })
