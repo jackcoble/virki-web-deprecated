@@ -1,4 +1,5 @@
 import { LocalStorageKeys } from '@/common/enums/localStorage';
+import type { Account } from '@/common/interfaces/account';
 import { LocalStorageService } from '@/common/services/localStorage.service';
 import { defineStore } from 'pinia'
 
@@ -7,23 +8,23 @@ const localStorage = new LocalStorageService();
 export const useUserStore = defineStore({
   id: 'userStore',
   state: () => ({
-    email: localStorage.get(LocalStorageKeys.EMAIL) || ""
+    account: {} as Account
   }),
 
   getters: {
-    getEmail: (state) => state.email
+    getUserID: (state) => state.account.id,
+    getEmail: (state) => state.account.email
   },
 
   actions: {
-    setEmail(email: string) {
-        this.email = email;
-
-        localStorage.add(LocalStorageKeys.EMAIL, email);
+    setAccount(account: Account) {
+      this.account = account;
+      localStorage.add(LocalStorageKeys.ACCOUNT, account);
     },
 
     // Clears entire store state
     clear() {
-      this.email = "";
+      this.account = null as any;
     }
   },
 })

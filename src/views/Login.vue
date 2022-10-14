@@ -62,6 +62,7 @@ import { CryptoWorker } from "@/utils/comlink";
 import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
+import type { Account } from "@/common/interfaces/account";
 
 export default defineComponent({
     name: "Login",
@@ -103,6 +104,14 @@ export default defineComponent({
                 // Request for the encrypted key material
                 res = await userService.Login(email.value, stretchedPassword.hash, turnstileToken.value);
                 const encryptedMasterKey = res.data.encrypted_keys.master_encryption_key;
+
+                // Set account details
+                const accountDetails: Account = {
+                    id: res.data.user_id,
+                    email: res.data.email,
+                    session_token: res.data.session_token
+                }
+                userStore.setAccount(accountDetails);
 
                 // Parse cipher string for master encryption key
                 const encryptionKeyCipher = await parseCipherString(encryptedMasterKey);
