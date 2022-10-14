@@ -4,6 +4,7 @@ import { LocalStorageService } from '@/common/services/localStorage.service';
 import { SessionStorageService } from '@/common/services/sessionStorage.service';
 import type { Keys } from '@/common/interfaces/keys';
 import { defineStore } from 'pinia'
+import { useUserStore } from './userStore';
 
 const localStorage = new LocalStorageService();
 const sessionStorage = new SessionStorageService();
@@ -11,13 +12,15 @@ const sessionStorage = new SessionStorageService();
 export const useKeyStore = defineStore({
   id: 'keyStore',
   state: () => ({
-    sessionToken: localStorage.get(LocalStorageKeys.SESSION),
     masterEncryptionKey: sessionStorage.get(SessionStorageKeys.MASTER_ENCRYPTION_KEY),
     encryptedKeys: localStorage.get(LocalStorageKeys.ENCRYPTED_KEYS)
   }),
 
   getters: {
-    getSessionToken: (state) => state.sessionToken,
+    getSessionToken: (state) => {
+      const userStore = useUserStore();
+      return userStore.getSessionToken;
+    },
     getMasterEncryptionKey: (state) => state.masterEncryptionKey,
     getEncryptedKeys: (state) => {
         // So after many hours of tearing my hair out, it turns out WebWorkers hate objects with function signatures being
@@ -31,11 +34,6 @@ export const useKeyStore = defineStore({
   },
 
   actions: {
-    setSessionToken(token: string) {
-        this.sessionToken = token;
-        localStorage.add(LocalStorageKeys.SESSION, token);
-    },
-
     setMasterEncryptionKey(key: string) {
         this.masterEncryptionKey = key;
 
@@ -50,7 +48,6 @@ export const useKeyStore = defineStore({
 
     // Clears entire store state
     clear() {
-      this.sessionToken = "";
       this.masterEncryptionKey = "";
       this.encryptedKeys = null;
     }
