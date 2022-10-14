@@ -118,7 +118,6 @@ export default defineComponent({
                 const encryptionKey = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
 
                 keyStore.setEncryptedKeys(res.data.encrypted_keys);
-                keyStore.setSessionToken(res.data.session_token);
                 keyStore.setMasterEncryptionKey(encryptionKey);
 
                 router.push(PAGES.VAULT);

@@ -9,8 +9,6 @@ import LayoutVault from '@/layouts/LayoutVault.vue'
 // Views
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
-import Verify from "@/views/Verify.vue"
-import Credentials from "@/views/Credentials.vue"
 import Vault from "@/views/Vault.vue"
 import Profile from "@/views/Profile.vue"
 import NewVault from "@/views/vaults/New.vue"
@@ -80,22 +78,6 @@ const router = createRouter({
       meta: {
         public: true
       }
-    },
-    {
-      path: PAGES.VERIFY,
-      name: 'verify',
-      component: Verify,
-      meta: {
-        public: true
-      }
-    },
-    {
-      path: PAGES.CREDENTIALS,
-      name: "credentials",
-      component: Credentials,
-      meta: {
-        public: true
-      }
     }
   ]
 })
@@ -114,13 +96,6 @@ router.beforeEach((to, from, next) => {
   // If no session token or master encryption key is present and the page isn't public, redirect to root (login)
   if ((!session || !masterEncryptionKey) && !to.meta.public) {
     return next({ path: PAGES.ROOT });
-  }
-
-  // So we have a session token present, but if we don't have encrypted keys on the device,
-  // we might not want to allow the user to visit a certain page, such as the "credentials" for decryption,
-  // so push them to login
-  if (session && !encryptedKeys.master_encryption_key && to.path === PAGES.CREDENTIALS) {
-    return next({ path: PAGES.ROOT })
   }
 
   // Though if both a session token and the decrypted master encryption key are available
