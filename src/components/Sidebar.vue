@@ -13,7 +13,8 @@
         <div class="p-4 text-gray-700">
             <div class="flex">
                 <button class="flex flex-1 justify-start items-center space-x-2"
-                    @click="showSidebarVaults = !showSidebarVaults">
+                    @click="showSidebarVaults = !showSidebarVaults"
+                    :disabled="vaults.length === 0">
                     <ChevronRightIcon v-if="!showSidebarVaults" class="w-4" />
                     <ChevronDownIcon v-else class="w-4" />
                     <p class="text-sm">Vaults</p>
