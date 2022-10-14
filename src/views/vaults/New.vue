@@ -36,6 +36,7 @@ import { useRouter } from 'vue-router';
 import { LockClosedIcon } from "@heroicons/vue/solid"
 import vaultService from "@/service/api/vaultService";
 import { useAppStore } from '@/stores/appStore';
+import { IndexedDBService } from '@/common/services/indexedDB.service';
 
 export default defineComponent({
     name: "CreateVault",
@@ -99,6 +100,10 @@ export default defineComponent({
                 modified: createdDate
             }
 
+            // Store the encrypted vault in IndexedDB first
+            const indexedDBService = new IndexedDBService();
+            await indexedDBService.addVault(encryptedVaultObject);
+
             // If online, send the encrypted vault to the API
             if (appStore.isOnline) {
                 try {
@@ -107,9 +112,6 @@ export default defineComponent({
                     return toaster.error("An unknown error occurred storing your vault on the Virki Sync server!");
                 }
             }
-
-            // Store the encrypted vault in IndexedDB.
-            await insertVault(encryptedVaultObject);
 
             // Create a copy of the encrypted vault, but put in the decrypted data again before inserting into the "vaultStore"
             const decryptedVaultObject = { ...encryptedVaultObject };
