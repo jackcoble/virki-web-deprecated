@@ -48,7 +48,7 @@
                     </button>
                 </div>
             </div>
-            <div v-if="showSidebarVaults && vaults.length === 0" class="p-2">
+            <div v-else-if="vaults.length === 0" class="p-2">
                 <div class="flex py-2 items-center space-x-2">
                     <EmojiSadIcon class="w-6 text-mountain-meadow" />
                     <h2 class="text-sm">No vaults available...</h2>
@@ -200,7 +200,6 @@ export default defineComponent({
         // Function to handle changing vaults by updating the ID in the vault store.
         const changeVault = (id: string) => {
             vaultStore.setActiveVault(id);
-            router.push({ path: `${PAGES.VAULT}/${id}` })
         }
 
         // Function to handle when the user wants to logout
