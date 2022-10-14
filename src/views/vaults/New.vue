@@ -12,8 +12,18 @@
                 <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
 
                 <div class="flex space-x-2">
-                    <b-button type="submit" :loading="isCreatingVault">Create</b-button>
-                    <b-button classType="danger" @click="router.push(PAGES.ROOT)">Cancel</b-button>
+                    <b-button classType="danger" @click="router.push(PAGES.ROOT)">
+                        <div class="flex flex-row justify-center items-center space-x-1">
+                            <XIcon class="w-5 md:-ml-1" />
+                            <span>Cancel</span>
+                        </div>
+                    </b-button>
+                    <b-button type="submit" :loading="isCreatingVault">
+                        <div class="flex flex-row justify-center items-center space-x-1">
+                            <CheckIcon class="w-5 md:-ml-1" />
+                            <span>Create</span>
+                        </div>
+                    </b-button>
                 </div>
             </form>
         </div>
@@ -30,18 +40,20 @@ import type { Vault } from '@/common/interfaces/vault';
 import { CryptoWorker } from '@/common/comlink';
 import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/common/utils/cipher';
-import { insertVault } from '@/utils/storage/indexedDB';
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { LockClosedIcon } from "@heroicons/vue/solid"
 import vaultService from "@/service/api/vaultService";
 import { useAppStore } from '@/stores/appStore';
 import { IndexedDBService } from '@/common/services/indexedDB.service';
+import { CheckIcon, XIcon } from "@heroicons/vue/outline"
 
 export default defineComponent({
     name: "CreateVault",
     components: {
-        LockClosedIcon
+        LockClosedIcon,
+        CheckIcon,
+        XIcon
     },
     setup() {
         const router = useRouter();
