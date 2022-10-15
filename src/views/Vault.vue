@@ -70,6 +70,7 @@ import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";
 
 import { PAGES } from "@/router/pages";
+import { parseCipherString } from "@/common/utils/cipher";
 
 export default defineComponent({
   name: "HomeView",
@@ -131,20 +132,20 @@ export default defineComponent({
         }
 
         // Base64 Encoded Vault Encryption Key
-        const vaultEncryptionKey = await cryptoWorker.decrypt(masterEncryptionKey, encryptedVault.key);
+        const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(encryptedVault.key, masterEncryptionKey)
 
         // We can proceed to decrypt the UTF8 text, description and icon properties
         let decryptedName, decryptedDescription, decryptedIcon;
-        decryptedName = await cryptoWorker.decryptToUTF8(vaultEncryptionKey, encryptedVault.name);
+        decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(encryptedVault.name, vaultEncryptionKey);
 
         if (encryptedVault.description) {
-          decryptedDescription = await cryptoWorker.decryptToUTF8(vaultEncryptionKey, encryptedVault.description);
+          decryptedDescription = await cryptoWorker.decryptFromB64CipherStringToUTF8(encryptedVault.description, vaultEncryptionKey);
         }
         if (encryptedVault.icon) {
-          decryptedIcon = await cryptoWorker.decryptToUTF8(vaultEncryptionKey, encryptedVault.icon);
+          decryptedIcon = await cryptoWorker.decryptFromB64CipherStringToUTF8(encryptedVault.icon, vaultEncryptionKey);
         }
 
-        // Create a copy of the encrypted vault and replace the data...
+        // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
         const decryptedVault = { ...encryptedVault };
         decryptedVault.key = vaultEncryptionKey;
         decryptedVault.name = decryptedName;
