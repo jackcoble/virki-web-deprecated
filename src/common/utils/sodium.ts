@@ -245,7 +245,7 @@ export async function decryptToUTF8(data: string, mac: string, nonce: string, ke
 
 /**
  * Decrypt from a cipher string
- * @param cipherString - A cipherstring
+ * @param cipherString - A cipherstring containing Base64 data we want decrypted
  * @param key - Encryption key used for the data
  * @returns 
  */
@@ -254,6 +254,29 @@ export async function decryptFromB64CipherString(cipherString: string, key: stri
     try {
         const cipher = await parseCipherString(cipherString);
         const decrypted = await decryptFromB64(
+            cipher.ciphertext,
+            cipher.mac,
+            cipher.nonce,
+            key
+        );
+
+        return Promise.resolve(decrypted);
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
+/**
+ * Decrypt and return UTF-8 data from a Cipherstring
+ * @param cipherString - Cipherstring containing UTF8 data to be returned once decrypted
+ * @param key - Encryption key used for the data
+ * @returns 
+ */
+export async function decryptFromB64CipherStringToUTF8(cipherString: string, key: string) {
+    // Parse the cipher string and decrypt the data
+    try {
+        const cipher = await parseCipherString(cipherString);
+        const decrypted = await decryptToUTF8(
             cipher.ciphertext,
             cipher.mac,
             cipher.nonce,

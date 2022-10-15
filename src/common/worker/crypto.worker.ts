@@ -30,6 +30,10 @@ export class Crypto {
     async decryptFromB64CipherString(cipherString: string, key: string) {
         return decryptFromB64CipherString(cipherString, key);
     }
+
+    async decryptFromB64CipherStringToUTF8(cipherString: string, key: string) {
+        this.decryptFromB64CipherStringToUTF8(cipherString, key);
+    }
 }
 
 Comlink.expose(Crypto)
