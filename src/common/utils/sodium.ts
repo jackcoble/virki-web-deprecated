@@ -249,7 +249,7 @@ export async function decryptToUTF8(data: string, mac: string, nonce: string, ke
  * @param key - Encryption key used for the data
  * @returns 
  */
-export async function decryptFromBase64CipherString(cipherString: string, key: string) {
+export async function decryptFromB64CipherString(cipherString: string, key: string) {
     // Parse the cipher string and decrypt the data
     try {
         const cipher = await parseCipherString(cipherString);
