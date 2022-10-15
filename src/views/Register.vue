@@ -167,7 +167,8 @@ export default defineComponent({
                 const accountDetails: Account = {
                     id: res.data.user_id,
                     email: res.data.email,
-                    session_token: res.data.session_token
+                    session_token: res.data.session_token,
+                    plan: res.data.plan
                 }
 
                 userStore.setAccount(accountDetails);
