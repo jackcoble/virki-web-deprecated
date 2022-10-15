@@ -6,3 +6,5 @@ export interface Vault {
     icon?: string;
     created: number;
     modified: number;
+    delete?: boolean;
+}
