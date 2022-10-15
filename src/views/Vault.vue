@@ -71,6 +71,9 @@ import { useLogout } from "@/composables/useLogout";
 
 import { PAGES } from "@/router/pages";
 import { parseCipherString } from "@/common/utils/cipher";
+import { IndexedDBService } from "@/common/services/indexedDB.service";
+import vaultService from "@/service/api/vaultService";
+import type { Vault } from "@/common/interfaces/vault";
 
 export default defineComponent({
   name: "HomeView",
@@ -108,22 +111,36 @@ export default defineComponent({
     const showExpiredSessionModal = ref(false);
 
     onMounted(async () => {
-      // First page load. What we should actually do here is fetch and set account data, decrypt the vaults and tokens
-      // we already have got stored offline, then if the client is online, request for a sync.
-      try {
-        await userService.GetAccount();
-      } catch (error) {
-        // Check for 401 unauthorised (invalid session)
-        if (error.response && error.response.status === 401) {
-          await useLogout();
+      // When the page first loads we should do a "sync" if the device is online. This is basically where we send off all the vaults/tokens
+      // and the server decides which ones we should keep.
+      const indexedDBService = new IndexedDBService();
 
-          isFirstLoad.value = false;
-          return showExpiredSessionModal.value = true;
+      if (appStore.isOnline) {
+        try {
+          const existingVaults = await indexedDBService.getAllVaults();
+          await vaultService.sync(existingVaults).then(res => {
+            const vaults: Vault[] = res.data.vaults;
+            vaults.forEach(async v => {
+              await indexedDBService.addVault(v);
+            })
+          })
+        } catch (e) {
+          // Check for 401 unauthorised (invalid session)
+          if (error.response && error.response.status === 401) {
+            isFirstLoad.value = false;
+            return showExpiredSessionModal.value = true;
+          }
+
+          // Otherwise something else has gone wrong...
+          console.log(e);
         }
       }
 
+      // Chances are that everything is up to date now,
+      // so we can go ahead and decrypt all the vaults.
       const cryptoWorker = await new CryptoWorker();
-      const existingVaults = await getAllVaults();
+      const existingVaults = await indexedDBService.getAllVaults();
+
       existingVaults.forEach(async encryptedVault => {
         // Decrypt the vault encryption key
         const masterEncryptionKey = keyStore.getMasterEncryptionKey;
@@ -155,9 +172,6 @@ export default defineComponent({
         // Add the decrypted vault into the Vault Store
         vaultStore.add(decryptedVault);
       })
-
-      // Artificial sleep for a second...
-      await sleep(1);
 
       isFirstLoad.value = false;
     })
