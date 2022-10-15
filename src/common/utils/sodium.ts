@@ -175,7 +175,7 @@ export async function encryptUTF8(data: string, key?: string): Promise<Encryptio
     const rawData = await fromString(data);
     const base64 = await toBase64(rawData);
 
-    return await encryptToB64(base64);
+    return await encryptToB64(base64, key);
 }
 
 /**
