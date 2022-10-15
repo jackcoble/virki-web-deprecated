@@ -109,8 +109,7 @@ export default defineComponent({
                 description: encryptedDescription,
                 icon: encryptedIcon,
                 created: createdDate,
-                modified: createdDate,
-                delete: false
+                modified: createdDate
             }
 
             // Store the encrypted vault in IndexedDB first
