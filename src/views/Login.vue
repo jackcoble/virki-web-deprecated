@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center items-center h-screen bg-gray-100 p-8">
-        <div class="p-8 md:m-auto rounded md:shadow-sm bg-white md:border md:border-gray-200 space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
+        <div class="p-8 md:m-auto space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
             <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
             <div space-y-1>
@@ -16,9 +16,6 @@
                 <!-- Password input -->
                 <p class="font-bold text-sm">Password</p>
                 <b-password-input v-model="password" placeholder="Master password" />
-
-                <!-- Cloudflare Turnstile -->
-                <CloudflareTurnstile site-key="0x4AAAAAAAAp_uCeOoj1R-By" @success="turnstileToken = $event" />
 
                 <!-- Login and Create buttons -->
                 <div class="flex flex-wrap md:flex-nowrap justify-center items-center md:space-x-2 space-y-2 md:space-y-0 pt-3">
@@ -50,8 +47,6 @@
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
-
 import useToaster from "@/composables/useToaster";
 import userService from "@/service/api/userService";
 
@@ -69,13 +64,11 @@ export default defineComponent({
     components: {
         ClockIcon,
         LoginIcon,
-        UserAddIcon,
-        CloudflareTurnstile
+        UserAddIcon
     },
     setup() {
         const email = ref("");
         const password = ref("");
-        const turnstileToken = ref("")
         const isLoading = ref(false);
 
         const router = useRouter();
@@ -102,7 +95,7 @@ export default defineComponent({
                 const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, argon.salt, argon.opsLimit, argon.memLimit);
                 
                 // Request for the encrypted key material
-                res = await userService.Login(email.value, stretchedPassword.hash, turnstileToken.value);
+                res = await userService.Login(email.value, stretchedPassword.hash);
                 const encryptedMasterKey = res.data.encrypted_keys.master_encryption_key;
 
                 // Set account details
@@ -138,7 +131,6 @@ export default defineComponent({
         return {
             email,
             password,
-            turnstileToken,
             isLoading,
 
             router,
