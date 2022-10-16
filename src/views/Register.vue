@@ -31,9 +31,6 @@
                     <b-password-input v-model="confirmPassword" />
                 </div>
 
-                <!-- Cloudflare Turnstile -->
-                <CloudflareTurnstile site-key="0x4AAAAAAAAp_uCeOoj1R-By" @success="turnstileToken = $event" />
-
                 <!-- Terms of Service and Privacy Policy tickbox -->
                 <div class="flex justify-center items-center space-x-2 focus:outline-none">
                     <input required class="border border-gray-300 rounded-sm focus:outline-none cursor-pointer" type="checkbox" v-model="acceptedTerms" id="acceptedTermsCheck">
@@ -69,7 +66,6 @@ import { serialiseCipherString } from "@/common/utils/cipher";
 import { EncryptionType } from "@/types/crypto";
 import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers";
-import CloudflareTurnstile from "@/components/CloudflareTurnstile.vue";
 import userService from "@/service/api/userService";
 import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
@@ -78,9 +74,6 @@ import { useUserStore } from "@/stores/userStore";
 
 export default defineComponent({
     name: "Login",
-    components: {
-        CloudflareTurnstile
-    },
     setup() {
         // Refs to keep track of user data
         const email = ref("");
@@ -89,7 +82,6 @@ export default defineComponent({
         const confirmPassword = ref("");
         const acceptedTerms = ref(false);
         const isLoading = ref(false);
-        const turnstileToken = ref("");
 
         const toaster = useToaster();
         const router = useRouter();
@@ -161,7 +153,7 @@ export default defineComponent({
             try {
                 // In this response we're expecting a session token to be returned
                 // so set that in the store as well as the master key
-                const res = await userService.Register(email.value, keys, turnstileToken.value);
+                const res = await userService.Register(email.value, keys);
 
                 // Set account details
                 const accountDetails: Account = {

@@ -9,27 +9,19 @@ export default {
         })
     },
 
-    Login(email: string, password: string, turnstileToken: string): Promise<AxiosResponse> {
-        const headers = {
-            "X-Turnstile-Token": turnstileToken
-        }
-
+    Login(email: string, password: string): Promise<AxiosResponse> {
         return api.post("/v1/users/login", {
             email: email,
             password: password
-        }, { headers })
+        })
     },
 
 
-    Register(email: string, keys: Keys, turnstileToken: string): Promise<AxiosResponse> {
-        const headers = {
-            "X-Turnstile-Token": turnstileToken
-        }
-
+    Register(email: string, keys: Keys): Promise<AxiosResponse> {
         return api.post("/v1/users/register", {
             email: email,
             encrypted_keys: keys
-        }, { headers })
+        })
     },
 
     GetKeys(): Promise<AxiosResponse> {
