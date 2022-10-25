@@ -1,15 +1,15 @@
 <template>
-    <div class="relative">
+    <div class="flex justify-between items-center space-x-2">
         <b-input :type="showPassword ? 'text' : 'password'" :value="modelValue" @input="updateValue"
             :placeholder="placeholder"
             required
         />
         
-        <button @click="showPassword = !showPassword"
-            class="text-mountain-meadow absolute bottom w-5 h-5 bottom-2.5 right-2.5">
+        <span @click="showPassword = !showPassword"
+            class="text-mountain-meadow bottom w-5 h-5 cursor-pointer">
             <EyeOffIcon v-if="showPassword" />
             <EyeIcon v-if="!showPassword" />
-        </button>
+        </span>
     </div>
 </template>
 
