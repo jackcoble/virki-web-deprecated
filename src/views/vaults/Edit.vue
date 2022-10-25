@@ -8,8 +8,8 @@
             <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
             
             <div class="flex space-x-2">
-                <b-button type="submit" :loading="isUpdating">Update</b-button>
                 <b-button classType="danger" @click="router.push(PAGES.ROOT)">Cancel</b-button>
+                <b-button type="submit" :loading="isUpdating">Update</b-button>
             </div>
         </form>
     </div>
