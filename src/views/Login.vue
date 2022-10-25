@@ -34,11 +34,6 @@
                     </b-button>
                 </div>
             </form>
-
-            <div class="flex justify-center items-center space-x-1 pt-3">
-                <img src="@/assets/gb_flag.svg" class="w-5 rounded-sm" alt="GB Flag">
-                <p class="text-xs">Made in the UK.</p>
-            </div>
         </div>
     </div>
 </template>
