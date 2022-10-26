@@ -2,7 +2,7 @@ import { useKeyStore } from "@/stores/keyStore";
 import axios from "axios";
 
 export const api = axios.create({
-    baseURL: "/api",
+    baseURL: import.meta.env.API_URL || "/api",
     headers: {
         "Content-Type": "application/json"
     }
