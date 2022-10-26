@@ -22,7 +22,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ["@/worker/crypto.worker"]
+    include: ["@/common/worker/crypto.worker"]
   },
   server: {
     host: true,
