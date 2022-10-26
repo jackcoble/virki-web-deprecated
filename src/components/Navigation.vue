@@ -8,8 +8,8 @@
             </router-link>
 
             <!-- Menu Icon (only visible on mobile) -->
-            <button class="block md:hidden text-mountain-meadow w-9" @click="closeMenuMobile = !closeMenuMobile">
-                <MenuIcon v-if="!closeMenuMobile" />
+            <button class="block md:hidden text-mountain-meadow w-9" @click="toggleMobileMenu">
+                <MenuIcon v-if="!openMobileMenu" />
                 <XIcon v-else />
             </button>
         </div>
@@ -31,6 +31,7 @@ import { PAGES } from "@/router/pages";
 import { useUserStore } from '@/stores/userStore';
 
 import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/vue/solid"
+import { useAppStore } from '@/stores/appStore';
 
 export default defineComponent({
     name: "Navigation",
@@ -42,15 +43,24 @@ export default defineComponent({
     setup() {
         const router = useRouter();
         const userStore = useUserStore();
+        const appStore = useAppStore();
 
         const email = computed(() => userStore.getEmail);
+        const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
 
-        const closeMenuMobile = ref(false)
+        /**
+         * Function to toggle whether mobile menu should be opened
+         */
+        const toggleMobileMenu = () => {
+            const currentOpenMobileMenu = appStore.shouldOpenMobileMenu;
+            appStore.setOpenMobileMenu(!currentOpenMobileMenu);
+        }
 
         return {
-            router,
+            toggleMobileMenu,
+            openMobileMenu,
 
-            closeMenuMobile,
+            router,
 
             email,
             PAGES
