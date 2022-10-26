@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import { createRouter, createWebHashHistory, RouterView } from 'vue-router'
 
 import { useKeyStore } from '@/stores/keyStore'
 import { PAGES } from './pages'
@@ -16,7 +16,7 @@ import EditVault from '@/views/vaults/Edit.vue'
 import NewToken from "@/views/vaults/tokens/New.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     // Handle 404 redirect
     {
