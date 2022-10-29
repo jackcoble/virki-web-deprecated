@@ -41,6 +41,10 @@ export const useKeyStore = defineStore({
       this.encrypted_keys = keys;
     },
 
+    clearMasterEncryptionKey() {
+      this.master_encryption_key = null as any;
+    },
+
     // Clears all keys
     clear() {
       this.master_encryption_key = null as any;
