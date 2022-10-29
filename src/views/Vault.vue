@@ -56,21 +56,17 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
 
-import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon, MenuIcon, StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/vue/outline"
+import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
 import { useRouter } from "vue-router";
 
-import { getAllVaults } from "@/utils/storage/indexedDB";
-import { sleep } from '@/common/utils/sleep';
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/common/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useUserStore } from "@/stores/userStore";
-import userService from "@/service/api/userService";
 import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";
 
 import { PAGES } from "@/router/pages";
-import { parseCipherString } from "@/common/utils/cipher";
 import { IndexedDBService } from "@/common/services/indexedDB.service";
 import vaultService from "@/service/api/vaultService";
 import type { Vault } from "@/common/interfaces/vault";
@@ -87,7 +83,6 @@ export default defineComponent({
     const router = useRouter();
 
     const appStore = useAppStore();
-    const userStore = useUserStore();
     const keyStore = useKeyStore();
     const vaultStore = useVaultStore();
 
@@ -126,7 +121,7 @@ export default defineComponent({
           })
         } catch (e) {
           // Check for 401 unauthorised (invalid session)
-          if (error.response && error.response.status === 401) {
+          if (e.response && e.response.status === 401) {
             isFirstLoad.value = false;
             return showExpiredSessionModal.value = true;
           }
@@ -177,8 +172,9 @@ export default defineComponent({
     })
 
     // handleLogout is called when we receive the "ok" event from the expired session modal.
-    const handleLogout = () => {
-      router.push({ path: PAGES.ROOT })
+    const handleLogout = async () => {
+      await useLogout();
+      router.push({ path: PAGES.ROOT });
     }
 
     return {
