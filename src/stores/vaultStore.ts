@@ -50,6 +50,10 @@ export const useVaultStore = defineStore({
     setActiveVault(id: string) {
       const userStore = useUserStore();
       userStore.setActiveVault(id);
+    },
+
+    clear() {
+      this.vaults = null as any;
     }
   },
 })

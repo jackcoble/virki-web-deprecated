@@ -12,9 +12,9 @@ export async function useLogout() {
     const vaultStore = useVaultStore();
 
     // Clear all the data...
-    keyStore.$reset();
-    userStore.$reset();
-    vaultStore.$reset();
+    keyStore.clear();
+    userStore.clear();
+    vaultStore.clear()
 
     await deleteDBs();
 }
