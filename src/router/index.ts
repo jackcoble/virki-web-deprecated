@@ -9,6 +9,7 @@ import LayoutVault from '@/layouts/LayoutVault.vue'
 // Views
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
+import Lock from "@/views/Lock.vue"
 import Vault from "@/views/Vault.vue"
 import Profile from "@/views/Profile.vue"
 import NewVault from "@/views/vaults/New.vue"
@@ -25,7 +26,7 @@ const router = createRouter({
     },
 
     {
-      path: "/vault",
+      path: PAGES.VAULT,
       name: "LayoutVault",
       component: RouterView,
       meta: {
@@ -78,31 +79,35 @@ const router = createRouter({
       meta: {
         public: true
       }
+    },
+    {
+      path: PAGES.LOCK,
+      name: "lock",
+      component: Lock
     }
   ]
 })
 
-/*
-We should assume that all pages by default require some form of authentication
-unless stated otherwise with the "public" property in the route metadata. To verify a user is authenticated, we'll just check for the
-presence of a session token in the store.
-*/
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const keyStore = useKeyStore();
   const session = keyStore.getSessionToken;
   const masterEncryptionKey = keyStore.getMasterEncryptionKey;
   const encryptedKeys = keyStore.getEncryptedKeys;
 
-  // If no session token or master encryption key is present and the page isn't public, redirect to root (login)
-  if ((!session || !masterEncryptionKey) && !to.meta.public) {
-    return next({ path: PAGES.ROOT });
+  console.log({ session, masterEncryptionKey, encryptedKeys })
+
+  // We don't want the user being able to go to the Lock page if they don't have a session or encrypted key on their device
+  if (to.path === PAGES.LOCK) {
+    if (!session || !encryptedKeys.master_encryption_key) {
+      return next({ path: PAGES.ROOT })
+    }
   }
 
-  // Though if both a session token and the decrypted master encryption key are available
-  // on the device, we can redirect the user straight to the "/vault" if the original
-  // path was to "/".
-  if (session && masterEncryptionKey && to.path === PAGES.ROOT) {
-    return next({ path: PAGES.VAULT });
+  if (to.matched.some(route => !route.meta.public)) {
+    // If we don't have an encrypted master key (at the very least, then prompt for a login)
+    if (encryptedKeys.master_encryption_key.length === 0) {
+      return next({ path: PAGES.ROOT });
+    }
   }
 
   next();
