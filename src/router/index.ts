@@ -15,6 +15,7 @@ import Profile from "@/views/Profile.vue"
 import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
 import NewToken from "@/views/vaults/tokens/New.vue";
+import path from 'path'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -94,19 +95,34 @@ router.beforeEach(async (to, from, next) => {
   const masterEncryptionKey = keyStore.getMasterEncryptionKey;
   const encryptedKeys = keyStore.getEncryptedKeys;
 
-  console.log({ session, masterEncryptionKey, encryptedKeys })
+  // If the user is going to the root path, already has a session, the encrypted data, and encryption key
+  // in memory, allow them to navigate straight to the vault page
+  if (to.path === PAGES.ROOT && session && encryptedKeys.master_encryption_key && masterEncryptionKey.length !== 0) {
+    return next({ path: PAGES.VAULT });
+  }
 
-  // We don't want the user being able to go to the Lock page if they don't have a session or encrypted key on their device
+  // We don't want the user being able to go to the Lock page if they don't have a session or encrypted key on their device,
+  // or if they already have the decrypted master key
   if (to.path === PAGES.LOCK) {
-    if (!session || !encryptedKeys.master_encryption_key) {
+    if (!session || !encryptedKeys.master_encryption_key || masterEncryptionKey.length !== 0) {
       return next({ path: PAGES.ROOT })
     }
   }
 
-  if (to.matched.some(route => !route.meta.public)) {
-    // If we don't have an encrypted master key (at the very least, then prompt for a login)
-    if (encryptedKeys.master_encryption_key.length === 0) {
-      return next({ path: PAGES.ROOT });
+  // If the path we're going to is the root, and the device has encrypted keys and a session token, but no decrypted key
+  // allow them to "unlock" their account.
+  if (to.path === PAGES.ROOT && encryptedKeys.master_encryption_key && session && masterEncryptionKey.length === 0) {
+    return next({ path: PAGES.LOCK });
+  } 
+
+  // We need to carry out some additional checks if the page we're intending to visit is not public, with the "Lock" page
+  // being an exclusion here...
+  if (to.matched.some(route => !route.meta.public && route.path !== PAGES.LOCK)) {
+    // At all times, private routes require the encrypted keys, decrypted key and a session.
+    // If we don't have all of this, redirect to the root.
+    const hasAllKeys = encryptedKeys.master_encryption_key && session && masterEncryptionKey.length !== 0;
+    if (!hasAllKeys) {
+      next({ path: PAGES.ROOT });
     }
   }
 
