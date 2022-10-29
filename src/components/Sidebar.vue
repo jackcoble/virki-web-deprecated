@@ -151,10 +151,8 @@ import { computed } from '@vue/reactivity';
 import { useVaultStore } from '@/stores/vaultStore';
 import { version } from "../../package.json";
 import { useAppStore } from '@/stores/appStore';
-import { useLogout } from '@/composables/useLogout';
 import { useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
-import userService from '@/service/api/userService';
 
 export default defineComponent({
     name: "Sidebar",
@@ -204,20 +202,6 @@ export default defineComponent({
             router.push(PAGES.ROOT);
         }
 
-        // Function to handle when the user wants to logout
-        const doLogout = async () => {
-            // Post to logout
-            try {
-                await userService.Logout();
-            } catch (error) {
-                console.log("There was an error logging user out:", e.response);
-            } finally {
-                // Regardless of the outcome, clear all state in the browser to be safe
-                await useLogout();
-                router.push({ path: PAGES.ROOT })
-            }
-        }
-
         return {
             router,
             version,
@@ -238,8 +222,7 @@ export default defineComponent({
 
             activeVault,
 
-            changeVault,
-            doLogout
+            changeVault
         }
     }
 })
