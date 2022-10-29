@@ -1,15 +1,18 @@
+import { getUnixTime } from 'date-fns';
 import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore({
   id: 'appStore',
   state: () => ({
     online: navigator.onLine,
-    openMobileMenu: false
+    openMobileMenu: false,
+    lastActive: getUnixTime(new Date())
   }),
 
   getters: {
     isOnline: (state) => state.online,
-    shouldOpenMobileMenu: (state) => state.openMobileMenu
+    shouldOpenMobileMenu: (state) => state.openMobileMenu,
+    getLastActiveTimestamp: (state) => state.lastActive
   },
 
   actions: {
@@ -19,6 +22,10 @@ export const useAppStore = defineStore({
 
     setOpenMobileMenu(open: boolean) {
       this.openMobileMenu = open;
+    },
+
+    setLastActiveTimestamp(timestamp: number) {
+      this.lastActive = timestamp;
     }
   }
 })

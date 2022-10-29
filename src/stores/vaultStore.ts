@@ -53,7 +53,7 @@ export const useVaultStore = defineStore({
     },
 
     clear() {
-      this.vaults = null as any;
+      this.vaults.clear();
     }
   },
 })
