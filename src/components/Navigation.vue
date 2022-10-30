@@ -14,12 +14,49 @@
             </button>
         </div>
 
-        <!-- Avatar -->
-        <div class="flex items-center justify-center space-x-2 rounded px-3 py-1.5 hover:bg-gray-200 transition cursor-pointer"
-            @click="router.push(PAGES.PROFILE)">
-            <UserCircleIcon class="w-7 text-mountain-meadow" />
-            <p class="text-sm">{{ email }}</p>
-        </div>
+        <!-- Profile dropdown -->
+        <Menu as="div" class="relative ml-3">
+            <div>
+                <MenuButton class="flex rounded-full bg-gray-800 text-sm focus:outline-none">
+                    <span class="sr-only">Open user menu</span>
+                    <img class="h-8 w-8 rounded-full"
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        alt="" />
+                </MenuButton>
+            </div>
+            <transition enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95">
+                <MenuItems
+                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <MenuItem v-slot="{ active }">
+                    <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                        <div class="flex space-x-2">
+                            <UserCircleIcon class="w-4" />
+                            <span>My Profile</span>
+                        </div>
+                    </a>
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                    <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                        <div class="flex space-x-2">
+                            <DeviceMobileIcon class="w-4" />
+                            <span>Active Sessions</span>
+                        </div>
+                    </a>
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                    <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                        <div class="flex space-x-2">
+                            <LogoutIcon class="w-4" />
+                            <span>Logout</span>
+                        </div>
+                    </a>
+                    </MenuItem>
+                </MenuItems>
+            </transition>
+        </Menu>
     </div>
 </template>
 
@@ -30,7 +67,8 @@ import { useRouter } from 'vue-router';
 import { PAGES } from "@/router/pages";
 import { useUserStore } from '@/stores/userStore';
 
-import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/vue/solid"
+import { UserCircleIcon, MenuIcon, XIcon, DeviceMobileIcon, LogoutIcon } from "@heroicons/vue/solid"
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
 
 export default defineComponent({
@@ -38,7 +76,10 @@ export default defineComponent({
     components: {
         UserCircleIcon,
         MenuIcon,
-        XIcon
+        XIcon,
+        DeviceMobileIcon,
+        LogoutIcon,
+        Menu, MenuButton, MenuItem, MenuItems
     },
     setup() {
         const router = useRouter();
