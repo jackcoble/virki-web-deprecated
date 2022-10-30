@@ -22,7 +22,7 @@
                         </div>
                     </b-button>
 
-                    <b-button classType="light">
+                    <b-button type="button" classType="light" @click="handleLogout">
                         <div class="flex flex-row justify-center items-center">
                             <LogoutIcon class="w-4 mr-1" />
                             <span>Logout</span>
@@ -45,6 +45,8 @@ import { CryptoWorker } from "@/common/comlink";
 import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
+import { useLogout } from "@/composables/useLogout";
+import userService from "@/service/api/userService";
 
 export default defineComponent({
     name: "Lock",
@@ -86,13 +88,25 @@ export default defineComponent({
             }
         }
 
+        // Handle logout
+        const handleLogout = async () => {
+            try {
+                await userService.Logout();
+                await useLogout();
+            } finally {
+                // Ignore any errors and just push straight to root
+                router.push(PAGES.ROOT);
+            }
+        }
+
         return {
             password,
             isLoading,
 
             router,
 
-            handleUnlock
+            handleUnlock,
+            handleLogout
         }
     }
 })
