@@ -11,6 +11,7 @@
             <div class="p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">
                 <b-button>Change Email</b-button>
                 <b-button>Change Password</b-button>
+                <b-button @click="handleLogout">Logout</b-button>
             </div>
         </div>
 
@@ -133,16 +134,24 @@ export default defineComponent({
 
             // If it's this device we're revoking, do a logout
             if (session.this_device) {
-                await useLogout();
-                router.push(PAGES.ROOT);
-
-                return;
+                return await handleLogout();
             }
 
             // Update the sessions list
             await userService.GetSessions().then(res => {
                 sessions.value = res.data;
             })
+        }
+
+        // Handle logout
+        const handleLogout = async () => {
+            try {
+                await userService.Logout();
+                await useLogout();
+            } finally {
+                // Ignore any errors and just push straight to root
+                router.push(PAGES.ROOT);
+            }
         }
 
         // Return a relative human readable date
@@ -156,6 +165,7 @@ export default defineComponent({
             sessions,
 
             revokeSession,
+            handleLogout,
             formatDate
         }
     }
