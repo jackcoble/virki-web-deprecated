@@ -92,9 +92,9 @@ export default defineComponent({
         const handleLogout = async () => {
             try {
                 await userService.Logout();
-                await useLogout();
             } finally {
-                // Ignore any errors and just push straight to root
+                // Ignore any errors just force the logout
+                await useLogout();
                 router.push(PAGES.ROOT);
             }
         }
