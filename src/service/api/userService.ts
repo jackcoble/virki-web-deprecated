@@ -16,7 +16,6 @@ export default {
         })
     },
 
-
     Register(email: string, keys: Keys): Promise<AxiosResponse> {
         return api.post("/v1/users/register", {
             email: email,
@@ -30,6 +29,10 @@ export default {
 
     GetAccount(): Promise<AxiosResponse> {
         return api.get("/v1/users/account");
+    },
+
+    UploadAvatar(): Promise<AxiosResponse> {
+        return api.get("/v1/users/avatar/upload")
     },
 
     GetSessions(): Promise<AxiosResponse> {
