@@ -35,6 +35,10 @@ export default {
         return api.get("/v1/users/avatar/upload")
     },
 
+    GetAvatar(): Promise<AxiosResponse> {
+        return api.get("/v1/users/avatar")
+    },
+
     GetSessions(): Promise<AxiosResponse> {
         return api.get("/v1/users/sessions")
     },
