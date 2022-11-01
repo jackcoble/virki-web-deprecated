@@ -20,8 +20,7 @@
                 <MenuButton class="flex rounded-full bg-gray-800 text-sm focus:outline-none">
                     <span class="sr-only">Open user menu</span>
                     <img class="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt="" />
+                        :src="avatar" />
                 </MenuButton>
             </div>
             <transition enter-active-class="transition ease-out duration-100"
@@ -61,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { PAGES } from "@/router/pages";
@@ -70,6 +69,8 @@ import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon, MenuIcon, XIcon, DeviceMobileIcon, LogoutIcon } from "@heroicons/vue/solid"
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
+import userService from '@/service/api/userService';
+import axios from 'axios';
 
 export default defineComponent({
     name: "Navigation",
@@ -86,8 +87,29 @@ export default defineComponent({
         const userStore = useUserStore();
         const appStore = useAppStore();
 
+        const avatar = ref();
+
         const email = computed(() => userStore.getEmail);
         const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
+
+        onMounted(async () => {
+            // Fetch the users account avatar
+            try {
+                // Need the URL for the image
+                let res = await userService.GetAvatar();
+                const signedUrl = res.data.url as string;
+
+                // Fetch and load the image
+                res = await axios.get(signedUrl, { responseType: "blob" });
+                const reader = new window.FileReader();
+                reader.readAsDataURL(res.data);
+                reader.onload = () => {
+                    avatar.value = reader.result;
+                }  
+            } catch (e) {
+                console.log("TODO: Handle this...")
+            }
+        })
 
         /**
          * Function to toggle whether mobile menu should be opened
@@ -102,6 +124,8 @@ export default defineComponent({
             openMobileMenu,
 
             router,
+
+            avatar,
 
             email,
             PAGES
