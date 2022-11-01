@@ -17,10 +17,13 @@
         <!-- Profile dropdown -->
         <Menu as="div" class="relative ml-3">
             <div>
-                <MenuButton class="flex rounded-full bg-gray-800 text-sm focus:outline-none">
+                <MenuButton class="flex rounded-full bg-gray-200 text-sm focus:outline-none">
                     <span class="sr-only">Open user menu</span>
-                    <img class="h-8 w-8 rounded-full"
+                    <img v-if="avatar" class="h-8 w-8 rounded-full"
                         :src="avatar" />
+                    <div v-else>
+                        <UserCircleIcon class="text-mountain-meadow w-8 h-8" />
+                    </div>
                 </MenuButton>
             </div>
             <transition enter-active-class="transition ease-out duration-100"
