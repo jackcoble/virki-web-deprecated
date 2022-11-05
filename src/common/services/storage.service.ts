@@ -1,8 +1,16 @@
-import { createRxDatabase } from "rxdb";
+import { createRxDatabase, addRxPlugin } from "rxdb";
 import { getRxStoragePouch, addPouchPlugin } from 'rxdb/plugins/pouchdb';
-import * as pouchDBAdpaterIDB from "pouchdb-adapter-idb";
+import { RxDBReplicationCouchDBPlugin } from 'rxdb/plugins/replication-couchdb';
 
-addPouchPlugin(pouchDBAdpaterIDB);
+// RxDB Plugins
+addRxPlugin(RxDBReplicationCouchDBPlugin);
+
+// PouchDB Plugins
+import * as pouchDBAdapterIDB from "pouchdb-adapter-idb";
+import * as pouchDBAdapterHTTP from "pouchdb-adapter-idb";
+
+addPouchPlugin(pouchDBAdapterIDB);
+addPouchPlugin(pouchDBAdapterHTTP);
 
 export class VirkiStorageService {
     // The Virki storage service uses RxDB and the CouchDB replication plugin
