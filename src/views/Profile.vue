@@ -4,7 +4,9 @@
         <div class="flex flex-col flex-shrink-0 space-y-4">
             <div
                 class="flex flex-col items-center justify-center p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">
-                <UserCircleIcon class="text-mountain-meadow w-28" />
+                <img :src="avatarImage" class="w-28 rounded-full" />
+                <input type="file" accept="image/*" @change=uploadImage>
+
                 <p>{{ email }}</p>
             </div>
 
@@ -21,7 +23,9 @@
                 <div class="sm:flex sm:items-center">
                     <div class="sm:flex-auto">
                         <h1 class="text-xl font-semibold text-gray-900">Active Devices</h1>
-                        <p class="mt-2 text-sm text-gray-700">Manage the devices which currently have access to your <span class="text-mountain-meadow">Virki</span> account.</p>
+                        <p class="mt-2 text-sm text-gray-700">Manage the devices which currently have access to your
+                            <span class="text-mountain-meadow">Virki</span> account.
+                        </p>
                     </div>
                 </div>
                 <div class="mt-8 flex flex-col">
@@ -50,16 +54,19 @@
                                                 <span class="sr-only">Edit</span>
                                             </th>
 
-                            
+
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
                                         <tr v-for="session in sessions" :key="session.id">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                            <td
+                                                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                                                 {{ session.ip_address }}
                                             </td>
-                                            <td class="flex space-x-2 whitespace-nowrap items-center px-3 py-4 text-sm text-gray-500">
-                                                <span v-if="session.this_device" title="This device" class="text-mountain-meadow">
+                                            <td
+                                                class="flex space-x-2 whitespace-nowrap items-center px-3 py-4 text-sm text-gray-500">
+                                                <span v-if="session.this_device" title="This device"
+                                                    class="text-mountain-meadow">
                                                     &#x25cf;
                                                 </span>
 
@@ -76,7 +83,8 @@
                                             </td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <button class="text-red-500 hover:text-red-600 transition" @click="revokeSession(session)">Revoke</button>
+                                                <button class="text-red-500 hover:text-red-600 transition"
+                                                    @click="revokeSession(session)">Revoke</button>
                                             </td>
                                         </tr>
 
@@ -102,6 +110,7 @@ import { PAGES } from '@/router/pages';
 import { computed } from '@vue/reactivity';
 import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon } from "@heroicons/vue/solid"
+import axios from 'axios';
 
 export default defineComponent({
     name: "Sessions",
@@ -124,7 +133,7 @@ export default defineComponent({
         })
 
         // Revoke an individual user session by ID
-        const revokeSession = async(session: any) => {
+        const revokeSession = async (session: any) => {
             // Revoke the session
             try {
                 await userService.RevokeSession(session.id);
@@ -160,13 +169,46 @@ export default defineComponent({
             return formatted.charAt(0).toUpperCase() + formatted.slice(1);
         }
 
+        // Handle avatar uploads
+        const avatarImage = ref()
+        const uploadImage = async (event: any) => {
+            try {
+                // Extract the file from the upload input
+                const file = event.target.files[0];
+
+                // Request for a presigned URL
+                let res = await userService.UploadAvatar();
+                const url = res.data.url as string;
+
+                // Upload the avatar
+                await axios.put(url, file, { headers: { "Content-Type": file.type } })
+
+                // Fetch the image from S3 and display in browser
+                res = await userService.GetAvatar();
+                const avatarUrl = res.data.url as string;
+
+                res = await axios.get(avatarUrl, { responseType: "blob" });
+                const reader = new window.FileReader();
+                reader.readAsDataURL(res.data);
+                reader.onload = () => {
+                    avatarImage.value = reader.result;
+                }
+            } catch (e) {
+                // TODO: Handle this...
+                console.log(e);
+            }
+        }
+
         return {
             email,
             sessions,
 
+            avatarImage,
+
             revokeSession,
             handleLogout,
-            formatDate
+            formatDate,
+            uploadImage
         }
     }
 })
