@@ -7,7 +7,7 @@ addRxPlugin(RxDBReplicationCouchDBPlugin);
 
 // PouchDB Plugins
 import * as pouchDBAdapterIDB from "pouchdb-adapter-idb";
-import * as pouchDBAdapterHTTP from "pouchdb-adapter-idb";
+import * as pouchDBAdapterHTTP from "pouchdb-adapter-http";
 
 addPouchPlugin(pouchDBAdapterIDB);
 addPouchPlugin(pouchDBAdapterHTTP);
