@@ -1,20 +1,8 @@
 import { createRxDatabase, addRxPlugin } from "rxdb";
-import { getRxStoragePouch, addPouchPlugin } from 'rxdb/plugins/pouchdb';
-import { RxDBReplicationCouchDBPlugin } from 'rxdb/plugins/replication-couchdb';
-
-// RxDB Plugins
-addRxPlugin(RxDBReplicationCouchDBPlugin);
-
-// PouchDB Plugins
-import * as pouchDBAdapterIDB from "pouchdb-adapter-idb";
-import * as pouchDBAdapterHTTP from "pouchdb-adapter-http";
-
-addPouchPlugin(pouchDBAdapterIDB);
-addPouchPlugin(pouchDBAdapterHTTP);
+import { getRxStorageDexie } from 'rxdb/plugins/dexie';;
 
 export class VirkiStorageService {
-    // The Virki storage service uses RxDB and the CouchDB replication plugin
-    // as an offline-first data store.
+    // The Virki storage service uses RxDB as an offline-first data store.
     private _database: any;
 
     /**
@@ -24,7 +12,7 @@ export class VirkiStorageService {
         // Create the database connection
         const database = await createRxDatabase({
             name: "virkidb",
-            storage: getRxStoragePouch('idb')
+            storage: getRxStorageDexie()
         });
 
         const virkiStorageService = new VirkiStorageService(database);
