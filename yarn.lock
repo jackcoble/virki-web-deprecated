@@ -1231,20 +1231,6 @@
   resolved "https://registry.yarnpkg.com/@types/object-path/-/object-path-0.11.1.tgz#eea5b357518597fc9c0a067ea3147f599fc1514f"
   integrity sha512-219LSCO9HPcoXcRTC6DbCs0FRhZgBnEMzf16RRqkT40WbkKx3mOeQuz3e2XqbfhOz/AHfbru0kzB1n1RCAsIIg==
 
-"@types/pouchdb-adapter-http@^6.1.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@types/pouchdb-adapter-http/-/pouchdb-adapter-http-6.1.3.tgz#6e592d5f48deb6274a21ddac1498dd308096bcf3"
-  integrity sha512-9Z4TLbF/KJWy/D2sWRPBA+RNU0odQimfdvlDX+EY7rGcd3aVoH8qjD/X0Xcd/0dfBH5pKrNIMFFQgW/TylRCmA==
-  dependencies:
-    "@types/pouchdb-core" "*"
-
-"@types/pouchdb-adapter-idb@^6.1.4":
-  version "6.1.4"
-  resolved "https://registry.yarnpkg.com/@types/pouchdb-adapter-idb/-/pouchdb-adapter-idb-6.1.4.tgz#cb9a18864585d600820cd325f007614c5c3989cd"
-  integrity sha512-KIAXbkF4uYUz0ZwfNEFLtEkK44mEWopAsD76UhucH92XnJloBysav+TjI4FFfYQyTjoW3S1s6V+Z14CUJZ0F6w==
-  dependencies:
-    "@types/pouchdb-core" "*"
-
 "@types/pouchdb-core@*", "@types/pouchdb-core@7.0.10":
   version "7.0.10"
   resolved "https://registry.yarnpkg.com/@types/pouchdb-core/-/pouchdb-core-7.0.10.tgz#d1ea1549e7fad6cb579f71459b1bc27252e06a5a"
@@ -4121,7 +4107,7 @@ pouchdb-abstract-mapreduce@7.3.0:
     pouchdb-md5 "7.3.0"
     pouchdb-utils "7.3.0"
 
-pouchdb-adapter-http@7.3.0, pouchdb-adapter-http@^7.3.0:
+pouchdb-adapter-http@7.3.0:
   version "7.3.0"
   resolved "https://registry.yarnpkg.com/pouchdb-adapter-http/-/pouchdb-adapter-http-7.3.0.tgz#b187f1bc41b6b8361b8a59e4188d2ff97745ed1c"
   integrity sha512-7nNfpbvL0MEu3RtwKkhi3VTxWDrSfEKyrWspSAhsFsn980okth5SRsEIQw0eJ4yNgJaVd47B/mUYVNphpyMTyQ==
@@ -4130,31 +4116,6 @@ pouchdb-adapter-http@7.3.0, pouchdb-adapter-http@^7.3.0:
     pouchdb-binary-utils "7.3.0"
     pouchdb-errors "7.3.0"
     pouchdb-fetch "7.3.0"
-    pouchdb-utils "7.3.0"
-
-pouchdb-adapter-idb@^7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/pouchdb-adapter-idb/-/pouchdb-adapter-idb-7.3.0.tgz#41939b4b3d8c6a2d1ad21df16c81a7c2e124b41d"
-  integrity sha512-qMy0lrB+LyOFyFUo7Gfr5VvSM1IXyP2c9N2XwmMSSaTib/OsNnBqLj8AWrgPEnzvEkDgImBkk34e5F6MlUFRyA==
-  dependencies:
-    pouchdb-adapter-utils "7.3.0"
-    pouchdb-binary-utils "7.3.0"
-    pouchdb-collections "7.3.0"
-    pouchdb-errors "7.3.0"
-    pouchdb-json "7.3.0"
-    pouchdb-merge "7.3.0"
-    pouchdb-utils "7.3.0"
-
-pouchdb-adapter-utils@7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/pouchdb-adapter-utils/-/pouchdb-adapter-utils-7.3.0.tgz#1747e4ea0b519a9d817c6eda0e2f0ebc3dc18c41"
-  integrity sha512-mU1+smcagWSpInVx/VQk7VVjjnJlyagKtusUS3OdCMFZY35L6RbXC8eIhoNVDbkBfEv3cIwqQ3t7fdvkaa1odQ==
-  dependencies:
-    pouchdb-binary-utils "7.3.0"
-    pouchdb-collections "7.3.0"
-    pouchdb-errors "7.3.0"
-    pouchdb-md5 "7.3.0"
-    pouchdb-merge "7.3.0"
     pouchdb-utils "7.3.0"
 
 pouchdb-all-dbs@1.1.1:
@@ -4252,13 +4213,6 @@ pouchdb-generate-replication-id@7.3.0:
   dependencies:
     pouchdb-collate "7.3.0"
     pouchdb-md5 "7.3.0"
-
-pouchdb-json@7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/pouchdb-json/-/pouchdb-json-7.3.0.tgz#94c2d876202c6879cb525db05e7633b926346e5d"
-  integrity sha512-D4wyi20ltyiFpuziQeMk3CbXs/Q58VoGTYTJQY8MWBw37OidtHGQAt1Kh5yJ435wJqDzJZyxMA5RxGZxEOBDVg==
-  dependencies:
-    vuvuzela "1.0.3"
 
 pouchdb-mapreduce-utils@7.3.0:
   version "7.3.0"
@@ -5399,11 +5353,6 @@ vue@^3.2.36:
     "@vue/runtime-dom" "3.2.37"
     "@vue/server-renderer" "3.2.37"
     "@vue/shared" "3.2.37"
-
-vuvuzela@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/vuvuzela/-/vuvuzela-1.0.3.tgz#3be145e58271c73ca55279dd851f12a682114b0b"
-  integrity sha512-Tm7jR1xTzBbPW+6y1tknKiEhz04Wf/1iZkcTJjSFcpNko43+dFW6+OOeQe9taJIug3NdfUAjFKgUSyQrIKaDvQ==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
