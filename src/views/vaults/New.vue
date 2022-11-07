@@ -45,7 +45,6 @@ import { useRouter } from 'vue-router';
 import { LockClosedIcon } from "@heroicons/vue/solid"
 import vaultService from "@/service/api/vaultService";
 import { useAppStore } from '@/stores/appStore';
-import { IndexedDBService } from '@/common/services/indexedDB.service';
 import { CheckIcon, XIcon } from "@heroicons/vue/outline"
 
 export default defineComponent({
@@ -113,8 +112,6 @@ export default defineComponent({
             }
 
             // Store the encrypted vault in IndexedDB first
-            const indexedDBService = new IndexedDBService();
-            await indexedDBService.addVault(encryptedVaultObject);
 
             // If online, send the encrypted vault to the API
             if (appStore.isOnline) {

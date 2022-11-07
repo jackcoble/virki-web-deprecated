@@ -62,12 +62,10 @@ import { useRouter } from "vue-router";
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/common/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
-import { useUserStore } from "@/stores/userStore";
 import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";
 
 import { PAGES } from "@/router/pages";
-import { IndexedDBService } from "@/common/services/indexedDB.service";
 import vaultService from "@/service/api/vaultService";
 import type { Vault } from "@/common/interfaces/vault";
 
@@ -108,10 +106,10 @@ export default defineComponent({
     onMounted(async () => {
       // When the page first loads we should do a "sync" if the device is online. This is basically where we send off all the vaults/tokens
       // and the server decides which ones we should keep.
-      const indexedDBService = new IndexedDBService();
 
       if (appStore.isOnline) {
         try {
+          /*
           const existingVaults = await indexedDBService.getAllVaults();
           await vaultService.sync(existingVaults).then(res => {
             const vaults: Vault[] = res.data.vaults;
@@ -119,6 +117,7 @@ export default defineComponent({
               await indexedDBService.addVault(v);
             })
           })
+          */
         } catch (e) {
           // Check for 401 unauthorised (invalid session)
           if (e.response && e.response.status === 401) {
@@ -134,7 +133,7 @@ export default defineComponent({
       // Chances are that everything is up to date now,
       // so we can go ahead and decrypt all the vaults.
       const cryptoWorker = await new CryptoWorker();
-      const existingVaults = await indexedDBService.getAllVaults();
+      const existingVaults = [] as any[];
 
       existingVaults.forEach(async encryptedVault => {
         // Decrypt the vault encryption key

@@ -22,8 +22,7 @@ import type { Vault } from '@/common/interfaces/vault';
 import { CryptoWorker } from '@/common/comlink';
 import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/common/utils/cipher';
-import { getAllVaults, insertVault } from '@/utils/storage/indexedDB';
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 
@@ -61,7 +60,7 @@ export default defineComponent({
             isUpdating.value = true;
 
             // Fetch the encrypted copy of the vault so we don't have to re-encrypt certain data
-            const encryptedVaults = await getAllVaults();
+            const encryptedVaults = [] as any[] // FIX
             const originalEncryptedVault = encryptedVaults.find(v => v.id === vault.value.id);
             if (!originalEncryptedVault) {
                 return;
@@ -99,7 +98,6 @@ export default defineComponent({
                 modified: modifiedDate
             }
 
-            await insertVault(encryptedVaultObject);
             await sleep(1);
 
             // Update the decrypted vault in the vault store
