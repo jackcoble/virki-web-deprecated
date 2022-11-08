@@ -1,3 +1,4 @@
+// Representation of a Vault
 export interface Vault {
     id: string;
     key: string;
@@ -6,5 +7,4 @@ export interface Vault {
     icon?: string;
     created: number;
     modified: number;
-    delete?: boolean;
 }
