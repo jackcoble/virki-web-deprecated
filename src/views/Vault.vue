@@ -104,9 +104,8 @@ export default defineComponent({
     const showExpiredSessionModal = ref(false);
 
     onMounted(async () => {
-      // When the page first loads we should do a "sync" if the device is online. This is basically where we send off all the vaults/tokens
-      // and the server decides which ones we should keep.
-
+      // When the page first loads we should do a "sync" if the device is online. This is basically where we request for all the vaults, tokens and tags
+      // and then we update our offline-cache from the results.
       if (appStore.isOnline) {
         try {
           /*
@@ -171,8 +170,8 @@ export default defineComponent({
     })
 
     // handleLogout is called when we receive the "ok" event from the expired session modal.
-    const handleLogout = async () => {
-      await useLogout();
+    const handleLogout = () => {
+      useLogout();
       router.push({ path: PAGES.ROOT });
     }
 
