@@ -1,6 +1,12 @@
 <template>
     <div class="p-9 lg:w-4/5 xl:w-2/5 mx-auto space-y-2">
-        <h1 class="text-2xl text-center">Editing <span class="text-mountain-meadow">{{ originalVault.name }}</span></h1>
+        <div class="flex justify-between">
+            <h1 class="text-2xl text-center">Editing <span class="text-mountain-meadow">{{ originalVault.name }}</span></h1>
+
+            <b-button classType="danger" class="w-24" @click="showDeleteVaultModal = !showDeleteVaultModal">
+                Delete
+            </b-button>
+        </div>
 
         <form @submit.prevent="updateVault" class="space-y-4 pt-4 pb-2 mx-auto">
             <b-icon-upload class="mx-auto" @imageData="vault.icon = $event" :image="vault.icon"></b-icon-upload>
@@ -13,6 +19,25 @@
             </div>
         </form>
     </div>
+
+    <!-- Delete vault confirmation modal -->
+    <b-modal v-if="showDeleteVaultModal">
+        <template v-slot:icon>
+            <TrashIcon class="h-6 w-6 text-red-400" />
+        </template>
+        <template v-slot:body>
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Delete this vault?</h3>
+            <div class="mt-2">
+                <p class="text-sm text-gray-500">Deleting a vault is a permanent action. All tokens stored inside a vault will be deleted too.</p>
+            </div>
+        </template>
+        <template v-slot:footer>
+            <div class="flex justify-between space-x-2">
+                <b-button classType="light" @click="showDeleteVaultModal = false">Cancel</b-button>
+                <b-button classType="danger" @click="handleDelete">Delete</b-button>
+            </div>
+        </template>
+    </b-modal>
 </template>
 
 <script lang="ts">
@@ -25,9 +50,14 @@ import { serialiseCipherString } from '@/common/utils/cipher';
 import { defineComponent, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
+import { TrashIcon } from "@heroicons/vue/outline"
+import { VirkiStorageService } from '@/common/services/storage.service';
 
 export default defineComponent({
     name: "EditVault",
+    components: {
+        TrashIcon
+    },
     setup() {
         // Stores
         const vaultStore = useVaultStore();
@@ -38,6 +68,9 @@ export default defineComponent({
         const originalVault = ref({} as Vault);
         const vault = ref({} as Vault);
         const isUpdating = ref(false);
+
+        // Refs for vault deletion
+        const showDeleteVaultModal = ref(false);
 
         onMounted(() => {
             const vaultId = route.params.id;
@@ -108,6 +141,25 @@ export default defineComponent({
             router.push(PAGES.ROOT);
         }
 
+        // Handle when we want to delete a vault
+        const handleDelete = async () => {
+            // We can pull the vault ID from the route params
+            const vaultId = route.params.id as string;
+            
+            // Delete from local DB
+            const storageService = new VirkiStorageService();
+            await storageService.deleteVault(vaultId);
+
+            // Delete from decrypted Pinia store
+            vaultStore.delete(vaultId);
+
+            // TODO: Delete from online...
+
+            // Close the modal and redirect to index
+            showDeleteVaultModal.value = false;
+            router.push(PAGES.ROOT);
+        }
+
         return {
             router,
 
@@ -117,7 +169,9 @@ export default defineComponent({
 
             PAGES,
 
-            updateVault
+            updateVault,
+            showDeleteVaultModal,
+            handleDelete
         }
     } 
 })
