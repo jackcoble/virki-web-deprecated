@@ -46,6 +46,7 @@ import { LockClosedIcon } from "@heroicons/vue/solid"
 import vaultService from "@/service/api/vaultService";
 import { useAppStore } from '@/stores/appStore';
 import { CheckIcon, XIcon } from "@heroicons/vue/outline"
+import { VirkiStorageService } from '@/common/services/storage.service';
 
 export default defineComponent({
     name: "CreateVault",
@@ -112,6 +113,8 @@ export default defineComponent({
             }
 
             // Store the encrypted vault in IndexedDB first
+            const storageService = new VirkiStorageService();
+            await storageService.addVault(encryptedVaultObject);
 
             // If online, send the encrypted vault to the API
             if (appStore.isOnline) {
