@@ -37,6 +37,20 @@ export class VirkiStorageService extends Dexie {
     }
 
     /**
+     * Retrieves all local copies of encrypted vaults on this device
+     * @returns {Vault[]}
+     */
+    async getVaults(): Promise<Vault[]> {
+        try {
+            const vaults = await this._vaults.toArray();
+            return Promise.resolve(vaults);
+        } catch (e) {
+            console.error(e);
+            return Promise.reject("There was an error fetching vaults from local DB!");
+        }
+    }
+
+    /**
      * Returns the contents of an encrypted vault - such as encryption key, name, description, image etc.
      * @param id - Vault ID
      * @returns 
