@@ -1,10 +1,10 @@
 <template>
     <div class="p-9 lg:w-4/5 xl:w-2/5 mx-auto space-y-2">
         <div class="flex justify-between">
-            <h1 class="text-2xl text-center">Editing <span class="text-mountain-meadow">{{ originalVault.name }}</span></h1>
+            <h1 class="text-2xl text-center text-mountain-meadow">{{ originalVault.name }}</h1>
 
-            <b-button classType="danger" class="w-24" @click="showDeleteVaultModal = !showDeleteVaultModal">
-                Delete
+            <b-button classType="danger" class="flex items-center justify-center w-14" @click="showDeleteVaultModal = !showDeleteVaultModal">
+                <TrashIcon class="h-5 w-5 text-red-800" />
             </b-button>
         </div>
 
@@ -131,13 +131,13 @@ export default defineComponent({
                 modified: modifiedDate
             }
 
-            await sleep(1);
-
-            // Update the decrypted vault in the vault store
+            // Update the vault in the encrypted and decrypted store
+            const storageService = new VirkiStorageService();
+            await storageService.addVault(encryptedVaultObject);
             vaultStore.add(vault.value);
 
+            await sleep(1);
             isUpdating.value = false;
-
             router.push(PAGES.ROOT);
         }
 
