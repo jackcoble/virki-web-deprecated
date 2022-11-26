@@ -58,4 +58,17 @@ export class VirkiStorageService extends Dexie {
     async getVault(id: string): Promise<Vault> {
         return Promise.resolve({} as Vault);
     }
+
+    /**
+     * Delete a vault from the database
+     * @param id - Vault ID for the vault to be removed from the local database
+     */
+    async deleteVault(id: string): Promise<void> {
+        try {
+            await this._vaults.delete(id);
+        } catch (e) {
+            console.error(e);
+            return Promise.reject("There was an error deleting this vault from local DB!");
+        }
+    }
 }
