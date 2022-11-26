@@ -1,37 +1,40 @@
-import { createRxDatabase } from "rxdb";
-import { getRxStorageDexie } from 'rxdb/plugins/dexie';import type { Vault } from "../interfaces/vault";
-;
+import Dexie from "dexie";
+import type { Vault } from "../interfaces/vault";
 
-export class VirkiStorageService {
-    // The Virki storage service uses RxDB as an offline-first data store.
-    private _database: any;
+const DB_NAME = "virki_db";
+const DB_VERSION = 1;
 
-    /**
-     * Returns a pre-configured instance of the Virki Storage Service class
-     */
-    static async build(): Promise<VirkiStorageService> {
-        // Create the database connection
-        const database = await createRxDatabase({
-            name: "virkidb",
-            storage: getRxStorageDexie()
-        });
-
-        const virkiStorageService = new VirkiStorageService(database);
-        return virkiStorageService;
-    }
+export class VirkiStorageService extends Dexie {
+    // The Virki storage service uses IndexedDB (with Dexie as a wrapper) for an offline-first data store.
+    // Specify the tables and the types they'll be storing.
+    private _vaults!: Dexie.Table<Vault, string>; // Stores a vault with the Vault ID in string format acting as a PK
 
     /**
      * Initialises the storage service constructor
      */
-    constructor(db: any) {
-        this._database = db;
+    constructor() {
+        super(DB_NAME);
+
+        // Prepare the store
+        this.version(DB_VERSION)
+        .stores({
+            _vaults: 'id'
+        })
     }
 
     /**
      * Inserts an encrypted copy of the vault to the local database
      * @param vault - Encrypted vault to be stored
      */
-    async addVault(vault: Vault): Promise<void> {}
+    async addVault(vault: Vault): Promise<void> {
+        try {
+            await this._vaults.put(vault, vault.id);
+        } catch (e) {
+            // TODO: Send error to Sentry/local debug log
+            console.error(e);
+            return Promise.reject("There was an error inserting vault into local DB!");
+        }
+    }
 
     /**
      * Returns the contents of an encrypted vault - such as encryption key, name, description, image etc.
