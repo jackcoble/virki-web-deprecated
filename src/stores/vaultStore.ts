@@ -46,6 +46,10 @@ export const useVaultStore = defineStore({
       this.vaults.set(vault.id, vault);
     },
 
+    delete(vaultId: string) {
+      this.vaults.delete(vaultId);
+    },
+
     // Stores the ID of the active vault
     setActiveVault(id: string) {
       const userStore = useUserStore();
