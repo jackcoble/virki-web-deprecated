@@ -68,6 +68,7 @@ import { useLogout } from "@/composables/useLogout";
 import { PAGES } from "@/router/pages";
 import vaultService from "@/service/api/vaultService";
 import type { Vault } from "@/common/interfaces/vault";
+import { VirkiStorageService } from "@/common/services/storage.service";
 
 export default defineComponent({
   name: "HomeView",
@@ -106,33 +107,15 @@ export default defineComponent({
     onMounted(async () => {
       // When the page first loads we should do a "sync" if the device is online. This is basically where we request for all the vaults, tokens and tags
       // and then we update our offline-cache from the results.
+      const storageService = new VirkiStorageService();
       if (appStore.isOnline) {
-        try {
-          /*
-          const existingVaults = await indexedDBService.getAllVaults();
-          await vaultService.sync(existingVaults).then(res => {
-            const vaults: Vault[] = res.data.vaults;
-            vaults.forEach(async v => {
-              await indexedDBService.addVault(v);
-            })
-          })
-          */
-        } catch (e) {
-          // Check for 401 unauthorised (invalid session)
-          if (e.response && e.response.status === 401) {
-            isFirstLoad.value = false;
-            return showExpiredSessionModal.value = true;
-          }
-
-          // Otherwise something else has gone wrong...
-          console.log(e);
-        }
+        // TODO...
       }
 
       // Chances are that everything is up to date now,
       // so we can go ahead and decrypt all the vaults.
       const cryptoWorker = await new CryptoWorker();
-      const existingVaults = [] as any[];
+      const existingVaults = await storageService.getVaults();
 
       existingVaults.forEach(async encryptedVault => {
         // Decrypt the vault encryption key
