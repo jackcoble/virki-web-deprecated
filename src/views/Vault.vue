@@ -108,47 +108,6 @@ export default defineComponent({
     onMounted(async () => {
       // When the page first loads we should do a "sync" if the device is online. This is basically where we request for all the vaults, tokens and tags
       // and then we update our offline-cache from the results.
-      const storageService = new VirkiStorageService();
-      if (appStore.isOnline) {
-        // TODO...
-      }
-
-      // Chances are that everything is up to date now,
-      // so we can go ahead and decrypt all the vaults.
-      const cryptoWorker = await new CryptoWorker();
-      const existingVaults = await storageService.getVaults();
-
-      existingVaults.forEach(async encryptedVault => {
-        // Decrypt the vault encryption key
-        const masterEncryptionKey = keyStore.getMasterEncryptionKey;
-        if (!masterEncryptionKey) {
-          return;
-        }
-
-        // Base64 Encoded Vault Encryption Key
-        const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(encryptedVault.key, masterEncryptionKey)
-
-        // We can proceed to decrypt the UTF8 text, description and icon properties
-        let decryptedName, decryptedDescription, decryptedIcon;
-        decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(encryptedVault.name, vaultEncryptionKey);
-
-        if (encryptedVault.description) {
-          decryptedDescription = await cryptoWorker.decryptFromB64CipherStringToUTF8(encryptedVault.description, vaultEncryptionKey);
-        }
-        if (encryptedVault.icon) {
-          decryptedIcon = await cryptoWorker.decryptFromB64CipherStringToUTF8(encryptedVault.icon, vaultEncryptionKey);
-        }
-
-        // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
-        const decryptedVault = { ...encryptedVault };
-        decryptedVault.key = vaultEncryptionKey;
-        decryptedVault.name = decryptedName;
-        decryptedVault.description = decryptedDescription;
-        decryptedVault.icon = decryptedIcon;
-
-        // Add the decrypted vault into the Vault Store
-        vaultStore.add(decryptedVault);
-      })
 
       isFirstLoad.value = false;
 
