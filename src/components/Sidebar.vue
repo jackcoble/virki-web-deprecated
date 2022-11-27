@@ -13,8 +13,7 @@
         <div class="p-4 text-gray-700">
             <div class="flex">
                 <button class="flex flex-1 justify-start items-center space-x-2"
-                    @click="showSidebarVaults = !showSidebarVaults"
-                    :disabled="vaults.length === 0">
+                    @click="showSidebarVaults = !showSidebarVaults">
                     <ChevronRightIcon v-if="!showSidebarVaults" class="w-4" />
                     <ChevronDownIcon v-else class="w-4" />
                     <p class="text-sm">Vaults</p>
@@ -49,7 +48,7 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="vaults.length === 0" class="p-2">
+            <div v-else-if="showSidebarVaults && vaults.length === 0" class="p-2">
                 <div class="flex py-2 items-center space-x-2">
                     <EmojiSadIcon class="w-6 text-mountain-meadow" />
                     <h2 class="text-sm">No vaults available...</h2>
