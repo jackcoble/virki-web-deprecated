@@ -26,7 +26,7 @@ import ProfileSidebar from '@/components/ProfileSidebar.vue';
 import { useAppStore } from '@/stores/appStore';
 
 export default defineComponent({
-    name: "LayoutProfile",
+    name: "LayoutAccount",
     components: {
         ProfileSidebar,
         Navigation

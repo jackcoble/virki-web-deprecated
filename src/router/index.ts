@@ -5,14 +5,14 @@ import { PAGES } from './pages'
 
 // Layouts
 import LayoutVault from '@/layouts/LayoutVault.vue'
-import LayoutProfile from '@/layouts/LayoutProfile.vue'
+import LayoutAccount from '@/layouts/LayoutAccount.vue'
 
 // Views
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
 import Lock from "@/views/Lock.vue"
 import Vault from "@/views/Vault.vue"
-import Profile from "@/views/Profile.vue"
+import Account from "@/views/account/Account.vue"
 import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
 import NewToken from "@/views/vaults/tokens/New.vue";
@@ -54,16 +54,16 @@ const router = createRouter({
 
     {
       path: PAGES.ACCOUNT,
-      name: "LayoutProfile",
+      name: "LayoutAccount",
       component: RouterView,
       meta: {
-        layout: LayoutProfile
+        layout: LayoutAccount
       },
       children: [
         {
           path: PAGES.ACCOUNT,
-          name: "ProfileView",
-          component: Profile
+          name: "Account",
+          component: Account
         }
       ]
     },
