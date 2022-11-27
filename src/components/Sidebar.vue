@@ -182,7 +182,7 @@ export default defineComponent({
 
         // Refs for sidebar menus
         const showSidebarUserOptions = ref(false);
-        const showSidebarVaults = ref(false);
+        const showSidebarVaults = ref(true);
         const showCreateVaultModal = ref(false);
 
         // Refs for online/offline modals
