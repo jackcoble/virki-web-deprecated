@@ -26,9 +26,7 @@
     <div v-if="vaults.length !== 0 && !showCreateVault && !showEditVault"
       class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
       <EmojiSadIcon class="w-12 text-mountain-meadow" />
-      <p class="text-sm">You have no authentication tokens in your <span class="font-bold">{{ activeVault &&
-          activeVault.name
-      }}</span> vault.</p>
+      <p class="text-sm">You have no authentication tokens in <span class="font-bold">{{ activeVault && activeVault.name }}</span>.</p>
     </div>
   </div>
 
@@ -57,9 +55,8 @@
 import { computed, defineComponent, onMounted, ref } from "vue";
 
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
-import { useKeyStore } from "@/stores/keyStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";

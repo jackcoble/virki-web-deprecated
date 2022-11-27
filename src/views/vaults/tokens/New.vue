@@ -16,7 +16,7 @@
                     <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                         <GlobeIcon class="w-5 h-5 text-gray-500" />
                     </div>
-                    <input type="text" id="issuer" v-model="token.issuer"
+                    <input type="text" id="issuer" v-model="token.service"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
                         placeholder="e.g. Twitter">
                 </div>
@@ -30,7 +30,7 @@
                 <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                     <UserIcon class="w-5 h-5 text-gray-500" />
                 </div>
-                <input type="text" id="label" v-model="token.label"
+                <input type="text" id="label" v-model="token.account"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
                     placeholder="e.g. user@example.com">
             </div>
@@ -141,7 +141,8 @@
 import { PAGES } from '@/router/pages';
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { OTPType, OTPAlgorithm, type Token } from "@/types/token";
+import { OTPType, OTPAlgorithm } from "@/common/enums/otp";
+import type { Token } from '@/common/interfaces/token';
 import { GlobeIcon, UserIcon, KeyIcon, ClockIcon, PencilIcon, QrcodeIcon, ChevronRightIcon, ChevronDownIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
