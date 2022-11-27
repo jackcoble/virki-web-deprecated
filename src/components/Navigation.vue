@@ -3,7 +3,7 @@
         class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
         <div>
             <!-- Logo -->
-            <router-link :to="PAGES.ROOT" class="hidden md:block">
+            <router-link :to="determineRootUrl()" class="hidden md:block">
                 <img class="w-24" src="@/assets/images/virki_full_horizontal_transparent_dark.png" alt="Virki Logo" />
             </router-link>
 
@@ -74,6 +74,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
 import userService from '@/service/api/userService';
 import axios from 'axios';
+import { useVaultStore } from '@/stores/vaultStore';
 
 export default defineComponent({
     name: "Navigation",
@@ -89,11 +90,13 @@ export default defineComponent({
         const router = useRouter();
         const userStore = useUserStore();
         const appStore = useAppStore();
+        const vaultStore = useVaultStore();
 
         const avatar = ref();
 
         const email = computed(() => userStore.getEmail);
         const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
+        const activeVaultId = computed(() => vaultStore.getActiveID)
 
         onMounted(async () => {
             // Fetch the users account avatar
@@ -122,9 +125,23 @@ export default defineComponent({
             appStore.setOpenMobileMenu(!currentOpenMobileMenu);
         }
 
+        /**
+         * If an active vault is set, the root URL should be `${PAGES.VAULT}/{VaultID}`
+         * If not, then it should just be `${PAGES.VAULT}`
+         */
+        const determineRootUrl = (): string => {
+            let url = PAGES.VAULT as string;
+            if (activeVaultId.value) {
+                url = `${PAGES.VAULT}/${activeVaultId.value}`;
+            }
+
+            return url;
+        }
+
         return {
             toggleMobileMenu,
             openMobileMenu,
+            determineRootUrl,
 
             router,
 
