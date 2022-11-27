@@ -52,6 +52,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import { TrashIcon } from "@heroicons/vue/outline"
 import { VirkiStorageService } from '@/common/services/storage.service';
+import { useUserStore } from '@/stores/userStore';
 
 export default defineComponent({
     name: "EditVault",
@@ -61,6 +62,7 @@ export default defineComponent({
     setup() {
         // Stores
         const vaultStore = useVaultStore();
+        const userStore = useUserStore();
 
         const router = useRouter();
         const route = useRoute();
@@ -151,7 +153,11 @@ export default defineComponent({
             await storageService.deleteVault(vaultId);
 
             // Delete from decrypted Pinia store
+            // and clear the active vault ID if the vault we're deleting is the active vault...
             vaultStore.delete(vaultId);
+            if (vaultId === vaultStore.getActiveID) {
+                userStore.clearActiveVault();
+            }
 
             // TODO: Delete from online...
 
