@@ -20,12 +20,6 @@ import path from 'path'
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
-    // Handle 404 redirect
-    {
-      path: "/:pathMatch(.*)*",
-      beforeEnter: (to, from, next) => next(PAGES.ROOT)
-    },
-
     {
       path: PAGES.VAULT,
       name: "LayoutVault",
