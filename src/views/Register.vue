@@ -63,7 +63,7 @@ import { CryptoWorker } from "@/common/comlink";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import type { EncryptionResult } from "@/common/interfaces/encryption";
 import { serialiseCipherString } from "@/common/utils/cipher";
-import { EncryptionType } from "@/types/crypto";
+import { EncryptionType } from "@/common/enums/encryptionType";
 import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers";
 import userService from "@/service/api/userService";

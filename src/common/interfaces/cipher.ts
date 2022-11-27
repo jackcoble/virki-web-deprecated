@@ -1,7 +1,4 @@
-// Enum representing the different encryption types available to us
-export enum EncryptionType {
-    XCHACHA20_POLY1305 = 1
-}
+import type { EncryptionType } from "../enums/encryptionType";
 
 // Interface representing the parsed format of a "cipher"
 export interface Cipher {

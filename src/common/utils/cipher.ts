@@ -1,4 +1,5 @@
-import { EncryptionType, type Cipher } from "@/types/crypto";
+import { EncryptionType } from "@/common/enums/encryptionType";
+import type { Cipher } from "@/common/interfaces/cipher";
 
 /**
  * Parses a "cipher" string into a usable object.

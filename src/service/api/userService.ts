@@ -1,5 +1,5 @@
 import { api } from "@/service/api/api";
-import type { Keys } from "@/types/user";
+import type { Keys } from "@/common/interfaces/keys";
 import type { AxiosResponse } from "axios";
 
 export default {

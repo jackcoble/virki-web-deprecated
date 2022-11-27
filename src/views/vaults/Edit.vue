@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { useVaultStore } from '@/stores/vaultStore';
-import { EncryptionType } from '@/types/crypto';
+import { EncryptionType } from "@/common/enums/encryptionType";
 import type { Vault } from '@/common/interfaces/vault';
 import { CryptoWorker } from '@/common/comlink';
 import { sleep } from '@/common/utils/sleep';
