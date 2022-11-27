@@ -135,11 +135,9 @@ export default defineComponent({
             // Artificial sleep to keep the user waiting...
             await sleep(1.5);
 
-            vaultStore.add(decryptedVaultObject);
-            vaultStore.setActiveVault(decryptedVaultObject.id);
-
             isCreatingVault.value = false;
             
+            vaultStore.add(decryptedVaultObject);            
             router.push(`${PAGES.VAULT}/${encryptedVaultObject.id}`);
         }
 

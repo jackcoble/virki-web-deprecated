@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue';
+import { computed, defineComponent, onMounted, watch, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // Components
@@ -47,6 +47,15 @@ export default defineComponent({
         const route = useRoute();
 
         const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
+
+        // Watch the "id" query parameter and set the active vault based
+        // on the value
+        const vaultIdFromParams = computed(() => route.params.id);
+        watch(vaultIdFromParams, ((id: any) => {
+            if (id) {
+                vaultStore.setActiveVault(id);
+            }
+        }))
 
         onMounted(async () => {
             // Since this is the main "vault" layout, we should do all fetching of encrypted vaults,
@@ -94,7 +103,6 @@ export default defineComponent({
             if (vaultId) {
                 const existingVault = vaultStore.getAll.find(v => v.id === vaultId);
                 if (existingVault) {
-                    vaultStore.setActiveVault(existingVault.id);
                     router.push(`${PAGES.VAULT}/${existingVault.id}`);
                 }
             } else {
