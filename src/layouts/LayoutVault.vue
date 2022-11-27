@@ -29,7 +29,6 @@ import { useVaultStore } from '@/stores/vaultStore';
 import { CryptoWorker } from '@/common/comlink';
 import { VirkiStorageService } from '@/common/services/storage.service';
 import { useKeyStore } from '@/stores/keyStore';
-import router from '@/router';
 import { PAGES } from '@/router/pages';
 
 export default defineComponent({

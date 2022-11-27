@@ -47,12 +47,13 @@ import type { Vault } from '@/common/interfaces/vault';
 import { CryptoWorker } from '@/common/comlink';
 import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/common/utils/cipher';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import { TrashIcon } from "@heroicons/vue/outline"
 import { VirkiStorageService } from '@/common/services/storage.service';
 import { useUserStore } from '@/stores/userStore';
+import { computed } from '@vue/reactivity';
 
 export default defineComponent({
     name: "EditVault",
@@ -74,15 +75,16 @@ export default defineComponent({
         // Refs for vault deletion
         const showDeleteVaultModal = ref(false);
 
-        onMounted(async () => {
-            // We hackily sleep here so that everything has a chance to load...
-            await sleep(0.1);
+        // Computed property for the vault ID parameter
+        const vaultId = computed(() => route.params.id);
+        watch(vaultId, (id: any) => {
+            setDecryptedVault();
+        })
 
+        const setDecryptedVault = () => {
             // Lookup the decrypted vault object for the provided ID
-            const vaultId = route.params.id;
             const decryptedVaults = vaultStore.getAll;
-
-            const decryptedVault = decryptedVaults.find(v => v.id === vaultId);
+            const decryptedVault = decryptedVaults.find(v => v.id === vaultId.value);
             if (!decryptedVault) {
                 console.log("No decrypted vault found for this ID...");
                 return;
@@ -91,6 +93,11 @@ export default defineComponent({
             // We'll make a copy of the decrypted vault so we don't modify it everywhere...
             vault.value = {...decryptedVault};
             originalVault.value = {...decryptedVault}
+        }
+
+        onMounted(async () => {
+            await sleep(0.1);
+            setDecryptedVault();
         })
 
         // Handle when we want to update the vault. This involves re-encrypting the data
