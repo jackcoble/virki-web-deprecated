@@ -97,6 +97,13 @@ export default defineComponent({
                     vaultStore.setActiveVault(existingVault.id);
                     router.push(`${PAGES.VAULT}/${existingVault.id}`);
                 }
+            } else {
+                // We can check for an active vault set in the userStore.
+                // If we have one set there, we can use it.
+                const vaultIdFromStore = vaultStore.getActiveID;
+                if (vaultIdFromStore) {
+                    router.push(`${PAGES.VAULT}/${vaultIdFromStore}`);
+                }
             }
         })
 
