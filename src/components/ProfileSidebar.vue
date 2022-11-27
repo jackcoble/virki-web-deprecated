@@ -3,10 +3,10 @@
     <div class="flex flex-col h-full border-r-2 p-6 bg-gray-100 overflow-auto">
         <div class="flex-col space-y-2 p-4 text-gray-700">
             <!-- Overview -->
-            <div class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.ACCOUNT" class="flex py-2 items-center space-x-2 cursor-pointer">
                 <ClipboardListIcon class="w-6" />
                 <h2 class="text-sm">Overview</h2>
-            </div>
+            </router-link>
 
             <!-- Sessions -->
             <div class="flex py-2 items-center space-x-2 cursor-pointer">
@@ -52,6 +52,7 @@ import {
     SparklesIcon
 
 } from "@heroicons/vue/outline";
+import { PAGES } from '@/router/pages';
 
 export default defineComponent({
     name: "ProfileSidebar",
@@ -61,6 +62,11 @@ export default defineComponent({
         DeviceTabletIcon,
         KeyIcon,
         SparklesIcon,
+    },
+    setup() {
+        return {
+            PAGES
+        }
     }
 })
 </script>
