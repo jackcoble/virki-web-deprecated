@@ -9,10 +9,10 @@
             </router-link>
 
             <!-- Sessions -->
-            <div class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.ACCOUNT_SESSIONS" class="flex py-2 items-center space-x-2 cursor-pointer">
                 <DeviceTabletIcon class="w-6" />
                 <h2 class="text-sm">Sessions</h2>
-            </div>
+            </router-link>
 
             <!-- Change Password -->
             <div class="flex py-2 items-center space-x-2 cursor-pointer">
