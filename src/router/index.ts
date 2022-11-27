@@ -5,6 +5,7 @@ import { PAGES } from './pages'
 
 // Layouts
 import LayoutVault from '@/layouts/LayoutVault.vue'
+import LayoutProfile from '@/layouts/LayoutProfile.vue'
 
 // Views
 import Login from "@/views/Login.vue"
@@ -15,7 +16,6 @@ import Profile from "@/views/Profile.vue"
 import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
 import NewToken from "@/views/vaults/tokens/New.vue";
-import path from 'path'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -48,17 +48,26 @@ const router = createRouter({
           path: `${PAGES.VAULT}/:id/tokens/new`,
           name: "newTokens",
           component: NewToken
-        },
-        {
-          path: PAGES.PROFILE,
-          name: "profile",
-          component: Profile,
-          meta: {
-            sidebar: false
-          }
         }
       ]
     },
+
+    {
+      path: PAGES.PROFILE,
+      name: "LayoutProfile",
+      component: RouterView,
+      meta: {
+        layout: LayoutProfile
+      },
+      children: [
+        {
+          path: PAGES.PROFILE,
+          name: "ProfileView",
+          component: Profile
+        }
+      ]
+    },
+
     {
       path: PAGES.ROOT,
       name: 'login',
