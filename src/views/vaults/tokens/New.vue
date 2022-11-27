@@ -2,8 +2,8 @@
     <!-- Manual Entry -->
     <div class="flex flex-col h-full w-1/2 p-4 space-y-3 mx-auto justify-center">
         <!-- Title/Issuer -->
-        <div class="flex space-x-4 pt-4">
-            <div class="p-2">
+        <div class="flex space-x-4 items-center">
+            <div>
                 <!-- Icon uploader -->
                 <div class="flex justify-center">
                     <b-icon-upload :image="token.icon" />
