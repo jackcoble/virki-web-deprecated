@@ -83,6 +83,16 @@ export default defineComponent({
                 // Add the decrypted vault into the Vault Store
                 vaultStore.add(decryptedVault);
             })
+
+            // If the route contains an ID of a Vault, we should set that to be the active
+            // vault if it exists
+            const vaultId = route.params.id;
+            if (vaultId) {
+                const existingVault = vaultStore.getAll.find(v => v.id === vaultId);
+                if (existingVault) {
+                    vaultStore.setActiveVault(existingVault.id);
+                }
+            }
         })
 
         return {
