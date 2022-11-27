@@ -3,9 +3,9 @@
         class="flex w-full justify-between items-center px-4 md:px-11 py-4 border-b-2 border-b-mountain-meadow bg-gray-100 space-x-3 shadow">
         <div>
             <!-- Logo -->
-            <router-link :to="determineRootUrl()" class="hidden md:block">
+            <a href="/" class="hidden md:block">
                 <img class="w-24" src="@/assets/images/virki_full_horizontal_transparent_dark.png" alt="Virki Logo" />
-            </router-link>
+            </a>
 
             <!-- Menu Icon (only visible on mobile) -->
             <button class="block md:hidden text-mountain-meadow w-9" @click="toggleMobileMenu">
@@ -125,23 +125,9 @@ export default defineComponent({
             appStore.setOpenMobileMenu(!currentOpenMobileMenu);
         }
 
-        /**
-         * If an active vault is set, the root URL should be `${PAGES.VAULT}/{VaultID}`
-         * If not, then it should just be `${PAGES.VAULT}`
-         */
-        const determineRootUrl = (): string => {
-            let url = PAGES.VAULT as string;
-            if (activeVaultId.value) {
-                url = `${PAGES.VAULT}/${activeVaultId.value}`;
-            }
-
-            return url;
-        }
-
         return {
             toggleMobileMenu,
             openMobileMenu,
-            determineRootUrl,
 
             router,
 
