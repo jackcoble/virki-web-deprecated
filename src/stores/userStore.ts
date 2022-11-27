@@ -25,6 +25,10 @@ export const useUserStore = defineStore({
       this.account.active_vault_id = id;
     },
 
+    clearActiveVault() {
+      this.account.active_vault_id = "";
+    },
+
     clear() {
       this.account = null as any;
     }
