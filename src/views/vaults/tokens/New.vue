@@ -25,7 +25,7 @@
 
         <!-- Account -->
         <div>
-            <label for="username" class="block mb-2 font-medium text-gray-900">Label</label>
+            <label for="username" class="block mb-2 font-medium text-gray-900">Account</label>
             <div class="relative">
                 <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                     <UserIcon class="w-5 h-5 text-gray-500" />
@@ -48,6 +48,14 @@
                     placeholder="e.g. JBSWY3D...">
             </div>
         </div>
+
+        <!-- Backup Codes -->
+        <!--
+        <div>
+            <label for="backupcodes" class="block mb-2 font-medium text-gray-900">Backup Codes (Optional)</label>
+            <textarea class="block w-full form-textarea rounded-lg bg-gray-50 border border-gray-300 text-sm" rows="5" placeholder="Enter some backup codes..."></textarea>
+        </div>
+        -->
 
         <!-- Advanced options -->
         <div class="flex">
