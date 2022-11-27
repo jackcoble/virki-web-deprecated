@@ -57,7 +57,7 @@
 import { computed, defineComponent, onMounted, ref } from "vue";
 
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { useKeyStore } from "@/stores/keyStore";
 import { CryptoWorker } from "@/common/comlink";
@@ -80,6 +80,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const route = useRoute();
 
     const appStore = useAppStore();
     const keyStore = useKeyStore();
@@ -150,6 +151,25 @@ export default defineComponent({
       })
 
       isFirstLoad.value = false;
+
+      // For a better user experience, we should extract the active Vault ID from the route parameter.
+      // This can be used to automatically show tokens for that vault.
+      // If it's not present, then we can prompt the user to create a new vault.
+      let vaultId = route.params.id as string;
+      if (!vaultId) {
+        // If there is no vault ID, attempt to fetch one from the decrypted vaults list
+        const vId = vaultStore.getActiveID;
+        if (vId) {
+          vaultId = vId;
+        }
+      }
+
+      if (vaultId) {
+        vaultStore.setActiveVault(vaultId);
+      }
+
+      const path = `${PAGES.VAULT}/${vaultId}`;
+      router.push(`${path}`)
     })
 
     // handleLogout is called when we receive the "ok" event from the expired session modal.

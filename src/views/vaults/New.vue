@@ -139,8 +139,8 @@ export default defineComponent({
             vaultStore.setActiveVault(decryptedVaultObject.id);
 
             isCreatingVault.value = false;
-
-            router.push(PAGES.ROOT);
+            
+            router.push(`${PAGES.VAULT}/${encryptedVaultObject.id}`);
         }
 
         return {
