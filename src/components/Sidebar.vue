@@ -61,7 +61,7 @@
                 class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
 
                 <!-- Vault icon and name -->
-                <div class="flex flex-1 items-center space-x-2" @click="changeVault(activeVaultID)">
+                <div class="flex flex-1 items-center space-x-2" @click="changeVault(activeVault && activeVault.id)">
                     <div
                         class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
                         <img v-if="activeVault && activeVault.icon" class="rounded-full object-cover"
@@ -199,7 +199,7 @@ export default defineComponent({
         // Function to handle changing vaults by updating the ID in the vault store.
         const changeVault = (id: string) => {
             vaultStore.setActiveVault(id);
-            router.push(PAGES.ROOT);
+            router.push(`${PAGES.VAULT}/${id}`);
         }
 
         return {
