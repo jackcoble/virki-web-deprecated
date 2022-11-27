@@ -53,7 +53,7 @@ const router = createRouter({
     },
 
     {
-      path: PAGES.PROFILE,
+      path: PAGES.ACCOUNT,
       name: "LayoutProfile",
       component: RouterView,
       meta: {
@@ -61,7 +61,7 @@ const router = createRouter({
       },
       children: [
         {
-          path: PAGES.PROFILE,
+          path: PAGES.ACCOUNT,
           name: "ProfileView",
           component: Profile
         }

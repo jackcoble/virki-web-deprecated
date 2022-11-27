@@ -33,10 +33,10 @@
                 <MenuItems
                     class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <MenuItem v-slot="{ active }">
-                    <router-link to="/profile" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                    <router-link :to="PAGES.ACCOUNT" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                         <div class="flex space-x-2">
                             <UserCircleIcon class="w-4" />
-                            <span>My Profile</span>
+                            <span>My Account</span>
                         </div>
                     </router-link>
                     </MenuItem>
