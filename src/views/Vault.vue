@@ -60,15 +60,11 @@ import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/o
 import { useRoute, useRouter } from "vue-router";
 
 import { useKeyStore } from "@/stores/keyStore";
-import { CryptoWorker } from "@/common/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";
 
 import { PAGES } from "@/router/pages";
-import vaultService from "@/service/api/vaultService";
-import type { Vault } from "@/common/interfaces/vault";
-import { VirkiStorageService } from "@/common/services/storage.service";
 
 export default defineComponent({
   name: "HomeView",
@@ -80,10 +76,8 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const route = useRoute();
 
     const appStore = useAppStore();
-    const keyStore = useKeyStore();
     const vaultStore = useVaultStore();
 
     // We don't want to allow any token related actions until the user
@@ -105,30 +99,8 @@ export default defineComponent({
     // Modal refs
     const showExpiredSessionModal = ref(false);
 
-    onMounted(async () => {
-      // When the page first loads we should do a "sync" if the device is online. This is basically where we request for all the vaults, tokens and tags
-      // and then we update our offline-cache from the results.
-
+    onMounted(() => {
       isFirstLoad.value = false;
-
-      // For a better user experience, we should extract the active Vault ID from the route parameter.
-      // This can be used to automatically show tokens for that vault.
-      // If it's not present, then we can prompt the user to create a new vault.
-      let vaultId = route.params.id as string;
-      if (!vaultId) {
-        // If there is no vault ID, attempt to fetch one from the decrypted vaults list
-        const vId = vaultStore.getActiveID;
-        if (vId) {
-          vaultId = vId;
-        }
-      }
-
-      if (vaultId) {
-        vaultStore.setActiveVault(vaultId);
-      }
-
-      const path = `${PAGES.VAULT}/${vaultId}`;
-      router.push(`${path}`)
     })
 
     // handleLogout is called when we receive the "ok" event from the expired session modal.

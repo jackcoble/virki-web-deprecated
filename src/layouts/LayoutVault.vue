@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 // Components
 import Navigation from '../components/Navigation.vue';
@@ -29,6 +29,8 @@ import { useVaultStore } from '@/stores/vaultStore';
 import { CryptoWorker } from '@/common/comlink';
 import { VirkiStorageService } from '@/common/services/storage.service';
 import { useKeyStore } from '@/stores/keyStore';
+import router from '@/router';
+import { PAGES } from '@/router/pages';
 
 export default defineComponent({
     name: "LayoutVault",
@@ -40,6 +42,8 @@ export default defineComponent({
         const appStore = useAppStore();
         const vaultStore = useVaultStore();
         const keyStore = useKeyStore();
+
+        const router = useRouter();
         const route = useRoute();
 
         const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
@@ -91,6 +95,7 @@ export default defineComponent({
                 const existingVault = vaultStore.getAll.find(v => v.id === vaultId);
                 if (existingVault) {
                     vaultStore.setActiveVault(existingVault.id);
+                    router.push(`${PAGES.VAULT}/${existingVault.id}`);
                 }
             }
         })
