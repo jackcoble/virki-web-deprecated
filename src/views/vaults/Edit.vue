@@ -74,14 +74,17 @@ export default defineComponent({
         // Refs for vault deletion
         const showDeleteVaultModal = ref(false);
 
-        onMounted(() => {
-            const vaultId = route.params.id;
+        onMounted(async () => {
+            // We hackily sleep here so that everything has a chance to load...
+            await sleep(0.1);
 
             // Lookup the decrypted vault object for the provided ID
+            const vaultId = route.params.id;
             const decryptedVaults = vaultStore.getAll;
+
             const decryptedVault = decryptedVaults.find(v => v.id === vaultId);
             if (!decryptedVault) {
-                console.log("Error");
+                console.log("No decrypted vault found for this ID...");
                 return;
             }
 
