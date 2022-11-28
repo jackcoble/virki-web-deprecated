@@ -17,7 +17,7 @@
         <!-- Profile dropdown -->
         <Menu as="div" class="relative ml-3">
             <div>
-                <MenuButton class="flex rounded-full bg-gray-200 text-sm focus:outline-none">
+                <MenuButton class="flex rounded-full bg-gray-200 text-sm focus:outline-none" @click="router.push(PAGES.ACCOUNT)">
                     <span class="sr-only">Open user menu</span>
                     <img v-if="avatar" class="h-8 w-8 rounded-full"
                         :src="avatar" />
@@ -26,38 +26,6 @@
                     </div>
                 </MenuButton>
             </div>
-            <transition enter-active-class="transition ease-out duration-100"
-                enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100"
-                leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
-                leave-to-class="transform opacity-0 scale-95">
-                <MenuItems
-                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <MenuItem v-slot="{ active }">
-                    <router-link :to="PAGES.ACCOUNT" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
-                        <div class="flex space-x-2">
-                            <UserCircleIcon class="w-4" />
-                            <span>My Account</span>
-                        </div>
-                    </router-link>
-                    </MenuItem>
-                    <MenuItem v-slot="{ active }">
-                    <router-link to="/sessions" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
-                        <div class="flex space-x-2">
-                            <DeviceMobileIcon class="w-4" />
-                            <span>Active Sessions</span>
-                        </div>
-                    </router-link>
-                    </MenuItem>
-                    <MenuItem v-slot="{ active }">
-                    <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
-                        <div class="flex space-x-2">
-                            <LogoutIcon class="w-4" />
-                            <span>Logout</span>
-                        </div>
-                    </a>
-                    </MenuItem>
-                </MenuItems>
-            </transition>
         </Menu>
     </div>
 </template>
@@ -69,8 +37,8 @@ import { useRouter } from 'vue-router';
 import { PAGES } from "@/router/pages";
 import { useUserStore } from '@/stores/userStore';
 
-import { UserCircleIcon, MenuIcon, XIcon, DeviceMobileIcon, LogoutIcon } from "@heroicons/vue/solid"
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/vue/solid"
+import { Menu, MenuButton } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
 import userService from '@/service/api/userService';
 import axios from 'axios';
@@ -82,9 +50,8 @@ export default defineComponent({
         UserCircleIcon,
         MenuIcon,
         XIcon,
-        DeviceMobileIcon,
-        LogoutIcon,
-        Menu, MenuButton, MenuItem, MenuItems
+        Menu,
+        MenuButton
     },
     setup() {
         const router = useRouter();
@@ -96,8 +63,6 @@ export default defineComponent({
 
         const email = computed(() => userStore.getEmail);
         const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
-        const activeVaultId = computed(() => vaultStore.getActiveID)
-
         onMounted(async () => {
             // Fetch the users account avatar
             try {
