@@ -44,6 +44,10 @@ api.interceptors.response.use(
 
             useLogout();
             router.push(PAGES.ROOT);
+
+            return;
         }
+
+        return error;
     }
 )
