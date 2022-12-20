@@ -1,5 +1,8 @@
+import { useLogout } from "@/composables/useLogout";
+import router from "@/router";
+import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || "/api",
@@ -23,5 +26,24 @@ api.interceptors.request.use(
     },
     error => {
         return Promise.reject(error);
+    }
+)
+
+// Intercept the responses. If we receive a 401, the session
+// has been revoked, so force data to be cleared and push to logout.
+api.interceptors.response.use(
+    response => {
+        return response;
+    },
+    
+    (error: AxiosError) => {
+        // Something has gone wrong, so lets investigate! First we shall check the status code.
+        // If it is 401, then clear all local data and logout.
+        if (error.response && error.response.status === 401) {
+            console.log("Session token is invalid, clearing data and logging out...");
+
+            useLogout();
+            router.push(PAGES.ROOT);
+        }
     }
 )
