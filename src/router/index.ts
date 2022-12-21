@@ -17,6 +17,7 @@ import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
 import NewToken from "@/views/vaults/tokens/New.vue";
 import AccountSessions from "@/views/account/Sessions.vue";
+import AccountEmail from "@/views/account/Email.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -70,6 +71,11 @@ const router = createRouter({
           path: PAGES.ACCOUNT_SESSIONS,
           name: "AccountSessions",
           component: AccountSessions
+        },
+        {
+          path: PAGES.ACCOUNT_EMAIL,
+          name: "AccountEmail",
+          component: AccountEmail
         }
       ]
     },
