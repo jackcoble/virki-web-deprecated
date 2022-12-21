@@ -21,10 +21,10 @@
             </div>
 
             <!-- Change Email -->
-            <div class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.ACCOUNT_EMAIL" class="flex py-2 items-center space-x-2 cursor-pointer">
                 <AtSymbolIcon class="w-6" />
                 <h2 class="text-sm">Email Address</h2>
-            </div>
+            </router-link>
 
             <!-- Subscription -->
             <div class="flex py-2 items-center space-x-2 cursor-pointer">
