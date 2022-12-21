@@ -39,6 +39,13 @@ export default {
         return api.get("/v1/users/avatar")
     },
 
+    UpdateEmail(email: string, masterPassword: string) {
+        return api.post("/v1/users/email/update", {
+            email: email,
+            password: masterPassword
+        })
+    },
+
     GetSessions(): Promise<AxiosResponse> {
         return api.get("/v1/users/sessions")
     },
