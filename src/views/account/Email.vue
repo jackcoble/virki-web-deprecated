@@ -21,7 +21,7 @@
                 <b-password-input v-model="masterPassword"></b-password-input>
                 <p class="text-xs text-gray-600">We need your master password to verify the email update request.</p>
 
-                <b-button class="md:w-1/3 w-full" :disabled="emailChanged">Update</b-button>
+                <b-button class="md:w-1/3 w-full" :disabled="emailChanged" @click="doUpdateEmail">Update</b-button>
             </div>
         </div>
     </div>
@@ -31,11 +31,20 @@
 import { useUserStore } from '@/stores/userStore';
 import { computed, defineComponent, ref } from 'vue';
 
+import userService from "@/service/api/userService";
+import useToaster from '@/composables/useToaster';
+import { CryptoWorker } from '@/common/comlink';
+import { useKeyStore } from '@/stores/keyStore';
+import type { StretchedPassword } from '@/common/interfaces/password';
+
 export default defineComponent({
     name: "AccountEmail",
     setup() {
         // Stores
         const userStore = useUserStore();
+        const keyStore = useKeyStore();
+
+        const toaster = useToaster();
 
         const email = ref(userStore.getEmail);
         const masterPassword = ref("");
@@ -43,9 +52,33 @@ export default defineComponent({
         // Computed value determining if email has been changed
         const emailChanged = computed(() => email.value === userStore.getEmail);
 
+        // Function to update user email via API
+        const doUpdateEmail = async () => {
+            // Stretch the plaintext password into a hashed version
+            const cryptoWorker = await new CryptoWorker();
+            const encryptedKeys = keyStore.getEncryptedKeys;
+            const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(masterPassword.value, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
+
+            try {
+                await userService.UpdateEmail(email.value, stretchedPassword.hash);
+            } catch (e) {
+                return toaster.error(e.response.data.error);
+            }
+
+            // Update the email in the store
+            const account = {...userStore.account};
+            account.email = email.value;
+            userStore.setAccount(account);
+
+            // Success!
+            toaster.success("Email address was updated!");
+        }
+
         return {
             email,
             masterPassword,
+
+            doUpdateEmail,
 
             emailChanged
         }
