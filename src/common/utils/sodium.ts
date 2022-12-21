@@ -334,7 +334,8 @@ export async function encryptFile(fileName: string, fileType: string, fileConten
         name: fileNameEncryptedCipherString,
         mime_type: fileTypeEncryptedCipherString,
         content: file,
-        encryption_header: encryptedStateHeaderCipherString
+        encryption_header: encryptedStateHeaderCipherString,
+        encryption_key: key
     }
 
     return fileObject;
