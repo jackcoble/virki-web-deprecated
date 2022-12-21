@@ -36,8 +36,8 @@ export class Crypto {
     }
 
     // Files
-    async encryptFile(content: Uint8Array, key?: string) {
-        return encryptFile(content, key)
+    async encryptFile(fileName: string, fileType: string, fileContent: Uint8Array, key?: string) {
+        return encryptFile(fileName, fileType, fileContent, key);
     }
 }
 
