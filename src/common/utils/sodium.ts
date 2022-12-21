@@ -288,3 +288,32 @@ export async function decryptFromB64CipherStringToUTF8(cipherString: string, key
         return Promise.reject(e);
     }
 }
+
+/*
+====================================
+File Encryption/Decryption utilities
+====================================
+*/
+
+export async function encryptFile(content: Uint8Array, key?: string) {
+    // If there is no key provided, generate one...
+    if (!key) {
+        key = await generateEncryptionKey();
+    }
+
+    // Convert key to bytes
+    const keyBytes = await fromBase64(key);
+
+    // File encryption (content)
+    // Create a new state
+    const state = sodium.crypto_secretstream_xchacha20poly1305_init_push(keyBytes);
+    const encryptedFile = sodium.crypto_secretstream_xchacha20poly1305_push(
+        state.state,
+        content,
+        null,
+        sodium.crypto_secretstream_xchacha20poly1305_TAG_FINAL
+    );
+
+    const file = new Blob([encryptedFile], { type: "application/octet-stream" });
+    return file;
+}
