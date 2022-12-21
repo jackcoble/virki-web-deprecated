@@ -21,7 +21,7 @@
                 <b-password-input v-model="masterPassword"></b-password-input>
                 <p class="text-xs text-gray-600">We need your master password to verify the email update request.</p>
 
-                <b-button class="md:w-1/3 w-full">Update</b-button>
+                <b-button class="md:w-1/3 w-full" :disabled="emailChanged">Update</b-button>
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@
 
 <script lang=ts>
 import { useUserStore } from '@/stores/userStore';
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 
 export default defineComponent({
     name: "AccountEmail",
@@ -40,9 +40,14 @@ export default defineComponent({
         const email = ref(userStore.getEmail);
         const masterPassword = ref("");
 
+        // Computed value determining if email has been changed
+        const emailChanged = computed(() => email.value === userStore.getEmail);
+
         return {
             email,
-            masterPassword
+            masterPassword,
+
+            emailChanged
         }
     }
 })
