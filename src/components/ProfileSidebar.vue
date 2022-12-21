@@ -35,7 +35,7 @@
 
         <!-- Logout area -->
         <div class="flex flex-1 justify-center items-end">
-            <b-button classType="danger">
+            <b-button classType="danger" @click="doLogout">
                 Logout
             </b-button>
         </div>
@@ -53,6 +53,8 @@ import {
 
 } from "@heroicons/vue/outline";
 import { PAGES } from '@/router/pages';
+import { useLogout } from '@/composables/useLogout';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     name: "ProfileSidebar",
@@ -64,8 +66,18 @@ export default defineComponent({
         SparklesIcon,
     },
     setup() {
+        const router = useRouter();
+
+        // Clear all state and storage, push to login page
+        const doLogout = () => {
+            useLogout();
+            router.push(PAGES.ROOT);
+        }
+
         return {
-            PAGES
+            PAGES,
+
+            doLogout
         }
     }
 })
