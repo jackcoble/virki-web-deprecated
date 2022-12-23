@@ -65,9 +65,8 @@
 
 <script lang="ts">
 import userService from '@/service/api/userService';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import { fromUnixTime, formatRelative, subDays } from "date-fns";
-import { computed } from '@vue/reactivity';
 import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon, CheckIcon, CameraIcon } from "@heroicons/vue/solid"
 import { CryptoWorker } from '@/common/comlink';
@@ -87,7 +86,7 @@ export default defineComponent({
         const keyStore = useKeyStore();
         const toaster = useToaster();
 
-        const email = computed(() => userStore.getEmail);
+        const email = ref(userStore.getEmail);
         const password = ref("");
         const emailChanged = computed(() => email.value === userStore.getEmail);
 
