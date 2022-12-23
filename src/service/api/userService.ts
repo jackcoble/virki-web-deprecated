@@ -46,6 +46,15 @@ export default {
         })
     },
 
+    GetUploadURLs(amount?: number): Promise<AxiosResponse> {
+        const params = new URLSearchParams();
+        if (amount) {
+            params.set("amount", amount.toString());
+        }
+
+        return api.get("/v1/users/files/upload-urls", { params })
+    },
+
     GetSessions(): Promise<AxiosResponse> {
         return api.get("/v1/users/sessions")
     },
