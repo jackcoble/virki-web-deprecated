@@ -52,6 +52,7 @@ import {
 import { PAGES } from '@/router/pages';
 import { useLogout } from '@/composables/useLogout';
 import { useRouter } from 'vue-router';
+import userService from '@/service/api/userService';
 
 export default defineComponent({
     name: "ProfileSidebar",
@@ -66,9 +67,14 @@ export default defineComponent({
         const router = useRouter();
 
         // Clear all state and storage, push to login page
-        const doLogout = () => {
-            useLogout();
-            router.push(PAGES.ROOT);
+        const doLogout = async () => {
+            // Attempt to revoke token
+            try {
+                await userService.Logout();
+            } finally {
+                useLogout();
+                router.push(PAGES.ROOT);
+            }
         }
 
         return {
