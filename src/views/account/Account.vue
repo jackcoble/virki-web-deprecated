@@ -1,94 +1,123 @@
 <template>
-    <div class="flex p-8 space-x-4 w-10/12 mx-auto">
-        <!-- User details -->
-        <div class="flex flex-col flex-shrink-0 space-y-4">
-            <div
-                class="flex flex-col items-center justify-center p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">
-                <img :src="avatarImage" class="w-28 rounded-full" />
-                <input type="file" accept="image/*" @change=uploadImage>
-
-                <p>{{ email }}</p>
+    <div class="flex flex-col p-6 pt-12 space-y-2">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-4">
+            <div class="sm:flex sm:items-center">
+                <div class="sm:flex-auto">
+                    <h1 class="text-xl font-semibold text-gray-900">
+                        My Account
+                    </h1>
+                    <p class="mt-2 text-sm text-gray-700">A brief overview of your
+                        <span class="text-mountain-meadow">Virki</span> account.
+                    </p>
+                </div>
             </div>
 
-            <div class="p-8 w-full space-y-2 bg-gray-50 border border-gray-300 rounded">
-                <b-button>Change Email</b-button>
-                <b-button>Change Password</b-button>
-                <b-button @click="handleLogout">Logout</b-button>
+            <hr>
+
+            <div class="flex items-center space-x-10 p-2">
+                <!-- Name  -->
+                <div class="w-1/3 space-y-2">
+                    <!-- Name -->
+                    <div class="space-y-1">
+                        <p class="font-bold text-sm">Name</p>
+                        <b-input type="email" placeholder="John Doe" />
+                    </div>
+
+                    <!-- Save button -->
+                    <b-button class="md:w-1/3 w-full">
+                        <div class="flex flex-row justify-center items-center">
+                            <CheckIcon class="w-4 mr-1" />
+                            <span>Save</span>
+                        </div>
+                    </b-button>
+                </div>
+
+                <!-- Avatar -->
+                <div class="flex items-center justify-center p-2 bg-gray-50 border border-gray-300 rounded-full w-36 h-36">
+                    <CameraIcon class="text-gray-400 w-12 h-12" />
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Change email address -->
+            <div class="space-y-4">
+                <h1 class="text-xl font-semibold text-gray-900">
+                    Change Email Address
+                </h1>
+
+                <div class="md:w-1/4 w-full space-y-2">
+                <!-- Email -->
+                <p class="font-bold text-sm">Email Address</p>
+                <b-input type="email" v-model="email" placeholder="hello@virki.io" autofocus />
+
+                <!-- Master password -->
+                <p class="font-bold text-sm">Master Password</p>
+                <b-password-input v-model="password"></b-password-input>
+                <p class="text-xs text-gray-600">We need your master password to verify the email update request.</p>
+
+                <b-button class="md:w-1/3 w-full" :disabled="emailChanged" @click="doUpdateEmail">Update</b-button>
+            </div>
             </div>
         </div>
-
-        <!-- Session management -->
-        
     </div>
 </template>
 
 <script lang="ts">
 import userService from '@/service/api/userService';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { fromUnixTime, formatRelative, subDays } from "date-fns";
-import { useLogout } from '@/composables/useLogout';
-import { useRouter } from 'vue-router';
-import { PAGES } from '@/router/pages';
 import { computed } from '@vue/reactivity';
 import { useUserStore } from '@/stores/userStore';
-import { UserCircleIcon } from "@heroicons/vue/solid"
+import { UserCircleIcon, CheckIcon, CameraIcon } from "@heroicons/vue/solid"
 import axios from 'axios';
+import { CryptoWorker } from '@/common/comlink';
+import { useKeyStore } from '@/stores/keyStore';
+import type { StretchedPassword } from '@/common/interfaces/password';
+import useToaster from '@/composables/useToaster';
 
 export default defineComponent({
     name: "Sessions",
     components: {
-        UserCircleIcon
+        UserCircleIcon,
+        CheckIcon,
+        CameraIcon
     },
     setup() {
         const userStore = useUserStore();
-        const router = useRouter();
+        const keyStore = useKeyStore();
+        const toaster = useToaster();
 
         const email = computed(() => userStore.getEmail);
-
-        const sessions = ref();
-
-        onMounted(async () => {
-            // Fetch all user sessions
-            await userService.GetSessions().then(res => {
-                sessions.value = res.data;
-            })
-        })
-
-        // Revoke an individual user session by ID
-        const revokeSession = async (session: any) => {
-            // Revoke the session
-            try {
-                await userService.RevokeSession(session.id);
-            } catch (error) {
-                console.log("Error revoking session...")
-            }
-
-            // If it's this device we're revoking, do a logout
-            if (session.this_device) {
-                return await handleLogout();
-            }
-
-            // Update the sessions list
-            await userService.GetSessions().then(res => {
-                sessions.value = res.data;
-            })
-        }
-
-        // Handle logout
-        const handleLogout = async () => {
-            try {
-                await userService.Logout();
-                await useLogout();
-            } finally {
-                // Ignore any errors and just push straight to root
-                router.push(PAGES.ROOT);
-            }
-        }
+        const password = ref("");
+        const emailChanged = computed(() => email.value === userStore.getEmail);
 
         // Return a relative human readable date
         const formatDate = (unix: any) => {
             const formatted = formatRelative(subDays(fromUnixTime(unix), 0), new Date())
             return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        }
+
+        // Function to update user email via API
+        const doUpdateEmail = async () => {
+            // Stretch the plaintext password into a hashed version
+            const cryptoWorker = await new CryptoWorker();
+            const encryptedKeys = keyStore.getEncryptedKeys;
+            const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
+
+            try {
+                await userService.UpdateEmail(email.value, stretchedPassword.hash);
+            } catch (e) {
+                return toaster.error(e.response.data.error);
+            }
+
+            // Update the email in the store
+            const account = {...userStore.account};
+            account.email = email.value;
+            userStore.setAccount(account);
+
+            // Success!
+            toaster.success("Email address was updated!");
         }
 
         // Handle avatar uploads
@@ -97,24 +126,29 @@ export default defineComponent({
             try {
                 // Extract the file from the upload input
                 const file = event.target.files[0];
+                let fileContents: ArrayBuffer;
+
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(file);
+
+                // Wait for file to be read
+                await new Promise((resolve) => {
+                    reader.onload = resolve;
+                });
+                fileContents = reader.result as ArrayBuffer;
+
+                const uIntFileContents = new Uint8Array(fileContents);
+
+                // Encrypt
+                const cryptoWorker = await new CryptoWorker();
+                const eFile = await cryptoWorker.encryptFile("test.jpeg", "image/jpeg", uIntFileContents);
 
                 // Request for a presigned URL
                 let res = await userService.UploadAvatar();
                 const url = res.data.url as string;
 
-                // Upload the avatar
-                await axios.put(url, file, { headers: { "Content-Type": file.type } })
-
-                // Fetch the image from S3 and display in browser
-                res = await userService.GetAvatar();
-                const avatarUrl = res.data.url as string;
-
-                res = await axios.get(avatarUrl, { responseType: "blob" });
-                const reader = new window.FileReader();
-                reader.readAsDataURL(res.data);
-                reader.onload = () => {
-                    avatarImage.value = reader.result;
-                }
+                // Upload the avatar content directly to B2, and the metadata to our API
+                await axios.put(url, eFile.content, { headers: { "Content-Type": "application/octet-stream" } })
             } catch (e) {
                 // TODO: Handle this...
                 console.log(e);
@@ -123,14 +157,14 @@ export default defineComponent({
 
         return {
             email,
-            sessions,
+            password,
+            emailChanged,
 
             avatarImage,
 
-            revokeSession,
-            handleLogout,
             formatDate,
-            uploadImage
+            uploadImage,
+            doUpdateEmail
         }
     }
 })
