@@ -33,8 +33,8 @@
                 </div>
 
                 <!-- Avatar -->
-                <div
-                    class="flex items-center justify-center p-2 bg-gray-50 border border-gray-300 rounded-full w-36 h-36">
+                <div class="flex items-center justify-center p-2 bg-gray-50 border border-gray-300 rounded-full w-36 h-36 cursor-pointer" @click="triggerAvatarInput">
+                    <input class="hidden" type="file" accept="image/*" @change="handleAvatarChange" ref="avatarInput" />
                     <CameraIcon class="text-gray-400 w-12 h-12" />
                 </div>
             </div>
@@ -99,10 +99,16 @@ export default defineComponent({
         const emailChanged = computed(() => email.value === userStore.getEmail);
         const updatingEmail = ref(false);
 
-        // Return a relative human readable date
-        const formatDate = (unix: any) => {
-            const formatted = formatRelative(subDays(fromUnixTime(unix), 0), new Date())
-            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        // Function to handle triggering input, uploading encrypted file to API and S3
+        const avatarInput = ref();
+        const triggerAvatarInput = () => {
+            if(avatarInput.value) {
+                avatarInput.value.click();
+            }
+        }
+
+        const handleAvatarChange = async (event: any) => {
+            console.log(event.target.files);
         }
 
         // Function to update user email via API
@@ -131,11 +137,21 @@ export default defineComponent({
             toaster.success("Email address was updated!");
         }
 
+        // Return a relative human readable date
+        const formatDate = (unix: any) => {
+            const formatted = formatRelative(subDays(fromUnixTime(unix), 0), new Date())
+            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        }
+
         return {
             email,
             password,
             emailChanged,
             updatingEmail,
+
+            avatarInput,
+            handleAvatarChange,
+            triggerAvatarInput,
 
             formatDate,
             doUpdateEmail
