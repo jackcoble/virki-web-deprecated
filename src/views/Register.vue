@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center items-center h-screen bg-gray-100 p-8">
-        <div class="p-8 md:m-auto space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
+        <div class="p-8 md:m-auto space-y-3 xl:w-4/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
             <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
             <div space-y-1>
@@ -8,11 +8,26 @@
                 <p class="text-xs text-center">Your secure two-factor authentication vault.</p>
             </div>
 
-            <form @submit.prevent="registerUser" class="space-y-3">
+            <form @submit.prevent="registerUser" class="space-y-2">
                 <!-- Email input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Email Address</p>
-                    <b-input type="email" required v-model="email" />
+                    <b-input type="email" required v-model="email" autofocus />
+                </div>
+
+                <!-- First and lastname input -->
+                <div>
+                    <div class="flex space-x-2">
+                        <div class="space-y-1.5 w-full">
+                            <p class="font-bold text-sm pt-2">First Name</p>
+                            <b-input></b-input>
+                        </div>
+
+                        <div class="space-y-1.5 w-full">
+                            <p class="font-bold text-sm pt-2">Last Name</p>
+                            <b-input></b-input>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Password -->
@@ -20,7 +35,6 @@
                     <p class="font-bold text-sm pt-2">Password</p>
                     <b-password-input v-model="password" :showStrength="true" />
                 </div>
-
                 <div>
                     <password-strength :password="password" />
                 </div>
