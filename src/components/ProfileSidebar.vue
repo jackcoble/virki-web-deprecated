@@ -4,8 +4,8 @@
         <div class="flex-col space-y-2 p-4 text-gray-700">
             <!-- Overview -->
             <router-link :to="PAGES.ACCOUNT" class="flex py-2 items-center space-x-2 cursor-pointer">
-                <ClipboardListIcon class="w-6" />
-                <h2 class="text-sm">Overview</h2>
+                <UserIcon class="w-6" />
+                <h2 class="text-sm">Account</h2>
             </router-link>
 
             <!-- Sessions -->
@@ -46,10 +46,10 @@
 import { defineComponent } from 'vue';
 import {
     AtSymbolIcon,
-    ClipboardListIcon,
     DeviceTabletIcon,
     KeyIcon,
-    SparklesIcon
+    SparklesIcon,
+    UserIcon
 
 } from "@heroicons/vue/outline";
 import { PAGES } from '@/router/pages';
@@ -60,10 +60,10 @@ export default defineComponent({
     name: "ProfileSidebar",
     components: {
         AtSymbolIcon,
-        ClipboardListIcon,
         DeviceTabletIcon,
         KeyIcon,
         SparklesIcon,
+        UserIcon
     },
     setup() {
         const router = useRouter();
