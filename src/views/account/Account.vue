@@ -50,7 +50,7 @@
                 <div class="md:w-1/4 w-full space-y-2">
                     <!-- Email -->
                     <p class="font-bold text-sm">Email Address</p>
-                    <b-input type="email" v-model="email" placeholder="hello@virki.io" autofocus />
+                    <b-input type="email" v-model="email" placeholder="hello@virki.io" />
 
                     <!-- Master password -->
                     <p class="font-bold text-sm">Master Password</p>
