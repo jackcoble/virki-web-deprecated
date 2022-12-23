@@ -8,7 +8,7 @@
             </a>
 
             <!-- Menu Icon (only visible on mobile) -->
-            <button class="block md:hidden text-mountain-meadow w-9" @click="toggleMobileMenu">
+            <button class="block md:hidden text-mountain-meadow w-8" @click="toggleMobileMenu">
                 <MenuIcon v-if="!openMobileMenu" />
                 <XIcon v-else />
             </button>
