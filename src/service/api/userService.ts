@@ -1,6 +1,7 @@
 import { api } from "@/service/api/api";
 import type { Keys } from "@/common/interfaces/keys";
 import type { AxiosResponse } from "axios";
+import type { EncryptedFile } from "@/common/interfaces/file";
 
 export default {
     PreLogin(email: string): Promise<AxiosResponse> {
@@ -31,8 +32,14 @@ export default {
         return api.get("/v1/users/account");
     },
 
-    UploadAvatar(): Promise<AxiosResponse> {
-        return api.get("/v1/users/avatar/upload")
+    UploadAvatar(file: EncryptedFile): Promise<AxiosResponse> {
+        return api.post("/v1/users/files", {
+            file_name: file.file_name,
+            file_encryption_header: file.file_encryption_header,
+            mime_type: file.mime_type,
+            encryption_key: file.encryption_key,
+            s3_object_key: file.object_key
+        })
     },
 
     GetAvatar(): Promise<AxiosResponse> {

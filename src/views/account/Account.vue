@@ -153,7 +153,8 @@ export default defineComponent({
                 return;
             }
 
-            // TODO: Send to API
+            // Send to API
+            await userService.UploadAvatar(encryptedFile);
 
             // Send to S3
             await axios.put(
