@@ -20,12 +20,6 @@
                 <h2 class="text-sm">Password</h2>
             </div>
 
-            <!-- Change Email -->
-            <router-link :to="PAGES.ACCOUNT_EMAIL" class="flex py-2 items-center space-x-2 cursor-pointer">
-                <AtSymbolIcon class="w-6" />
-                <h2 class="text-sm">Email Address</h2>
-            </router-link>
-
             <!-- Subscription -->
             <div class="flex py-2 items-center space-x-2 cursor-pointer">
                 <SparklesIcon class="w-6 text-yellow-500" />

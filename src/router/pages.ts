@@ -8,6 +8,5 @@ export enum PAGES {
 
     // Account management
     ACCOUNT = "/account",
-    ACCOUNT_SESSIONS = "/account/sessions",
-    ACCOUNT_EMAIL = "/account/email"
+    ACCOUNT_SESSIONS = "/account/sessions"
 }
