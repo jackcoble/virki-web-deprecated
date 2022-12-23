@@ -81,6 +81,12 @@ import { CryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
 import type { StretchedPassword } from '@/common/interfaces/password';
 import useToaster from '@/composables/useToaster';
+import type { EncryptedFile } from '@/common/interfaces/file';
+import { encrypt } from '@/common/utils/sodium';
+import { serialiseCipherString } from '@/common/utils/cipher';
+import { EncryptionType } from '@/common/enums/encryptionType';
+import type { EncryptionResult } from '@/common/interfaces/encryption';
+import axios from 'axios';
 
 export default defineComponent({
     name: "Sessions",
@@ -108,7 +114,57 @@ export default defineComponent({
         }
 
         const handleAvatarChange = async (event: any) => {
-            console.log(event.target.files);
+            // Need to extract the File from the input event.
+            // Also prepare converting the file contents to ArrayBuffer
+            const file = event.target.files[0];
+            let fileContents: ArrayBuffer;
+
+            // Read in the file
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            await new Promise((resolve) => {
+                reader.onload = resolve;
+            })
+            fileContents = reader.result as ArrayBuffer;
+
+            // File contents need to be represented as Uint8Array before encryption...
+            const uIntFileContents = new Uint8Array(fileContents);
+
+            // Fetch an upload URL
+            let presignedUrl: any;
+            await userService.GetUploadURLs().then(res => {
+                presignedUrl = res.data[0];
+            })
+
+            // We need to encrypt the avatar now
+            const cryptoWorker = await new CryptoWorker();
+            const encryptedFile: EncryptedFile = await cryptoWorker.encryptFile(file.name, file.type, uIntFileContents, presignedUrl.key);
+
+            // As the encrypted file has been encrypted with a standalone encryption key,
+            // we need to encrypt it with our master key.
+            const masterEncryptionKey = keyStore.getMasterEncryptionKey;
+            const encryptedFileKey: EncryptionResult = await cryptoWorker.encryptToB64(encryptedFile.encryption_key, masterEncryptionKey);
+            const encryptedFileKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedFileKey.ciphertext, encryptedFileKey.nonce, encryptedFileKey.mac);
+            encryptedFile.encryption_key = encryptedFileKeyCipherString;
+
+            // Everything is encrypted now, so we can send the metadata to our API, and the encrypted contents up to S3.
+            // We should have content in our encrypted file
+            if (!encryptedFile.content) {
+                return;
+            }
+
+            // TODO: Send to API
+
+            // Send to S3
+            await axios.put(
+                presignedUrl.url,
+                encryptedFile.content,
+                {
+                    headers: {
+                        "Content-Type": encryptedFile.content.type // Should be "application/octet-stream"
+                    }
+                }
+            )
         }
 
         // Function to update user email via API
