@@ -1,6 +1,7 @@
 import sodium from "libsodium-wrappers";
 import { EncryptionType } from "../enums/encryptionType";
 import type { EncryptionResult, RawEncryptionResult } from "../interfaces/encryption";
+import type { EncryptedFile } from "../interfaces/file";
 import { parseCipherString, serialiseCipherString } from "./cipher";
 
 /*
@@ -296,19 +297,28 @@ File Encryption/Decryption utilities
 ====================================
 */
 
-export async function encryptFile(fileName: string, fileType: string, fileContent: Uint8Array, key?: string) {
+/**
+ * Encrypts a file and returns the encrypted file data.
+ * @param fileName 
+ * @param fileType 
+ * @param fileContent 
+ * @param object_key 
+ * @param encryption_key 
+ * @returns {EncryptedFile}
+ */
+export async function encryptFile(fileName: string, fileType: string, fileContent: Uint8Array, object_key: string, encryption_key?: string): Promise<EncryptedFile> {
     // If there is no key provided, generate one...
-    if (!key) {
-        key = await generateEncryptionKey();
+    if (!encryption_key) {
+        encryption_key = await generateEncryptionKey();
     }
 
     // Convert key to bytes for use with encryption
-    const keyBytes = await fromBase64(key);
+    const keyBytes = await fromBase64(encryption_key);
 
     // Encrypt the file name and file type (used for client-side reconstruction of the file)
     // and their subsequent cipher strings
-    const fileNameEncrypted = await encryptUTF8(fileName, key);
-    const fileTypeEncrypted = await encryptUTF8(fileType, key);
+    const fileNameEncrypted = await encryptUTF8(fileName, encryption_key);
+    const fileTypeEncrypted = await encryptUTF8(fileType, encryption_key);
 
     const fileNameEncryptedCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, fileNameEncrypted.ciphertext, fileNameEncrypted.nonce, fileNameEncrypted.mac);
     const fileTypeEncryptedCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, fileTypeEncrypted.ciphertext, fileTypeEncrypted.nonce, fileTypeEncrypted.mac);
@@ -326,17 +336,18 @@ export async function encryptFile(fileName: string, fileType: string, fileConten
     const file = new Blob([encryptedFile], { type: "application/octet-stream" });
 
     const stateHeaderB64 = await toBase64(state.header);
-    const encryptedStateHeader = await encryptToB64(stateHeaderB64, key);
+    const encryptedStateHeader = await encryptToB64(stateHeaderB64, encryption_key);
     const encryptedStateHeaderCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedStateHeader.ciphertext, encryptedStateHeader.nonce, encryptedStateHeader.mac);
 
     // Construct an encrypted file object containg all the data we need and can upload straight to the API
-    const fileObject = {
-        name: fileNameEncryptedCipherString,
+    const fileObject: EncryptedFile = {
+        file_name: fileNameEncryptedCipherString,
+        file_encryption_header: encryptedStateHeaderCipherString,
         mime_type: fileTypeEncryptedCipherString,
         content: file,
-        encryption_header: encryptedStateHeaderCipherString,
-        encryption_key: key
+        encryption_key: encryption_key,
+        object_key: object_key
     }
 
-    return fileObject;
+    return Promise.resolve(fileObject);
 }
