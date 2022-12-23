@@ -30,7 +30,10 @@
         <!-- Logout area -->
         <div class="flex flex-1 justify-center items-end">
             <b-button classType="danger" @click="doLogout">
-                Logout
+                <div class="flex flex-row justify-center items-center">
+                    <LogoutIcon class="w-4 mr-1" />
+                    <span>Logout</span>
+                </div>
             </b-button>
         </div>
     </div>
@@ -39,11 +42,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    AtSymbolIcon,
     DeviceTabletIcon,
     KeyIcon,
     SparklesIcon,
-    UserIcon
+    UserIcon,
+    LogoutIcon
 
 } from "@heroicons/vue/outline";
 import { PAGES } from '@/router/pages';
@@ -53,11 +56,11 @@ import { useRouter } from 'vue-router';
 export default defineComponent({
     name: "ProfileSidebar",
     components: {
-        AtSymbolIcon,
         DeviceTabletIcon,
         KeyIcon,
         SparklesIcon,
-        UserIcon
+        UserIcon,
+        LogoutIcon
     },
     setup() {
         const router = useRouter();
