@@ -33,7 +33,8 @@
                 </div>
 
                 <!-- Avatar -->
-                <div class="flex items-center justify-center p-2 bg-gray-50 border border-gray-300 rounded-full w-36 h-36">
+                <div
+                    class="flex items-center justify-center p-2 bg-gray-50 border border-gray-300 rounded-full w-36 h-36">
                     <CameraIcon class="text-gray-400 w-12 h-12" />
                 </div>
             </div>
@@ -47,17 +48,24 @@
                 </h1>
 
                 <div class="md:w-1/4 w-full space-y-2">
-                <!-- Email -->
-                <p class="font-bold text-sm">Email Address</p>
-                <b-input type="email" v-model="email" placeholder="hello@virki.io" autofocus />
+                    <!-- Email -->
+                    <p class="font-bold text-sm">Email Address</p>
+                    <b-input type="email" v-model="email" placeholder="hello@virki.io" autofocus />
 
-                <!-- Master password -->
-                <p class="font-bold text-sm">Master Password</p>
-                <b-password-input v-model="password"></b-password-input>
-                <p class="text-xs text-gray-600">We need your master password to verify the email update request.</p>
+                    <!-- Master password -->
+                    <p class="font-bold text-sm">Master Password</p>
+                    <b-password-input v-model="password"></b-password-input>
+                    <p class="text-xs text-gray-600">We need your master password to verify the email update request.
+                    </p>
 
-                <b-button class="md:w-1/3 w-full" :disabled="emailChanged" @click="doUpdateEmail">Update</b-button>
-            </div>
+                    <b-button class="md:w-1/3 w-full" :disabled="emailChanged" @click="doUpdateEmail"
+                        :loading="updatingEmail">
+                        <div class="flex flex-row justify-center items-center">
+                            <CheckIcon class="w-4 mr-1" />
+                            <span>Save</span>
+                        </div>
+                    </b-button>
+                </div>
             </div>
         </div>
     </div>
@@ -89,6 +97,7 @@ export default defineComponent({
         const email = ref(userStore.getEmail);
         const password = ref("");
         const emailChanged = computed(() => email.value === userStore.getEmail);
+        const updatingEmail = ref(false);
 
         // Return a relative human readable date
         const formatDate = (unix: any) => {
@@ -98,6 +107,8 @@ export default defineComponent({
 
         // Function to update user email via API
         const doUpdateEmail = async () => {
+            updatingEmail.value = true;
+
             // Stretch the plaintext password into a hashed version
             const cryptoWorker = await new CryptoWorker();
             const encryptedKeys = keyStore.getEncryptedKeys;
@@ -107,10 +118,12 @@ export default defineComponent({
                 await userService.UpdateEmail(email.value, stretchedPassword.hash);
             } catch (e) {
                 return toaster.error(e.response.data.error);
+            } finally {
+                updatingEmail.value = false;
             }
 
             // Update the email in the store
-            const account = {...userStore.account};
+            const account = { ...userStore.account };
             account.email = email.value;
             userStore.setAccount(account);
 
@@ -122,6 +135,7 @@ export default defineComponent({
             email,
             password,
             emailChanged,
+            updatingEmail,
 
             formatDate,
             doUpdateEmail
