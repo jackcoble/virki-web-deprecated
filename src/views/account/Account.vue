@@ -70,7 +70,6 @@ import { fromUnixTime, formatRelative, subDays } from "date-fns";
 import { computed } from '@vue/reactivity';
 import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon, CheckIcon, CameraIcon } from "@heroicons/vue/solid"
-import axios from 'axios';
 import { CryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
 import type { StretchedPassword } from '@/common/interfaces/password';
@@ -120,50 +119,12 @@ export default defineComponent({
             toaster.success("Email address was updated!");
         }
 
-        // Handle avatar uploads
-        const avatarImage = ref()
-        const uploadImage = async (event: any) => {
-            try {
-                // Extract the file from the upload input
-                const file = event.target.files[0];
-                let fileContents: ArrayBuffer;
-
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(file);
-
-                // Wait for file to be read
-                await new Promise((resolve) => {
-                    reader.onload = resolve;
-                });
-                fileContents = reader.result as ArrayBuffer;
-
-                const uIntFileContents = new Uint8Array(fileContents);
-
-                // Encrypt
-                const cryptoWorker = await new CryptoWorker();
-                const eFile = await cryptoWorker.encryptFile("test.jpeg", "image/jpeg", uIntFileContents);
-
-                // Request for a presigned URL
-                let res = await userService.UploadAvatar();
-                const url = res.data.url as string;
-
-                // Upload the avatar content directly to B2, and the metadata to our API
-                await axios.put(url, eFile.content, { headers: { "Content-Type": "application/octet-stream" } })
-            } catch (e) {
-                // TODO: Handle this...
-                console.log(e);
-            }
-        }
-
         return {
             email,
             password,
             emailChanged,
 
-            avatarImage,
-
             formatDate,
-            uploadImage,
             doUpdateEmail
         }
     }
