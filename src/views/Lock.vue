@@ -2,9 +2,9 @@
     <div class="flex justify-center items-center h-screen bg-gray-100 p-8">
         <div class="p-8 md:m-auto space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
-            <div class="flex space-x-2 justify-center">
-                <img class="w-24" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo" />
-                <img v-if="avatar" class="w-24 rounded-full border-4 border-gray-300" :src="avatar" alt="Avatar">
+            <div class="flex justify-center">
+                <img v-if="!avatar" class="w-24" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo" />
+                <img v-else class="w-24 rounded-full border-4 border-gray-300" :src="avatar" alt="Avatar">
             </div>
             <div space-y-1>
                 <h1 class="text-xl text-center">Hi <span class="text-mountain-meadow">{{ name }}</span> 👋</h1>
