@@ -26,9 +26,17 @@
                 <h2 class="text-sm">Subscription</h2>
             </div>
         </div>
+        
 
         <!-- Logout area -->
-        <div class="flex flex-1 justify-center items-end">
+        <div class="flex flex-1 space-x-2 justify-center items-end">
+            <b-button classType="light" @click="doLock">
+                <div class="flex flex-row justify-center items-center">
+                    <LockClosedIcon class="w-4 mr-1" />
+                    <span>Lock</span>
+                </div>
+            </b-button>
+
             <b-button classType="danger" @click="doLogout">
                 <div class="flex flex-row justify-center items-center">
                     <LogoutIcon class="w-4 mr-1" />
@@ -46,13 +54,16 @@ import {
     KeyIcon,
     SparklesIcon,
     UserIcon,
-    LogoutIcon
+    LogoutIcon,
+    LockClosedIcon
 
 } from "@heroicons/vue/outline";
 import { PAGES } from '@/router/pages';
 import { useLogout } from '@/composables/useLogout';
 import { useRouter } from 'vue-router';
 import userService from '@/service/api/userService';
+import { useKeyStore } from '@/stores/keyStore';
+import { useVaultStore } from '@/stores/vaultStore';
 
 export default defineComponent({
     name: "ProfileSidebar",
@@ -61,10 +72,22 @@ export default defineComponent({
         KeyIcon,
         SparklesIcon,
         UserIcon,
-        LogoutIcon
+        LogoutIcon,
+        LockClosedIcon
     },
     setup() {
         const router = useRouter();
+
+        const keyStore = useKeyStore();
+        const vaultStore = useVaultStore();
+
+        // Clear the master encryption key from cache and then navigate to the lock page
+        const doLock = () => {
+            keyStore.clearMasterEncryptionKey();
+            vaultStore.clear();
+      
+            router.push(PAGES.LOCK);
+        }
 
         // Clear all state and storage, push to login page
         const doLogout = async () => {
@@ -80,6 +103,7 @@ export default defineComponent({
         return {
             PAGES,
 
+            doLock,
             doLogout
         }
     }
