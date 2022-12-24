@@ -40,9 +40,6 @@ import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/vue/solid"
 import { Menu, MenuButton } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
-import userService from '@/service/api/userService';
-import axios from 'axios';
-import { useVaultStore } from '@/stores/vaultStore';
 
 export default defineComponent({
     name: "Navigation",
@@ -57,30 +54,10 @@ export default defineComponent({
         const router = useRouter();
         const userStore = useUserStore();
         const appStore = useAppStore();
-        const vaultStore = useVaultStore();
 
-        const avatar = ref();
-
+        const avatar = computed(() => userStore.getAvatarURL);
         const email = computed(() => userStore.getEmail);
         const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
-        onMounted(async () => {
-            // Fetch the users account avatar
-            try {
-                // Need the URL for the image
-                let res = await userService.GetAvatar();
-                const signedUrl = res.data.url as string;
-
-                // Fetch and load the image
-                res = await axios.get(signedUrl, { responseType: "blob" });
-                const reader = new window.FileReader();
-                reader.readAsDataURL(res.data);
-                reader.onload = () => {
-                    avatar.value = reader.result;
-                }  
-            } catch (e) {
-                console.log("TODO: Handle this...")
-            }
-        })
 
         /**
          * Function to toggle whether mobile menu should be opened

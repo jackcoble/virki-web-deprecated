@@ -35,7 +35,8 @@
                 <!-- Avatar -->
                 <div class="flex items-center justify-center p-2 bg-gray-50 border border-gray-300 rounded-full w-36 h-36 cursor-pointer" @click="triggerAvatarInput">
                     <input class="hidden" type="file" accept="image/*" @change="handleAvatarChange" ref="avatarInput" />
-                    <CameraIcon class="text-gray-400 w-12 h-12" />
+                    <CameraIcon v-if="!avatar" class="text-gray-400 w-12 h-12" />
+                    <img v-else class="rounded-full" :src="avatar" alt="Avatar">
                 </div>
             </div>
 
@@ -101,6 +102,7 @@ export default defineComponent({
         const toaster = useToaster();
 
         const email = ref(userStore.getEmail);
+        const avatar = computed(() => userStore.getAvatarURL);
         const password = ref("");
         const emailChanged = computed(() => email.value === userStore.getEmail);
         const updatingEmail = ref(false);
@@ -195,12 +197,9 @@ export default defineComponent({
                 // Decrypt file into a blob for us to play with
                 const decryptedFile = await cryptoWorker.decryptFile(uintFile, mimeType, header, encryptionKey);
 
-                // Download the file...
+                // Put the Blob URL into the user store
                 const url = URL.createObjectURL(decryptedFile);
-                let a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                a.click();
+                userStore.setAvatarURL(url);
             })
         }
 
@@ -239,6 +238,7 @@ export default defineComponent({
         return {
             email,
             password,
+            avatar,
             emailChanged,
             updatingEmail,
 
