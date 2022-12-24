@@ -40,6 +40,11 @@ import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/vue/solid"
 import { Menu, MenuButton } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
+import { VirkiStorageService } from '@/common/services/storage.service';
+import userService from '@/service/api/userService';
+import { CryptoWorker } from '@/common/comlink';
+import { useKeyStore } from '@/stores/keyStore';
+import axios from 'axios';
 
 export default defineComponent({
     name: "Navigation",
@@ -54,6 +59,7 @@ export default defineComponent({
         const router = useRouter();
         const userStore = useUserStore();
         const appStore = useAppStore();
+        const keyStore = useKeyStore();
 
         const avatar = computed(() => userStore.getAvatarURL);
         const email = computed(() => userStore.getEmail);
@@ -66,6 +72,51 @@ export default defineComponent({
             const currentOpenMobileMenu = appStore.shouldOpenMobileMenu;
             appStore.setOpenMobileMenu(!currentOpenMobileMenu);
         }
+
+        onMounted(async () => {
+            // Attempt to retrieve and set the avatar file from IndexedDB.
+            // If we don't have it present there, then we should request for the file from the API
+            // and decrypt it.
+            const cryptoWorker = await new CryptoWorker();
+            const storageService = new VirkiStorageService();
+            const masterEncryptionKey = keyStore.getMasterEncryptionKey;
+
+            const avatarFile = await storageService.getAvatar();
+            if (!avatarFile) {
+                // Request for Presigned file URL and metadata
+                let res = await userService.GetAvatar();
+                const avatarFile = res.data.file;
+                const metadata = res.data.metadata;
+
+                // First, let us decrypt the encryption key with our master key
+                const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
+
+                // Then we can decrypt the header used for content encryption with the encryption key
+                const header = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_header, encryptionKey);
+
+                // Decrypt the MIME type with the encryption key
+                const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
+
+                // Fetch the contents of the file from directly from S3
+                res = await axios.get(avatarFile.url, {
+                    responseType: "arraybuffer"
+                });
+                const file = res.data as ArrayBuffer;
+                const uintFile = new Uint8Array(file);
+
+                // Decrypt file into a blob for us to then store in IndexedDB
+                const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, header, encryptionKey);
+                const storageService = new VirkiStorageService();
+                await storageService.addAvatar(decryptedFile);
+
+                const avatarFileObjectURL = URL.createObjectURL(decryptedFile);
+                userStore.setAvatarURL(avatarFileObjectURL);
+            } else {
+                // We found the file locally...
+                const avatarFileObjectURL = URL.createObjectURL(avatarFile);
+                userStore.setAvatarURL(avatarFileObjectURL);
+            }
+        })
 
         return {
             toggleMobileMenu,
