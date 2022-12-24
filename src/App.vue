@@ -5,11 +5,13 @@ import { RouterView, useRoute, useRouter } from 'vue-router'
 import { PAGES } from './router/pages';
 import { useAppStore } from './stores/appStore';
 import { useKeyStore } from './stores/keyStore';
+import { useUserStore } from './stores/userStore';
 import { useVaultStore } from './stores/vaultStore';
 
 const appStore = useAppStore();
 const keyStore = useKeyStore();
 const vaultStore = useVaultStore();
+const userStore = useUserStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -31,13 +33,14 @@ onMounted(() => {
   inactivityInterval = setInterval(() => {
     const lastActiveTimestamp = appStore.getLastActiveTimestamp;
     const leastActivityDate = sub(new Date(), { minutes: 15 });
+    const sessionToken = userStore.getSessionToken;
 
-    if (leastActivityDate > fromUnixTime(lastActiveTimestamp) && (route.path !== PAGES.LOCK || PAGES.ROOT)) {
+    if (leastActivityDate > fromUnixTime(lastActiveTimestamp) && (route.path !== PAGES.LOCK || PAGES.ROOT) && sessionToken) {
       // Clear the encryption key and vaults
       keyStore.clearMasterEncryptionKey();
       vaultStore.clear();
       
-      router.push(PAGES.ROOT);
+      router.push(PAGES.LOCK);
     }
   }, 1000)
 })
