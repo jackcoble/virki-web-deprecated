@@ -351,3 +351,21 @@ export async function encryptFile(fileName: string, fileType: string, fileConten
 
     return Promise.resolve(fileObject);
 }
+
+export async function decryptFile(content: Uint8Array, mime_type: string, encryption_header: string, encryption_key: string): Promise<Blob> {
+    // Convert the encryption key into bytes
+    const encryptionKeyBytes = await fromBase64(encryption_key);
+
+    // Need to convert the encryption header back into Bytes
+    // and reconstruct the header
+    const encryptionHeaderBytes = await fromBase64(encryption_header);
+    const dataState = sodium.crypto_secretstream_xchacha20poly1305_init_pull(encryptionHeaderBytes, encryptionKeyBytes);
+
+    // Decrypt the file contents and put them into a Blob
+    const decryptedFile = sodium.crypto_secretstream_xchacha20poly1305_pull(dataState, content, null);
+    const decryptedFileBlob = new Blob([decryptedFile.message], {
+        type: mime_type
+    });
+
+    return Promise.resolve(decryptedFileBlob)
+}

@@ -1,6 +1,6 @@
 import * as Comlink from "comlink";
 import { stretchPassword } from "@/common/utils/password";
-import { encryptToB64, encryptUTF8, generateEncryptionKey, generateKeypair, decryptFromB64, decryptFromB64CipherString, decryptFromB64CipherStringToUTF8, encryptFile } from "@/common/utils/sodium";
+import { encryptToB64, encryptUTF8, generateEncryptionKey, generateKeypair, decryptFromB64, decryptFromB64CipherString, decryptFromB64CipherStringToUTF8, encryptFile, fromBase64, decryptFile } from "@/common/utils/sodium";
 
 export class Crypto {
     async stretchPassword(password: string, salt?: string, opsLimit?: number, memLimit?: number) {
@@ -38,6 +38,15 @@ export class Crypto {
     // Files
     async encryptFile(fileName: string, fileType: string, fileContent: Uint8Array, object_key: string, encryptionKey?: string) {
         return encryptFile(fileName, fileType, fileContent, object_key, encryptionKey);
+    }
+
+    async decryptFile(content: Uint8Array, mime_type: string, encryption_header: string, encryption_key: string) {
+        return decryptFile(content, mime_type, encryption_header, encryption_key);
+    }
+
+    // String utilities
+    async fromBase64(input: string) {
+        return fromBase64(input);
     }
 }
 
