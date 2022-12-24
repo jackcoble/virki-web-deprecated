@@ -166,6 +166,42 @@ export default defineComponent({
                     }
                 }
             )
+
+            // Testing purposes only, fetch the avatar file/metadata and decrypt it all
+            await userService.GetAvatar().then(async res => {
+                const avatarFile = res.data.file;
+                const metadata = res.data.metadata;
+
+                // First, let us decrypt the encryption key with our master key
+                const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
+                console.log("Avatar File Encryption Key:", encryptionKey);
+
+                // Then we can decrypt the header used for content encryption with the encryption key
+                const header = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_header, encryptionKey);
+
+                // Decrypt the MIME type with the encryption key
+                const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
+
+                // Decrypt the original file name with the encryption key
+                const fileName = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.file_name, encryptionKey);
+
+                // Fetch the contents of the file from S3
+                const res2 = await axios.get(avatarFile.url, {
+                    responseType: "arraybuffer"
+                });
+                const file = res2.data as ArrayBuffer;
+                const uintFile = new Uint8Array(file);
+
+                // Decrypt file into a blob for us to play with
+                const decryptedFile = await cryptoWorker.decryptFile(uintFile, mimeType, header, encryptionKey);
+
+                // Download the file...
+                const url = URL.createObjectURL(decryptedFile);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+            })
         }
 
         // Function to update user email via API
