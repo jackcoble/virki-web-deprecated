@@ -88,6 +88,7 @@ import { serialiseCipherString } from '@/common/utils/cipher';
 import { EncryptionType } from '@/common/enums/encryptionType';
 import type { EncryptionResult } from '@/common/interfaces/encryption';
 import axios from 'axios';
+import { VirkiStorageService } from '@/common/services/storage.service';
 
 export default defineComponent({
     name: "Sessions",
@@ -169,14 +170,14 @@ export default defineComponent({
                 }
             )
 
-            // Testing purposes only, fetch the avatar file/metadata and decrypt it all
+            // We should get rid of this at some point, but for now to make sure the user avatar is the most recent.
+            // Fetch and decrypt it.
             await userService.GetAvatar().then(async res => {
                 const avatarFile = res.data.file;
                 const metadata = res.data.metadata;
 
                 // First, let us decrypt the encryption key with our master key
                 const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
-                console.log("Avatar File Encryption Key:", encryptionKey);
 
                 // Then we can decrypt the header used for content encryption with the encryption key
                 const header = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_header, encryptionKey);
@@ -184,22 +185,26 @@ export default defineComponent({
                 // Decrypt the MIME type with the encryption key
                 const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
 
-                // Decrypt the original file name with the encryption key
-                const fileName = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.file_name, encryptionKey);
-
-                // Fetch the contents of the file from S3
-                const res2 = await axios.get(avatarFile.url, {
+                // Fetch the contents of the file from S3 and convert to a Uint8Arrau
+                res = await axios.get(avatarFile.url, {
                     responseType: "arraybuffer"
                 });
-                const file = res2.data as ArrayBuffer;
+                const file = res.data as ArrayBuffer;
                 const uintFile = new Uint8Array(file);
 
-                // Decrypt file into a blob for us to play with
-                const decryptedFile = await cryptoWorker.decryptFile(uintFile, mimeType, header, encryptionKey);
+                // Decrypt file into a blob for us to then store in IndexedDB (via Virki Storage Service)
+                const storageService = new VirkiStorageService();
+                const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, header, encryptionKey);
+                await storageService.addAvatar(decryptedFile);
 
-                // Put the Blob URL into the user store
-                const url = URL.createObjectURL(decryptedFile);
-                userStore.setAvatarURL(url);
+                // Retrieve the avatar from IndexedDB and create an object URL
+                const decryptedAvatarFile = await storageService.getAvatar();
+                if (!decryptedAvatarFile) {
+                    return;
+                } 
+
+                const avatarUrl = URL.createObjectURL(decryptedAvatarFile);
+                userStore.setAvatarURL(avatarUrl);
             })
         }
 
