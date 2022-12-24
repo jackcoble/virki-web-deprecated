@@ -38,12 +38,13 @@ export default {
             file_encryption_header: file.file_encryption_header,
             mime_type: file.mime_type,
             encryption_key: file.encryption_key,
-            s3_object_key: file.object_key
+            s3_object_key: file.object_key,
+            s3_object_type: "avatar"
         })
     },
 
     GetAvatar(): Promise<AxiosResponse> {
-        return api.get("/v1/users/avatar")
+        return api.get("/v1/users/files/avatar")
     },
 
     UpdateEmail(email: string, masterPassword: string) {
