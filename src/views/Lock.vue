@@ -4,8 +4,8 @@
             <!-- Header -->
             <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
             <div space-y-1>
-                <h1 class="text-xl text-center">Unlock your <span class="text-mountain-meadow">Virki</span> account.</h1>
-                <p class="text-xs text-center">Please enter your master password to continue.</p>
+                <h1 class="text-xl text-center">Hi <span class="text-mountain-meadow">{{ name }}</span> 👋</h1>
+                <p class="text-xs text-center">Please enter your master password to unlock your account.</p>
             </div>
 
             <form @submit.prevent="handleUnlock" class="space-y-2">
@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import useToaster from "@/composables/useToaster";
@@ -47,6 +47,7 @@ import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
 import { useLogout } from "@/composables/useLogout";
 import userService from "@/service/api/userService";
+import { useUserStore } from "@/stores/userStore";
 
 export default defineComponent({
     name: "Lock",
@@ -55,12 +56,14 @@ export default defineComponent({
         LockOpenIcon
     },
     setup() {
+        const name = computed(() => userStore.getName);
         const password = ref("");
         const isLoading = ref(false);
 
         const router = useRouter();
         const toaster = useToaster();
         
+        const userStore = useUserStore();
         const keyStore = useKeyStore();
 
         // Handle the unlock process
@@ -94,12 +97,13 @@ export default defineComponent({
                 await userService.Logout();
             } finally {
                 // Ignore any errors just force the logout
-                await useLogout();
+                useLogout();
                 router.push(PAGES.ROOT);
             }
         }
 
         return {
+            name,
             password,
             isLoading,
 
