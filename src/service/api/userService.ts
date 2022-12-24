@@ -17,9 +17,10 @@ export default {
         })
     },
 
-    Register(email: string, keys: Keys): Promise<AxiosResponse> {
+    Register(email: string, name: string, keys: Keys): Promise<AxiosResponse> {
         return api.post("/v1/users/register", {
             email: email,
+            name: name,
             encrypted_keys: keys
         })
     },

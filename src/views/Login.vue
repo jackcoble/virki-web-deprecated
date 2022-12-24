@@ -97,6 +97,7 @@ export default defineComponent({
                 const accountDetails: Account = {
                     id: res.data.user_id,
                     email: res.data.email,
+                    name: res.data.name,
                     session_token: res.data.session_token,
                     plan: res.data.plan
                 }

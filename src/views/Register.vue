@@ -12,22 +12,13 @@
                 <!-- Email input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Email Address</p>
-                    <b-input type="email" required v-model="email" autofocus />
+                    <b-input type="email" required v-model="email" />
                 </div>
 
-                <!-- First and lastname input -->
-                <div>
-                    <div class="flex space-x-2">
-                        <div class="space-y-1.5 w-full">
-                            <p class="font-bold text-sm pt-2">First Name</p>
-                            <b-input></b-input>
-                        </div>
-
-                        <div class="space-y-1.5 w-full">
-                            <p class="font-bold text-sm pt-2">Last Name</p>
-                            <b-input></b-input>
-                        </div>
-                    </div>
+                <!-- Name input -->
+                <div class="space-y-1.5">
+                    <p class="font-bold text-sm">Name</p>
+                    <b-input type="text" required v-model="name" autofocus />
                 </div>
 
                 <!-- Password -->
@@ -167,12 +158,13 @@ export default defineComponent({
             try {
                 // In this response we're expecting a session token to be returned
                 // so set that in the store as well as the master key
-                const res = await userService.Register(email.value, keys);
+                const res = await userService.Register(email.value, name.value, keys);
 
                 // Set account details
                 const accountDetails: Account = {
                     id: res.data.user_id,
                     email: res.data.email,
+                    name: res.data.name,
                     session_token: res.data.session_token,
                     plan: res.data.plan
                 }
