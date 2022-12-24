@@ -20,11 +20,11 @@
                     <!-- Name -->
                     <div class="space-y-1">
                         <p class="font-bold text-sm">Name</p>
-                        <b-input type="email" placeholder="John Doe" />
+                        <b-input type="text" v-model="name"/>
                     </div>
 
                     <!-- Save button -->
-                    <b-button class="md:w-1/3 w-full">
+                    <b-button class="md:w-1/3 w-full" @click="doUpdateName">
                         <div class="flex flex-row justify-center items-center">
                             <CheckIcon class="w-4 mr-1" />
                             <span>Save</span>
@@ -103,6 +103,7 @@ export default defineComponent({
         const toaster = useToaster();
 
         const email = ref(userStore.getEmail);
+        const name = ref(userStore.getName);
         const avatar = computed(() => userStore.getAvatarURL);
         const password = ref("");
         const emailChanged = computed(() => email.value === userStore.getEmail);
@@ -234,6 +235,23 @@ export default defineComponent({
             toaster.success("Email address was updated!");
         }
 
+        // Function to update users name via API
+        const doUpdateName = async () => {
+            try {
+                await userService.UpdateName(name.value);
+            } catch (e) {
+                return toaster.error(e.response.data.error);
+            }
+
+            // Update the name in the store
+            const account = { ...userStore.account };
+            account.name = name.value;
+            userStore.setAccount(account);
+
+            // Success!
+            toaster.success("Name was updated!");
+        }
+
         // Return a relative human readable date
         const formatDate = (unix: any) => {
             const formatted = formatRelative(subDays(fromUnixTime(unix), 0), new Date())
@@ -242,6 +260,7 @@ export default defineComponent({
 
         return {
             email,
+            name,
             password,
             avatar,
             emailChanged,
@@ -252,7 +271,8 @@ export default defineComponent({
             triggerAvatarInput,
 
             formatDate,
-            doUpdateEmail
+            doUpdateEmail,
+            doUpdateName
         }
     }
 })

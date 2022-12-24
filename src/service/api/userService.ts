@@ -49,9 +49,15 @@ export default {
     },
 
     UpdateEmail(email: string, masterPassword: string) {
-        return api.post("/v1/users/email/update", {
+        return api.post("/v1/users/update/email", {
             email: email,
             password: masterPassword
+        })
+    },
+
+    UpdateName(name: string) {
+        return api.post("/v1/users/update/name", {
+            name: name
         })
     },
 
