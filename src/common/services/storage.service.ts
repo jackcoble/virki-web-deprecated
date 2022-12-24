@@ -8,6 +8,7 @@ export class VirkiStorageService extends Dexie {
     // The Virki storage service uses IndexedDB (with Dexie as a wrapper) for an offline-first data store.
     // Specify the tables and the types they'll be storing.
     private _vaults!: Dexie.Table<Vault, string>; // Stores a vault with the Vault ID in string format acting as a PK
+    private _files!: Dexie.Table<Blob, string>;
 
     /**
      * Initialises the storage service constructor
@@ -18,7 +19,8 @@ export class VirkiStorageService extends Dexie {
         // Prepare the store
         this.version(DB_VERSION)
         .stores({
-            _vaults: 'id'
+            _vaults: 'id',
+            _files: ''
         })
     }
 
@@ -69,6 +71,28 @@ export class VirkiStorageService extends Dexie {
         } catch (e) {
             console.error(e);
             return Promise.reject("There was an error deleting this vault from local DB!");
+        }
+    }
+
+    async addAvatar(file: Blob): Promise<void> {
+        try {
+            await this._files.put(file, "avatar");
+        } catch (e) {
+            console.error(e);
+            return Promise.reject("There was an error inserting Blob to local DB!");
+        }
+    }
+
+    async getAvatar(): Promise<Blob | null> {
+        try {
+            const file = await this._files.get("avatar");
+            if (!file) {
+                return Promise.resolve(null)
+            }
+
+            return Promise.resolve(file);
+        } catch (e) {
+            return Promise.reject("There was an error retrieving avatar Blob from local DB!");
         }
     }
 }
