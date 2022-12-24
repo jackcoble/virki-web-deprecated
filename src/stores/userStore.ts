@@ -6,19 +6,26 @@ import { LocalStorageKeys } from '@/common/enums/localStorage';
 export const useUserStore = defineStore({
   id: 'userStore',
   state: () => ({
-    account: useStorage(LocalStorageKeys.ACCOUNT, {} as Account)
+    account: useStorage(LocalStorageKeys.ACCOUNT, {} as Account),
+    avatarUrl: ""
   }),
 
   getters: {
     getUserID: (state) => state.account.id,
     getEmail: (state) => state.account ? state.account.email : "",
     getSessionToken: (state) => state.account ? state.account.session_token : "",
-    getPlan: (state) => state.account.plan
+    getPlan: (state) => state.account.plan,
+
+    getAvatarURL: (state) => state.avatarUrl
   },
 
   actions: {
     setAccount(account: Account) {
       this.account = account;
+    },
+
+    setAvatarURL(url: string) {
+      this.avatarUrl = url;
     },
 
     setActiveVault(id: string) {
