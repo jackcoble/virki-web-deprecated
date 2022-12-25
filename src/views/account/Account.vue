@@ -14,7 +14,7 @@
 
             <hr>
 
-            <div class="flex items-center space-x-10 p-2">
+            <div class="flex items-center space-x-10">
                 <!-- Name  -->
                 <div class="w-1/3 space-y-2">
                     <!-- Name -->
