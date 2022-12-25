@@ -142,7 +142,7 @@ export default defineComponent({
 
             // We need to encrypt the avatar now
             const cryptoWorker = await new CryptoWorker();
-            const encryptedFile: EncryptedFile = await cryptoWorker.encryptFile(file.name, file.type, uIntFileContents, presignedUrl.key);
+            const encryptedFile: EncryptedFile = await cryptoWorker.encryptFile(file.type, uIntFileContents, presignedUrl.key);
 
             // As the encrypted file has been encrypted with a standalone encryption key,
             // we need to encrypt it with our master key.

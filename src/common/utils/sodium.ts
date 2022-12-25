@@ -306,7 +306,7 @@ File Encryption/Decryption utilities
  * @param encryption_key 
  * @returns {EncryptedFile}
  */
-export async function encryptFile(fileName: string, fileType: string, fileContent: Uint8Array, object_key: string, encryption_key?: string): Promise<EncryptedFile> {
+export async function encryptFile(fileType: string, fileContent: Uint8Array, object_key: string, encryption_key?: string): Promise<EncryptedFile> {
     // If there is no key provided, generate one...
     if (!encryption_key) {
         encryption_key = await generateEncryptionKey();
@@ -315,12 +315,8 @@ export async function encryptFile(fileName: string, fileType: string, fileConten
     // Convert key to bytes for use with encryption
     const keyBytes = await fromBase64(encryption_key);
 
-    // Encrypt the file name and file type (used for client-side reconstruction of the file)
-    // and their subsequent cipher strings
-    const fileNameEncrypted = await encryptUTF8(fileName, encryption_key);
+    // Encrypt the file type (used for client-side reconstruction of the file)
     const fileTypeEncrypted = await encryptUTF8(fileType, encryption_key);
-
-    const fileNameEncryptedCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, fileNameEncrypted.ciphertext, fileNameEncrypted.nonce, fileNameEncrypted.mac);
     const fileTypeEncryptedCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, fileTypeEncrypted.ciphertext, fileTypeEncrypted.nonce, fileTypeEncrypted.mac);
 
     // File encryption
@@ -337,7 +333,6 @@ export async function encryptFile(fileName: string, fileType: string, fileConten
 
     // Construct an encrypted file object containg all the data we need and can upload straight to the API
     const fileObject: EncryptedFile = {
-        file_name: fileNameEncryptedCipherString,
         file_encryption_header: headerB64,
         mime_type: fileTypeEncryptedCipherString,
         content: file,
