@@ -129,7 +129,7 @@ router.beforeEach(async (to, from, next) => {
 
   // If the path we're going to is the root, and the device has encrypted keys and a session token, but no decrypted key
   // allow them to "unlock" their account.
-  if (to.path === PAGES.ROOT && (encryptedKeys && encryptedKeys.master_encryption_key) && session && (masterEncryptionKey && masterEncryptionKey.length === 0)) {
+  if (to.path === PAGES.ROOT && (encryptedKeys && encryptedKeys.master_encryption_key) && session && !masterEncryptionKey) {
     return next({ path: PAGES.LOCK });
   } 
 
