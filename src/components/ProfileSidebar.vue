@@ -2,6 +2,12 @@
     <!-- Sidebar -->
     <div class="flex flex-col h-full border-r-2 p-6 bg-gray-100 overflow-auto">
         <div class="flex-col space-y-2 p-4 text-gray-700">
+            <!-- Back -->
+            <router-link :to="PAGES.VAULT" class="flex py-2 items-center space-x-2 cursor-pointer">
+                <ArrowLeftIcon class="w-6" />
+                <h2 class="text-sm">Back</h2>
+            </router-link>
+
             <!-- Overview -->
             <router-link :to="PAGES.ACCOUNT" class="flex py-2 items-center space-x-2 cursor-pointer">
                 <UserIcon class="w-6" />
@@ -55,7 +61,8 @@ import {
     SparklesIcon,
     UserIcon,
     LogoutIcon,
-    LockClosedIcon
+    LockClosedIcon,
+    ArrowLeftIcon
 
 } from "@heroicons/vue/outline";
 import { PAGES } from '@/router/pages';
@@ -73,7 +80,8 @@ export default defineComponent({
         SparklesIcon,
         UserIcon,
         LogoutIcon,
-        LockClosedIcon
+        LockClosedIcon,
+        ArrowLeftIcon
     },
     setup() {
         const router = useRouter();
