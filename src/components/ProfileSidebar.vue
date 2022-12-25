@@ -3,7 +3,7 @@
     <div class="flex flex-col h-full border-r-2 p-6 bg-gray-100 overflow-auto">
         <div class="flex-col space-y-2 p-4 text-gray-700">
             <!-- Back -->
-            <router-link :to="PAGES.VAULT" class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.VAULT" class="py-2 pb-6 items-center space-x-2 cursor-pointer sm:hidden flex">
                 <ArrowLeftIcon class="w-6" />
                 <h2 class="text-sm">Back</h2>
             </router-link>
