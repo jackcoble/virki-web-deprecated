@@ -14,9 +14,9 @@
 
             <hr>
 
-            <div class="flex items-center space-x-10">
+            <div class="flex items-center md:justify-start justify-between space-x-10">
                 <!-- Name  -->
-                <div class="w-1/3 space-y-2">
+                <div class="md:w-1/3 w-full space-y-2">
                     <!-- Name -->
                     <div class="space-y-1">
                         <p class="font-bold text-sm">Name</p>
@@ -33,10 +33,10 @@
                 </div>
 
                 <!-- Avatar -->
-                <div class="flex items-center justify-center p-2 bg-gray-50 border border-gray-300 rounded-full w-36 h-36 cursor-pointer" @click="triggerAvatarInput">
+                <div class="flex items-center justify-center bg-gray-50 rounded-full md:w-28 w-20 cursor-pointer border-4 border-gray-300" @click="triggerAvatarInput">
                     <input class="hidden" type="file" accept="image/*" @change="handleAvatarChange" ref="avatarInput" />
                     <CameraIcon v-if="!avatar" class="text-gray-400 w-12 h-12" />
-                    <img v-else class="rounded-full" :src="avatar" alt="Avatar">
+                    <img v-else class="object-scale-down rounded-full" :src="avatar" alt="Avatar">
                 </div>
             </div>
 
