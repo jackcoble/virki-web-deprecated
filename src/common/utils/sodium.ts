@@ -324,25 +324,21 @@ export async function encryptFile(fileName: string, fileType: string, fileConten
     const fileTypeEncryptedCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, fileTypeEncrypted.ciphertext, fileTypeEncrypted.nonce, fileTypeEncrypted.mac);
 
     // File encryption
-    // Create a new state and encrypt the contents
-    // Also encrypt the data state header
-    const state = sodium.crypto_secretstream_xchacha20poly1305_init_push(keyBytes);
+    // Create a new header and encrypt the contents of the file
+    const header = sodium.crypto_secretstream_xchacha20poly1305_init_push(keyBytes);
     const encryptedFile = sodium.crypto_secretstream_xchacha20poly1305_push(
-        state.state,
+        header.state,
         fileContent,
         null,
         sodium.crypto_secretstream_xchacha20poly1305_TAG_FINAL
     );
     const file = new Blob([encryptedFile], { type: "application/octet-stream" });
-
-    const stateHeaderB64 = await toBase64(state.header);
-    const encryptedStateHeader = await encryptToB64(stateHeaderB64, encryption_key);
-    const encryptedStateHeaderCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedStateHeader.ciphertext, encryptedStateHeader.nonce, encryptedStateHeader.mac);
+    const headerB64 = await toBase64(header.header);
 
     // Construct an encrypted file object containg all the data we need and can upload straight to the API
     const fileObject: EncryptedFile = {
         file_name: fileNameEncryptedCipherString,
-        file_encryption_header: encryptedStateHeaderCipherString,
+        file_encryption_header: headerB64,
         mime_type: fileTypeEncryptedCipherString,
         content: file,
         encryption_key: encryption_key,
