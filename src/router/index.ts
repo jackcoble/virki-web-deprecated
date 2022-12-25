@@ -17,6 +17,7 @@ import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
 import NewToken from "@/views/vaults/tokens/New.vue";
 import AccountSessions from "@/views/account/Sessions.vue";
+import { useAppStore } from '@/stores/appStore'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -99,10 +100,18 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  const appStore = useAppStore();
   const keyStore = useKeyStore();
+
   const session = keyStore.getSessionToken;
   const masterEncryptionKey = keyStore.getMasterEncryptionKey;
   const encryptedKeys = keyStore.getEncryptedKeys;
+
+  // More of a UX improvement here, but if the mobile dropdown menu state is open, and we're navigating to a
+  // page other than the one we're currently on, we should close it.
+  if (appStore.shouldOpenMobileMenu && to.path !== from.path) {
+    appStore.setOpenMobileMenu(false);
+  } 
 
   // If the user is going to the root path, already has a session, the encrypted data, and encryption key
   // in memory, allow them to navigate straight to the vault page
