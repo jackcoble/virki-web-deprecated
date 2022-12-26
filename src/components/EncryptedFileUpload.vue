@@ -1,8 +1,8 @@
 <template>
-    <div class="flex items-center justify-center p-2 rounded-full bg-gray-100 hover:bg-gray-200 border-2 border-gray-200 hover:border-gray-300 transition cursor-pointer w-24 h-24" @click="triggerUploadInput">
+    <div class="flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border-2 border-gray-200 hover:border-gray-300 transition cursor-pointer w-24 h-24" @click="triggerUploadInput">
         <input class="hidden" type="file" accept="image/*" ref="uploadInput" @change="handleInputChange" />
-        <UploadIcon v-if="!uploadedFile" class="text-gray-400 w-10 h-10" />
-        <img v-else class="object-scale-down rounded-full" :src="uploadedFile" alt="Avatar" />
+        <UploadIcon v-if="!uploadedFile && !placeholder" class="text-gray-400 w-10 h-10 p-2" />
+        <img v-else class="rounded-full" :src="uploadedFile || placeholder" alt="Image" />
     </div>
 </template>
 
@@ -23,6 +23,9 @@ export default defineComponent({
         encryptionKey: {
             type: String,
             required: true
+        },
+        placeholder: {
+            type: String
         }
     },
     emits: ['objectKey', 'error'],
