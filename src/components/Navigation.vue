@@ -91,9 +91,6 @@ export default defineComponent({
                 // First, let us decrypt the encryption key with our master key
                 const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
 
-                // Then we can decrypt the header used for content encryption with the encryption key
-                const header = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_header, encryptionKey);
-
                 // Decrypt the MIME type with the encryption key
                 const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
 
@@ -105,7 +102,7 @@ export default defineComponent({
                 const uintFile = new Uint8Array(file);
 
                 // Decrypt file into a blob for us to then store in IndexedDB
-                const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, header, encryptionKey);
+                const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
                 const storageService = new VirkiStorageService();
                 await storageService.addAvatar(decryptedFile);
 
