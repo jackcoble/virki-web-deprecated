@@ -33,11 +33,7 @@
                 </div>
 
                 <!-- Avatar -->
-                <div class="flex items-center justify-center bg-gray-50 rounded-full md:w-28 w-20 cursor-pointer border-4 border-gray-300" @click="triggerAvatarInput">
-                    <input class="hidden" type="file" accept="image/*" @change="handleAvatarChange" ref="avatarInput" />
-                    <CameraIcon v-if="!avatar" class="text-gray-400 w-12 h-12" />
-                    <img v-else class="object-scale-down rounded-full" :src="avatar" alt="Avatar">
-                </div>
+                <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" :file-type="FileType.Avatar" />
             </div>
 
             <hr>
@@ -82,20 +78,17 @@ import { CryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
 import type { StretchedPassword } from '@/common/interfaces/password';
 import useToaster from '@/composables/useToaster';
-import type { EncryptedFile } from '@/common/interfaces/file';
-import { encrypt } from '@/common/utils/sodium';
-import { serialiseCipherString } from '@/common/utils/cipher';
-import { EncryptionType } from '@/common/enums/encryptionType';
-import type { EncryptionResult } from '@/common/interfaces/encryption';
-import axios from 'axios';
-import { VirkiStorageService } from '@/common/services/storage.service';
+import { FileType } from '@/common/interfaces/file';
+import EncryptedFileUpload from "@/components/EncryptedFileUpload.vue";
 
 export default defineComponent({
     name: "Sessions",
     components: {
         UserCircleIcon,
         CheckIcon,
-        CameraIcon
+        CameraIcon,
+
+        EncryptedFileUpload
     },
     setup() {
         const userStore = useUserStore();
@@ -109,102 +102,7 @@ export default defineComponent({
         const emailChanged = computed(() => email.value === userStore.getEmail);
         const updatingEmail = ref(false);
 
-        // Function to handle triggering input, uploading encrypted file to API and S3
-        const avatarInput = ref();
-        const triggerAvatarInput = () => {
-            if(avatarInput.value) {
-                avatarInput.value.click();
-            }
-        }
-
-        const handleAvatarChange = async (event: any) => {
-            // Need to extract the File from the input event.
-            // Also prepare converting the file contents to ArrayBuffer
-            const file = event.target.files[0];
-            let fileContents: ArrayBuffer;
-
-            // Read in the file
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(file);
-            await new Promise((resolve) => {
-                reader.onload = resolve;
-            })
-            fileContents = reader.result as ArrayBuffer;
-
-            // File contents need to be represented as Uint8Array before encryption...
-            const uIntFileContents = new Uint8Array(fileContents);
-
-            // Fetch an upload URL
-            let presignedUrl: any;
-            await userService.GetUploadURLs().then(res => {
-                presignedUrl = res.data[0];
-            })
-
-            // We need to encrypt the avatar now
-            const cryptoWorker = await new CryptoWorker();
-            const encryptedFile: EncryptedFile = await cryptoWorker.encryptFile(file.type, uIntFileContents, presignedUrl.key);
-
-            // As the encrypted file has been encrypted with a standalone encryption key,
-            // we need to encrypt it with our master key.
-            const masterEncryptionKey = keyStore.getMasterEncryptionKey;
-            const encryptedFileKey: EncryptionResult = await cryptoWorker.encryptToB64(encryptedFile.encryption_key, masterEncryptionKey);
-            const encryptedFileKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedFileKey.ciphertext, encryptedFileKey.nonce, encryptedFileKey.mac);
-            encryptedFile.encryption_key = encryptedFileKeyCipherString;
-
-            // Everything is encrypted now, so we can send the metadata to our API, and the encrypted contents up to S3.
-            // We should have content in our encrypted file
-            if (!encryptedFile.content) {
-                return;
-            }
-
-            // Send to API
-            await userService.UploadAvatar(encryptedFile);
-
-            // Send to S3
-            await axios.put(
-                presignedUrl.url,
-                encryptedFile.content,
-                {
-                    headers: {
-                        "Content-Type": encryptedFile.content.type // Should be "application/octet-stream"
-                    }
-                }
-            )
-
-            // We should get rid of this at some point, but for now to make sure the user avatar is the most recent.
-            // Fetch and decrypt it.
-            await userService.GetAvatar().then(async res => {
-                const avatarFile = res.data.file;
-                const metadata = res.data.metadata;
-
-                // First, let us decrypt the encryption key with our master key
-                const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
-
-                // Decrypt the MIME type with the encryption key
-                const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
-
-                // Fetch the contents of the file from S3 and convert to a Uint8Arrau
-                res = await axios.get(avatarFile.url, {
-                    responseType: "arraybuffer"
-                });
-                const file = res.data as ArrayBuffer;
-                const uintFile = new Uint8Array(file);
-
-                // Decrypt file into a blob for us to then store in IndexedDB (via Virki Storage Service)
-                const storageService = new VirkiStorageService();
-                const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
-                await storageService.addAvatar(decryptedFile);
-
-                // Retrieve the avatar from IndexedDB and create an object URL
-                const decryptedAvatarFile = await storageService.getAvatar();
-                if (!decryptedAvatarFile) {
-                    return;
-                } 
-
-                const avatarUrl = URL.createObjectURL(decryptedAvatarFile);
-                userStore.setAvatarURL(avatarUrl);
-            })
-        }
+        const encryptionKey = computed(() => keyStore.getMasterEncryptionKey);
 
         // Function to update user email via API
         const doUpdateEmail = async () => {
@@ -263,13 +161,13 @@ export default defineComponent({
             emailChanged,
             updatingEmail,
 
-            avatarInput,
-            handleAvatarChange,
-            triggerAvatarInput,
+            encryptionKey,
 
             formatDate,
             doUpdateEmail,
-            doUpdateName
+            doUpdateName,
+
+            FileType
         }
     }
 })
