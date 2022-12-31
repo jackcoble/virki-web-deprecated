@@ -43,6 +43,10 @@ export default {
         })
     },
 
+    GetFile(key: string) {
+        return api.get(`/v1/users/files?key=${key}`)
+    },
+
     GetAvatar(): Promise<AxiosResponse> {
         return api.get("/v1/users/files/avatar")
     },
