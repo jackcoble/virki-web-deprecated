@@ -33,7 +33,7 @@
                 </div>
 
                 <!-- Avatar -->
-                <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" :file-type="FileType.Avatar" />
+                <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" :file-type="FileType.Avatar" @object-key="handleAvatarUpload" />
             </div>
 
             <hr>
@@ -80,6 +80,8 @@ import type { StretchedPassword } from '@/common/interfaces/password';
 import useToaster from '@/composables/useToaster';
 import { FileType } from '@/common/interfaces/file';
 import EncryptedFileUpload from "@/components/EncryptedFileUpload.vue";
+import { VirkiStorageService } from '@/common/services/storage.service';
+import axios from 'axios';
 
 export default defineComponent({
     name: "Sessions",
@@ -147,6 +149,39 @@ export default defineComponent({
             toaster.success("Name was updated!");
         }
 
+        // When we receeive an object-key event (containing the object key from S3), we want to
+        // fetch the file and decrypt it, then update the store with the blob URL.
+        const handleAvatarUpload = async (key: any) => {
+            let res = await userService.GetFile(key);
+
+            const avatarFile = res.data.file;
+            const metadata = res.data.metadata;
+
+            const storageService = new VirkiStorageService();
+            const masterEncryptionKey = keyStore.getMasterEncryptionKey;
+
+            // First, let us decrypt the encryption key with our master key
+            const cryptoWorker = await new CryptoWorker();
+            const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
+
+            // Decrypt the MIME type with the encryption key
+            const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
+
+            // Fetch the contents of the file from directly from S3
+            res = await axios.get(avatarFile.url, {
+                responseType: "arraybuffer"
+            });
+            const file = res.data as ArrayBuffer;
+            const uintFile = new Uint8Array(file);
+
+            // Decrypt file into a blob for us to then store in IndexedDB
+            const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
+            await storageService.addAvatar(decryptedFile);
+
+            const avatarFileObjectURL = URL.createObjectURL(decryptedFile);
+            userStore.setAvatarURL(avatarFileObjectURL);
+        }
+
         // Return a relative human readable date
         const formatDate = (unix: any) => {
             const formatted = formatRelative(subDays(fromUnixTime(unix), 0), new Date())
@@ -166,6 +201,7 @@ export default defineComponent({
             formatDate,
             doUpdateEmail,
             doUpdateName,
+            handleAvatarUpload,
 
             FileType
         }
