@@ -4,12 +4,22 @@
         <!-- Vaults -->
         <div class="p-4 text-gray-700">
             <!-- All items -->
-            <div class="flex p-2 mb-4 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="!vaultIdPresent ? 'bg-gray-200' : ''" @click="router.push(PAGES.VAULT)">
+            <div class="flex p-2 mb-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="!vaultIdPresent ? 'bg-gray-200' : ''" @click="router.push(PAGES.VAULT)">
                 <div class="flex flex-1 items-center space-x-2">
                     <div class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                        <CollectionIcon class="w-4 h-4" />
+                        <CollectionIcon class="w-4 h-4 text-gray-500" />
                     </div>
                     <p class="text-sm">All Vaults</p>
+                </div>
+            </div>
+
+            <!-- Favourites -->
+            <div class="flex p-2 mb-4 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition">
+                <div class="flex flex-1 items-center space-x-2">
+                    <div class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                        <StarIcon class="w-4 h-4 text-yellow-500" />
+                    </div>
+                    <p class="text-sm">Favourites</p>
                 </div>
             </div>
 
@@ -132,26 +142,28 @@ import { version } from "../../package.json";
 import { useAppStore } from '@/stores/appStore';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
+import { StarIcon } from '@heroicons/vue/solid';
 
 export default defineComponent({
     name: "Sidebar",
     emits: ["newVault", "editVault"],
     components: {
-        UserIcon,
-        ChevronDownIcon,
-        KeyIcon,
-        LogoutIcon,
-        ChevronRightIcon,
-        PlusIcon,
-        DotsHorizontalIcon,
-        ShieldCheckIcon,
-        DeviceMobileIcon,
-        MailIcon,
-        StatusOfflineIcon,
-        StatusOnlineIcon,
-        EmojiSadIcon,
-        CollectionIcon
-    },
+    UserIcon,
+    ChevronDownIcon,
+    KeyIcon,
+    LogoutIcon,
+    ChevronRightIcon,
+    PlusIcon,
+    DotsHorizontalIcon,
+    ShieldCheckIcon,
+    DeviceMobileIcon,
+    MailIcon,
+    StatusOfflineIcon,
+    StatusOnlineIcon,
+    EmojiSadIcon,
+    CollectionIcon,
+    StarIcon
+},
     setup() {
         // Stores
         const appStore = useAppStore();
