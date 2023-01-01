@@ -26,7 +26,8 @@
     <div v-if="vaults.length !== 0 && !showCreateVault && !showEditVault"
       class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
       <EmojiSadIcon class="w-12 text-mountain-meadow" />
-      <p class="text-sm">You have no authentication tokens in <span class="font-bold">{{ activeVault && activeVault.name }}</span>.</p>
+      <p class="text-sm">You have no authentication tokens in <span class="font-bold">{{ activeVault && activeVault.name
+}}</span>.</p>
     </div>
   </div>
 
@@ -62,6 +63,10 @@ import { useAppStore } from "@/stores/appStore";
 import { useLogout } from "@/composables/useLogout";
 
 import { PAGES } from "@/router/pages";
+import vaultService from "@/service/api/vaultService";
+import type { Vault } from "@/common/interfaces/vault";
+import { CryptoWorker } from "@/common/comlink";
+import { useKeyStore } from "@/stores/keyStore";
 
 export default defineComponent({
   name: "HomeView",
@@ -76,6 +81,7 @@ export default defineComponent({
 
     const appStore = useAppStore();
     const vaultStore = useVaultStore();
+    const keyStore = useKeyStore();
 
     // We don't want to allow any token related actions until the user
     // has vaults available. If they have just signed up, then this value
@@ -96,7 +102,45 @@ export default defineComponent({
     // Modal refs
     const showExpiredSessionModal = ref(false);
 
-    onMounted(() => {
+    onMounted(async () => {
+      // Fetch all the vaults if we're online and decrypt them.
+      if (appStore.isOnline) {
+        try {
+          const res = await vaultService.getVaults();
+          const vaults: Vault[] = res.data;
+
+          // Prepare a CryptoWorker for us to use, along with our master encryption key
+          const cryptoWorker = await new CryptoWorker();
+          const masterEncryptionKey = keyStore.getMasterEncryptionKey;
+
+          // Decrypt and add to the Pinia vault store
+          vaults.forEach(async vault => {
+            // Decrypt the vault encryption key using the master key
+            const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(vault.key, masterEncryptionKey);
+
+            // We can proceed to decrypt the UTF8 name and description
+            let decryptedName, decryptedDescription;
+            decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(vault.name, vaultEncryptionKey);
+
+            if (vault.description) {
+              decryptedDescription = await cryptoWorker.decryptFromB64CipherStringToUTF8(vault.description, vaultEncryptionKey);
+            }
+
+            // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
+            const decryptedVault = { ...vault };
+            decryptedVault.key = vaultEncryptionKey;
+            decryptedVault.name = decryptedName;
+            decryptedVault.description = decryptedDescription;
+
+            // Add the decrypted vault into the Vault Store
+            vaultStore.add(decryptedVault);
+          })
+        } catch (e) {
+          // TODO: Handle this...
+          console.log(e);
+        }
+      }
+
       isFirstLoad.value = false;
     })
 
