@@ -9,28 +9,28 @@
             </router-link>
 
             <!-- Overview -->
-            <router-link :to="PAGES.ACCOUNT" class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.ACCOUNT" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === PAGES.ACCOUNT ? 'bg-gray-200 rounded p-2' : ''">
                 <UserIcon class="w-6" />
                 <h2 class="text-sm">Account</h2>
             </router-link>
 
             <!-- Sessions -->
-            <router-link :to="PAGES.ACCOUNT_SESSIONS" class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.ACCOUNT_SESSIONS" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === PAGES.ACCOUNT_SESSIONS ? 'bg-gray-200 rounded p-2' : ''">
                 <DeviceTabletIcon class="w-6" />
                 <h2 class="text-sm">Sessions</h2>
             </router-link>
 
             <!-- Change Password -->
-            <div class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.ROOT" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
                 <KeyIcon class="w-6" />
                 <h2 class="text-sm">Password</h2>
-            </div>
+            </router-link>
 
             <!-- Subscription -->
-            <div class="flex py-2 items-center space-x-2 cursor-pointer">
+            <router-link :to="PAGES.ROOT" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
                 <SparklesIcon class="w-6 text-yellow-500" />
                 <h2 class="text-sm">Subscription</h2>
-            </div>
+            </router-link>
         </div>
         
 
@@ -67,7 +67,7 @@ import {
 } from "@heroicons/vue/outline";
 import { PAGES } from '@/router/pages';
 import { useLogout } from '@/composables/useLogout';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import userService from '@/service/api/userService';
 import { useKeyStore } from '@/stores/keyStore';
 import { useVaultStore } from '@/stores/vaultStore';
@@ -85,6 +85,7 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter();
+        const route = useRoute();
 
         const keyStore = useKeyStore();
         const vaultStore = useVaultStore();
@@ -110,6 +111,7 @@ export default defineComponent({
 
         return {
             PAGES,
+            route,
 
             doLock,
             doLogout
