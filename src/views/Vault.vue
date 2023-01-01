@@ -1,12 +1,22 @@
 <template>
   <div class="flex flex-col h-full p-4" v-if="!isFirstLoad">
-    <div class="flex justify-end" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
-      <b-button class="w-36" @click="router.push(`${PAGES.VAULT}/${activeVault && activeVault.id}/tokens/new`)">
-        <div class="flex flex-row justify-center items-center space-x-1">
-          <PlusCircleIcon class="w-4" />
-          <span>Add</span>
+    <!-- Name, Description and button to add entry -->
+    <div class="flex items-center p-2 pb-4" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
+      <div class="flex flex-1">
+        <div class="space-y-1">
+          <p>Test Vault</p>
+          <p class="text-xs">Example description</p>
         </div>
-      </b-button>
+      </div>
+
+      <div class="flex">
+        <b-button class="w-36" @click="router.push(`${PAGES.VAULT}/${activeVault && activeVault.id}/tokens/new`)">
+          <div class="flex flex-row justify-center items-center space-x-1">
+            <PlusCircleIcon class="w-4" />
+            <span>Add</span>
+          </div>
+        </b-button>
+      </div>
     </div>
 
     <!-- Show message if no vaults are available -->
@@ -23,11 +33,10 @@
     </div>
 
     <!-- Show frowny face if we've got no tokens, but have vaults available -->
-    <div v-if="vaults.length !== 0 && !showCreateVault && !showEditVault"
+    <div v-if="vaultIdPresent && vaults.length !== 0 && !showCreateVault && !showEditVault"
       class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
       <EmojiSadIcon class="w-12 text-mountain-meadow" />
-      <p class="text-sm">You have no authentication tokens in <span class="font-bold">{{ activeVault && activeVault.name
-}}</span>.</p>
+      <p class="text-sm">You have no authentication tokens in <span class="font-bold">{{ activeVault && activeVault.name }}</span>.</p>
     </div>
   </div>
 
@@ -56,7 +65,7 @@
 import { computed, defineComponent, onMounted, ref } from "vue";
 
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
@@ -78,6 +87,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const route = useRoute();
 
     const appStore = useAppStore();
     const vaultStore = useVaultStore();
@@ -88,6 +98,7 @@ export default defineComponent({
     // should be false.
     const isFirstLoad = ref(true);
     const vaults = computed(() => vaultStore.getAll);
+    const vaultIdPresent = computed(() => !!route.query.id);
     const activeVault = computed(() => vaultStore.getActive);
     const isOnline = computed(() => appStore.isOnline);
 
@@ -159,6 +170,7 @@ export default defineComponent({
       vaults,
       activeVault,
       isOnline,
+      vaultIdPresent,
 
       closeMenuMobile,
       showSidebarVaults,
