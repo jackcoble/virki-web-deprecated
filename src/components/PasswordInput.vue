@@ -5,11 +5,11 @@
             required
         />
         
-        <button @click="showPassword = !showPassword"
+        <div @click="showPassword = !showPassword"
             class="text-mountain-meadow bottom cursor-pointer border bg-gray-100 border-gray-300 rounded p-2">
             <EyeOffIcon class="w-5" v-if="showPassword" />
             <EyeIcon class="w-5" v-if="!showPassword" />
-        </button>
+        </div>
     </div>
 </template>
 
