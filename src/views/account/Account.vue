@@ -33,7 +33,7 @@
                 </div>
 
                 <!-- Avatar -->
-                <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" :file-type="FileType.Avatar" @object-key="handleAvatarUpload" />
+                <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" @object-key="handleAvatarUpload" />
             </div>
 
             <hr>
@@ -78,7 +78,6 @@ import { CryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
 import type { StretchedPassword } from '@/common/interfaces/password';
 import useToaster from '@/composables/useToaster';
-import { FileType } from '@/common/interfaces/file';
 import EncryptedFileUpload from "@/components/EncryptedFileUpload.vue";
 import { VirkiStorageService } from '@/common/services/storage.service';
 import axios from 'axios';
@@ -152,6 +151,15 @@ export default defineComponent({
         // When we receeive an object-key event (containing the object key from S3), we want to
         // fetch the file and decrypt it, then update the store with the blob URL.
         const handleAvatarUpload = async (key: any) => {
+            // Update the user account information with the avatar object key
+            try {
+                await userService.UpdateAvatar(key);
+            } catch (e) {
+                // TODO: Handle...
+                console.log(e);
+                return toaster.error("Problem updating avatar!");
+            }
+
             let res = await userService.GetFile(key);
 
             const avatarFile = res.data.file;
@@ -202,8 +210,6 @@ export default defineComponent({
             doUpdateEmail,
             doUpdateName,
             handleAvatarUpload,
-
-            FileType
         }
     }
 })

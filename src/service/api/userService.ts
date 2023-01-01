@@ -63,6 +63,12 @@ export default {
         })
     },
 
+    UpdateAvatar(key: string) {
+        return api.post("/v1/users/update/avatar", {
+            key: key
+        })
+    },
+
     GetUploadURLs(amount?: number): Promise<AxiosResponse> {
         const params = new URLSearchParams();
         if (amount) {
