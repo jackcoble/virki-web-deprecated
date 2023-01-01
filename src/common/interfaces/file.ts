@@ -6,9 +6,3 @@ export interface EncryptedFile {
 
     content?: Blob;
 }
-
-export enum FileType {
-    Avatar = "avatar",
-    VaultIcon = "vault_icon",
-    TokenIcon = "token_icon"
-}

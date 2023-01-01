@@ -11,7 +11,7 @@ import { defineComponent, ref } from 'vue';
 import { UploadIcon } from '@heroicons/vue/solid';
 import userService from '@/service/api/userService';
 import { CryptoWorker } from '@/common/comlink';
-import type { EncryptedFile, FileType } from '@/common/interfaces/file';
+import type { EncryptedFile } from '@/common/interfaces/file';
 import { EncryptionType } from '@/common/enums/encryptionType';
 import type { EncryptionResult } from '@/common/interfaces/encryption';
 import { serialiseCipherString } from '@/common/utils/cipher';
@@ -26,10 +26,6 @@ export default defineComponent({
         },
         placeholder: {
             type: String
-        },
-        fileType: {
-            type: String,
-            required: true
         }
     },
     emits: ['objectKey', 'error'],
@@ -91,8 +87,7 @@ export default defineComponent({
             // Everything is encrypted now. We can begin uploading the metadata to our API, and then the encrypted file contents to S3 via the presigned URL.
             // Send metadata to API
             try {
-                const type = props.fileType as FileType;
-                await userService.UploadFile(encryptedFile, type);
+                await userService.UploadFile(encryptedFile);
             } catch (e: any) {
                 // TODO: Handle this better
                 emit("error", "Error uploading file metadata to API.")
