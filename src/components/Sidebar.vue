@@ -16,8 +16,8 @@
                 </button>
             </div>
 
-            <!-- List all vaults -->
-            <div v-if="showSidebarVaults && vaults.length !== 0" class="pt-2 space-y-1">
+            <!-- List all vaults -->    
+            <div v-if="showSidebarVaults" class="pt-2 space-y-1">
                 <div v-for="vault in vaults" :key="vault.id"
                     class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition"
                     :class="activeVaultID === vault.id ? 'bg-gray-200' : ''">
@@ -40,34 +40,12 @@
                     </button>
                 </div>
             </div>
-            <div v-else-if="showSidebarVaults && vaults.length === 0" class="p-2">
+
+            <div v-if="showSidebarVaults && vaults.length === 0">
                 <div class="flex py-2 items-center space-x-2">
                     <EmojiSadIcon class="w-6 text-mountain-meadow" />
                     <h2 class="text-sm">No vaults available...</h2>
                 </div>
-            </div>
-
-            <!-- Show active vault even if sidebar is closed -->
-            <div v-if="activeVault && activeVault.id && !showSidebarVaults"
-                class="flex p-2 mt-2 rounded items-center space-x-2 cursor-pointer bg-gray-200">
-
-                <!-- Vault icon and name -->
-                <div class="flex flex-1 items-center space-x-2" @click="changeVault(activeVault && activeVault.id)">
-                    <div
-                        class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                        <img v-if="activeVault && activeVault.icon" class="rounded-full object-cover"
-                            :src="activeVault.icon" alt="Vault Icon" />
-                        <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
-                            alt="Vault Icon" />
-                    </div>
-                    <p class="text-sm">{{ activeVault && activeVault.name }}</p>
-                </div>
-
-                <!-- More icon (3 dots) -->
-                <button class="rounded-full p-1 hover:bg-gray-300 transition"
-                    @click="router.push(`/vaults/${activeVaultID}/edit`)">
-                    <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
-                </button>
             </div>
         </div>
 
@@ -141,7 +119,7 @@ import { computed } from '@vue/reactivity';
 import { useVaultStore } from '@/stores/vaultStore';
 import { version } from "../../package.json";
 import { useAppStore } from '@/stores/appStore';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 
 export default defineComponent({
@@ -169,6 +147,7 @@ export default defineComponent({
         const vaultStore = useVaultStore();
 
         const router = useRouter();
+        const route = useRoute();
 
         // Refs for sidebar menus
         const showSidebarUserOptions = ref(false);
@@ -182,12 +161,12 @@ export default defineComponent({
         const isOnline = computed(() => appStore.isOnline);
         const email = computed(() => userStore.getEmail);
         const vaults = computed(() => vaultStore.getAll);
-        const activeVaultID = computed(() => vaultStore.getActiveID);
-        const activeVault = computed(() => vaultStore.getActive);
+
+        const activeVaultID = computed(() => route.query.id);
 
         // Function to handle changing vaults by updating the ID in the vault store.
         const changeVault = (id: string) => {
-            router.push(`${PAGES.VAULT}/${id}`);
+            router.push(`${PAGES.VAULT}?id=${id}`);
         }
 
         return {
@@ -207,8 +186,6 @@ export default defineComponent({
             email,
             vaults,
             activeVaultID,
-
-            activeVault,
 
             changeVault
         }
