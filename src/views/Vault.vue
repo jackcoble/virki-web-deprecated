@@ -2,11 +2,11 @@
   <div class="flex flex-col h-full p-4" v-if="!isFirstLoad">
     <!-- Name, Description and button to add entry -->
     <div class="flex items-center p-2 pb-4" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
-      <div class="flex flex-1">
-        <div class="space-y-1">
-          <p>Test Vault</p>
-          <p class="text-xs">Example description</p>
-        </div>
+      <div class="flex flex-grow h-full space-x-2 items-center">
+          <div>
+            <h2 class="text-lg">{{ activeVault.name }} </h2>
+            <p class="text-sm" :class="activeVault?.description ? '' : 'md:p-2.5'">{{ activeVault?.description }}</p>
+          </div>
       </div>
 
       <div class="flex">
@@ -99,7 +99,7 @@ export default defineComponent({
     const isFirstLoad = ref(true);
     const vaults = computed(() => vaultStore.getAll);
     const vaultIdPresent = computed(() => !!route.query.id);
-    const activeVault = computed(() => vaultStore.getActive);
+    const activeVault = computed(() => vaultStore.getAll.find(v => v.id === route.query.id));
     const isOnline = computed(() => appStore.isOnline);
 
     // Sidebar refs
