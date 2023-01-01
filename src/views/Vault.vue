@@ -98,8 +98,8 @@ export default defineComponent({
     // should be false.
     const isFirstLoad = ref(true);
     const vaults = computed(() => vaultStore.getAll);
-    const vaultIdPresent = computed(() => !!route.query.id);
-    const activeVault = computed(() => vaultStore.getAll.find(v => v.id === route.query.id));
+    const vaultIdPresent = computed(() => !!route.query.vault);
+    const activeVault = computed(() => vaultStore.getAll.find(v => v.id === route.query.vault));
     const isOnline = computed(() => appStore.isOnline);
 
     // Sidebar refs

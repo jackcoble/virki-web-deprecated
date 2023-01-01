@@ -186,12 +186,12 @@ export default defineComponent({
         const email = computed(() => userStore.getEmail);
         const vaults = computed(() => vaultStore.getAll);
 
-        const vaultIdPresent = computed(() => !!route.query.id);
-        const activeVaultID = computed(() => route.query.id);
+        const vaultIdPresent = computed(() => !!route.query.vault);
+        const activeVaultID = computed(() => route.query.vault);
 
         // Function to handle changing vaults by updating the ID in the vault store.
         const changeVault = (id: string) => {
-            router.push(`${PAGES.VAULT}?id=${id}`);
+            router.push(`${PAGES.VAULT}?vault=${id}`);
         }
 
         return {
