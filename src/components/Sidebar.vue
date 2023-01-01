@@ -7,7 +7,7 @@
             <div class="flex p-2 mb-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="!vaultIdPresent ? 'bg-gray-200' : ''" @click="router.push(PAGES.VAULT)">
                 <div class="flex flex-1 items-center space-x-2">
                     <div class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                        <CollectionIcon class="w-4 h-4 text-gray-500" />
+                        <CollectionIcon class="w-4 h-4 text-mountain-meadow" />
                     </div>
                     <p class="text-sm">All Vaults</p>
                 </div>
@@ -43,13 +43,11 @@
                     :class="activeVaultID === vault.id ? 'bg-gray-200' : ''">
                     <!-- Vault icon and name -->
                     <div class="flex flex-1 items-center space-x-2" @click="changeVault(vault.id)">
-                        <div
-                            class="object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                            <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon"
-                                alt="Vault Icon" />
-                            <img v-else class="rounded-full object-cover" src="@/assets/images/virki_logo_bg_dark.png"
-                                alt="Vault Icon" />
+                        <div class="flex justify-center items-center object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                            <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon" alt="Vault Icon" />
+                            <CubeIcon v-else class="w-4 h-4 text-mountain-meadow" />
                         </div>
+
                         <p class="text-sm">{{ vault.name }}</p>
                     </div>
 
@@ -132,7 +130,9 @@ import {
     StatusOfflineIcon,
     StatusOnlineIcon,
     EmojiSadIcon,
-    CollectionIcon
+    CollectionIcon,
+    CubeIcon,
+    StarIcon
 
 } from "@heroicons/vue/outline";
 import { useUserStore } from '@/stores/userStore';
@@ -142,7 +142,6 @@ import { version } from "../../package.json";
 import { useAppStore } from '@/stores/appStore';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
-import { StarIcon } from '@heroicons/vue/solid';
 
 export default defineComponent({
     name: "Sidebar",
@@ -162,7 +161,8 @@ export default defineComponent({
     StatusOnlineIcon,
     EmojiSadIcon,
     CollectionIcon,
-    StarIcon
+    StarIcon,
+    CubeIcon
 },
     setup() {
         // Stores
