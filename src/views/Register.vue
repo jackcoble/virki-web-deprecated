@@ -175,7 +175,7 @@ export default defineComponent({
                 keyStore.setMasterEncryptionKey(encryptionKey);
                 keyStore.setEncryptedKeys(res.data.encrypted_keys);
 
-                router.push(PAGES.ROOT);
+                router.push(PAGES.LOGIN);
             } catch (e) {
                 toaster.error(e.response.data.error);
             } finally {

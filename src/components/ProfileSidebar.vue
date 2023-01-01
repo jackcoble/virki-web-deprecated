@@ -21,13 +21,13 @@
             </router-link>
 
             <!-- Change Password -->
-            <router-link :to="PAGES.ROOT" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
+            <router-link :to="PAGES.LOGIN" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
                 <KeyIcon class="w-6" />
                 <h2 class="text-sm">Password</h2>
             </router-link>
 
             <!-- Subscription -->
-            <router-link :to="PAGES.ROOT" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
+            <router-link :to="PAGES.LOGIN" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
                 <SparklesIcon class="w-6 text-yellow-500" />
                 <h2 class="text-sm">Subscription</h2>
             </router-link>
@@ -105,7 +105,7 @@ export default defineComponent({
                 await userService.Logout();
             } finally {
                 useLogout();
-                router.push(PAGES.ROOT);
+                router.push(PAGES.LOGIN);
             }
         }
 

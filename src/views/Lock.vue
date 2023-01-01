@@ -102,7 +102,7 @@ export default defineComponent({
             } finally {
                 // Ignore any errors just force the logout
                 useLogout();
-                router.push(PAGES.ROOT);
+                router.push(PAGES.LOGIN);
             }
         }
 

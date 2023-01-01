@@ -12,7 +12,7 @@
                 <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
 
                 <div class="flex space-x-2">
-                    <b-button classType="danger" @click="router.push(PAGES.ROOT)">
+                    <b-button classType="danger" @click="router.push(PAGES.LOGIN)">
                         <div class="flex flex-row justify-center items-center space-x-1">
                             <XIcon class="w-5 md:-ml-1" />
                             <span>Cancel</span>

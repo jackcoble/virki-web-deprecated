@@ -76,7 +76,7 @@ const router = createRouter({
     },
 
     {
-      path: PAGES.ROOT,
+      path: PAGES.LOGIN,
       name: 'login',
       component: Login,
       meta: {
@@ -115,7 +115,7 @@ router.beforeEach(async (to, from, next) => {
 
   // If the user is going to the root path, already has a session, the encrypted data, and encryption key
   // in memory, allow them to navigate straight to the vault page
-  if (to.path === PAGES.ROOT && session && (encryptedKeys && encryptedKeys.master_encryption_key) && (masterEncryptionKey && masterEncryptionKey.length !== 0)) {
+  if (to.path === PAGES.LOGIN && session && (encryptedKeys && encryptedKeys.master_encryption_key) && (masterEncryptionKey && masterEncryptionKey.length !== 0)) {
     return next({ path: PAGES.VAULT });
   }
 
@@ -123,13 +123,13 @@ router.beforeEach(async (to, from, next) => {
   // or if they already have the decrypted master key
   if (to.path === PAGES.LOCK) {
     if (!session || !encryptedKeys.master_encryption_key || (masterEncryptionKey && masterEncryptionKey.length !== 0)) {
-      return next({ path: PAGES.ROOT })
+      return next({ path: PAGES.LOGIN })
     }
   }
 
   // If the path we're going to is the root, and the device has encrypted keys and a session token, but no decrypted key
   // allow them to "unlock" their account.
-  if (to.path === PAGES.ROOT && (encryptedKeys && encryptedKeys.master_encryption_key) && session && !masterEncryptionKey) {
+  if (to.path === PAGES.LOGIN && (encryptedKeys && encryptedKeys.master_encryption_key) && session && !masterEncryptionKey) {
     return next({ path: PAGES.LOCK });
   } 
 
@@ -140,7 +140,7 @@ router.beforeEach(async (to, from, next) => {
     // If we don't have all of this, redirect to the root.
     const hasAllKeys = (encryptedKeys && encryptedKeys.master_encryption_key) && session && (masterEncryptionKey && masterEncryptionKey.length !== 0);
     if (!hasAllKeys) {
-      next({ path: PAGES.ROOT });
+      next({ path: PAGES.LOGIN });
     }
   }
 

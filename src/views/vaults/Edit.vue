@@ -14,7 +14,7 @@
             <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
             
             <div class="flex space-x-2">
-                <b-button classType="danger" @click="router.push(PAGES.ROOT)">Cancel</b-button>
+                <b-button classType="danger" @click="router.push(PAGES.LOGIN)">Cancel</b-button>
                 <b-button type="submit" :loading="isUpdating">Update</b-button>
             </div>
         </form>
@@ -150,7 +150,7 @@ export default defineComponent({
 
             await sleep(1);
             isUpdating.value = false;
-            router.push(PAGES.ROOT);
+            router.push(PAGES.LOGIN);
         }
 
         // Handle when we want to delete a vault
@@ -173,7 +173,7 @@ export default defineComponent({
 
             // Close the modal and redirect to index
             showDeleteVaultModal.value = false;
-            router.push(PAGES.ROOT);
+            router.push(PAGES.LOGIN);
         }
 
         return {

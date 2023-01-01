@@ -43,7 +43,7 @@ api.interceptors.response.use(
             console.log("Session token is invalid, clearing data and logging out...");
 
             useLogout();
-            router.push(PAGES.ROOT);
+            router.push(PAGES.LOGIN);
 
             return;
         }

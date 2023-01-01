@@ -135,7 +135,7 @@ export default defineComponent({
                 await useLogout();
             } finally {
                 // Ignore any errors and just push straight to root
-                router.push(PAGES.ROOT);
+                router.push(PAGES.LOGIN);
             }
         }
 

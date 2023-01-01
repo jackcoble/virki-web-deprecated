@@ -1,8 +1,8 @@
 export enum PAGES {
-    ROOT = "/",
+    LOGIN = "/login",
     REGISTER = "/signup",
     LOCK = "/lock",
-    VAULT = "/vaults",
+    VAULT = "/",
     EDIT_VAULT = "/vaults/edit",
     NEW_VAULT = "/vaults/new",
 

@@ -158,7 +158,7 @@ export default defineComponent({
     // handleLogout is called when we receive the "ok" event from the expired session modal.
     const handleLogout = () => {
       useLogout();
-      router.push({ path: PAGES.ROOT });
+      router.push({ path: PAGES.LOGIN });
     }
 
     return {

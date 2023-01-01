@@ -35,7 +35,7 @@ onMounted(() => {
     const leastActivityDate = sub(new Date(), { minutes: 15 });
     const sessionToken = userStore.getSessionToken;
 
-    if (leastActivityDate > fromUnixTime(lastActiveTimestamp) && (route.path !== PAGES.LOCK || PAGES.ROOT) && sessionToken) {
+    if (leastActivityDate > fromUnixTime(lastActiveTimestamp) && (route.path !== PAGES.LOCK || PAGES.LOGIN) && sessionToken) {
       // Clear the encryption key and vaults
       keyStore.clearMasterEncryptionKey();
       vaultStore.clear();
