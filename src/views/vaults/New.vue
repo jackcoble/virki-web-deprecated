@@ -7,7 +7,7 @@
                 End-to-End Encryption.</p>
 
             <form @submit.prevent="handleCreateVault" class="space-y-4 pt-4 pb-2 mx-auto">
-                <b-icon-upload class="mx-auto" @imageData="vault.icon = $event"></b-icon-upload>
+                <EncryptedFileUpload class="mx-auto" :encryption-key="masterEncryptionKey" @object-key="handleObjectKey" />
                 <b-input placeholder="Vault name" v-model="vault.name" required></b-input>
                 <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
 
@@ -40,20 +40,21 @@ import type { Vault } from '@/common/interfaces/vault';
 import { CryptoWorker } from '@/common/comlink';
 import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/common/utils/cipher';
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { LockClosedIcon } from "@heroicons/vue/solid"
 import vaultService from "@/service/api/vaultService";
 import { useAppStore } from '@/stores/appStore';
 import { CheckIcon, XIcon } from "@heroicons/vue/outline"
-import { VirkiStorageService } from '@/common/services/storage.service';
+import EncryptedFileUpload from '@/components/EncryptedFileUpload.vue';
 
 export default defineComponent({
     name: "CreateVault",
     components: {
         LockClosedIcon,
         CheckIcon,
-        XIcon
+        XIcon,
+        EncryptedFileUpload
     },
     setup() {
         const router = useRouter();
@@ -63,8 +64,17 @@ export default defineComponent({
         const vaultStore = useVaultStore();
         const toaster = useToaster();
 
+        const masterEncryptionKey = computed(() => keyStore.getMasterEncryptionKey);
+
         const vault = ref({} as Vault);
         const isCreatingVault = ref(false);
+
+        // When we receive an object key, we want to set it in a ref so we can use it when
+        // submitted to the API
+        const iconObjectKey = ref("");
+        const handleObjectKey = (key: string) => {
+            iconObjectKey.value = key;
+        }
 
         // Handle creating an encrypted vault using the data from the "vault" ref.
         const handleCreateVault = async () => {
@@ -84,18 +94,14 @@ export default defineComponent({
             const encryptedVaultKeyObject = await cryptoWorker.encryptToB64(vaultEncryptionKey, masterEncryptionKey);
             const encryptedVaultKey = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedVaultKeyObject.ciphertext, encryptedVaultKeyObject.nonce, encryptedVaultKeyObject.mac);
 
-            // We need to then encrypt the name, description and icon with the vault encryption key.
-            let encryptedName, encryptedDescription, encryptedIcon;
+            // We need to then encrypt the name and description with the vault encryption key.
+            let encryptedName, encryptedDescription;
             const encryptedNameObject = await cryptoWorker.encryptUTF8(vault.value.name, vaultEncryptionKey);
             encryptedName = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedNameObject.ciphertext, encryptedNameObject.nonce, encryptedNameObject.mac);
 
             if (vault.value.description) {
                 const encryptedDescriptionObject = await cryptoWorker.encryptUTF8(vault.value.description, vaultEncryptionKey);
                 encryptedDescription = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedDescriptionObject.ciphertext, encryptedDescriptionObject.nonce, encryptedDescriptionObject.mac);
-            }
-            if (vault.value.icon) {
-                const encryptedIconObject = await cryptoWorker.encryptUTF8(vault.value.icon, vaultEncryptionKey);
-                encryptedIcon = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedIconObject.ciphertext, encryptedIconObject.nonce, encryptedIconObject.mac);
             }
 
             // Construct a vault object with the encrypted data
@@ -107,14 +113,14 @@ export default defineComponent({
                 key: encryptedVaultKey,
                 name: encryptedName,
                 description: encryptedDescription,
-                icon: encryptedIcon,
                 created: createdDate,
                 modified: createdDate
             }
 
-            // Store the encrypted vault in IndexedDB first
-            const storageService = new VirkiStorageService();
-            await storageService.addVault(encryptedVaultObject);
+            // If we have an icon (S3 object key), attach that
+            if (iconObjectKey.value) {
+                encryptedVaultObject.icon = iconObjectKey.value;
+            }
 
             // If online, send the encrypted vault to the API
             if (appStore.isOnline) {
@@ -123,6 +129,10 @@ export default defineComponent({
                 } catch (e) {
                     return toaster.error("An unknown error occurred storing your vault on the Virki Sync server!");
                 }
+            } else {
+                // Exit out
+                alert("Device is offline, can't add new vault to API!")
+                return;
             }
 
             // Create a copy of the encrypted vault, but put in the decrypted data again before inserting into the "vaultStore"
@@ -130,7 +140,6 @@ export default defineComponent({
             decryptedVaultObject.key = vaultEncryptionKey;
             decryptedVaultObject.name = vault.value.name;
             decryptedVaultObject.description = vault.value.description;
-            decryptedVaultObject.icon = vault.value.icon;
 
             // Artificial sleep to keep the user waiting...
             await sleep(1.5);
@@ -138,7 +147,7 @@ export default defineComponent({
             isCreatingVault.value = false;
             
             vaultStore.add(decryptedVaultObject);            
-            router.push(`${PAGES.VAULT}/${encryptedVaultObject.id}`);
+            router.push(`${PAGES.VAULT}?id=${vault.value.id}`);
         }
 
         return {
@@ -149,7 +158,11 @@ export default defineComponent({
             vault,
             isCreatingVault,
 
+            masterEncryptionKey,
+            iconObjectKey,
+
             handleCreateVault,
+            handleObjectKey
         }
     }
 })
