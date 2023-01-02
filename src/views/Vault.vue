@@ -59,7 +59,6 @@ import { useRoute, useRouter } from "vue-router";
 
 import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
-import { useLogout } from "@/composables/useLogout";
 
 import { PAGES } from "@/router/pages";
 import vaultService from "@/service/api/vaultService";
@@ -93,12 +92,9 @@ export default defineComponent({
     const isOnline = computed(() => appStore.isOnline);
 
     // Sidebar refs
-    const closeMenuMobile = ref(false);
     const showSidebarVaults = ref(false);
-    const showSidebarUserOptions = ref(false);
     const showCreateVault = ref(false);
     const showEditVault = ref(false);
-    const vaultToEdit = ref("");
 
     onMounted(async () => {
       // Fetch all the vaults if we're online and decrypt them.
@@ -142,12 +138,6 @@ export default defineComponent({
       isFirstLoad.value = false;
     })
 
-    // handleLogout is called when we receive the "ok" event from the expired session modal.
-    const handleLogout = () => {
-      useLogout();
-      router.push({ path: PAGES.LOGIN });
-    }
-
     return {
       router,
 
@@ -159,14 +149,9 @@ export default defineComponent({
       isOnline,
       vaultIdPresent,
 
-      closeMenuMobile,
       showSidebarVaults,
-      showSidebarUserOptions,
       showCreateVault,
-      showEditVault,
-      vaultToEdit,
-
-      handleLogout
+      showEditVault
     };
   }
 })
