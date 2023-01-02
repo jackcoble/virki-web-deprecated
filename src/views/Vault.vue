@@ -49,16 +49,6 @@
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
     </svg>
   </div>
-
-  <!-- Session expired modal -->
-  <b-modal v-if="showExpiredSessionModal" @ok="handleLogout">
-    <template v-slot:body>
-      <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Session expired!</h3>
-      <div class="mt-2">
-        <p class="text-sm text-gray-500">All data on this device has been cleared, and you will be signed out.</p>
-      </div>
-    </template>
-  </b-modal>
 </template>
 
 <script lang="ts">
@@ -109,9 +99,6 @@ export default defineComponent({
     const showCreateVault = ref(false);
     const showEditVault = ref(false);
     const vaultToEdit = ref("");
-
-    // Modal refs
-    const showExpiredSessionModal = ref(false);
 
     onMounted(async () => {
       // Fetch all the vaults if we're online and decrypt them.
@@ -178,8 +165,6 @@ export default defineComponent({
       showCreateVault,
       showEditVault,
       vaultToEdit,
-
-      showExpiredSessionModal,
 
       handleLogout
     };
