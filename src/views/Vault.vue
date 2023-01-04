@@ -10,7 +10,7 @@
       </div>
 
       <div class="flex">
-        <b-button class="w-36" @click="router.push(`${PAGES.VAULT}/${activeVault && activeVault.id}/tokens/new`)">
+        <b-button class="w-36" @click="router.push(`/tokens/new?vault=${presentVaultId}`)">
           <div class="flex flex-row justify-center items-center space-x-1">
             <PlusCircleIcon class="w-4" />
             <span>Add</span>
@@ -87,6 +87,7 @@ export default defineComponent({
     // should be false.
     const isFirstLoad = ref(true);
     const vaults = computed(() => vaultStore.getAll);
+    const presentVaultId = computed(() => route.query.vault);
     const vaultIdPresent = computed(() => !!route.query.vault);
     const activeVault = computed(() => vaultStore.getAll.find(v => v.id === route.query.vault));
     const isOnline = computed(() => appStore.isOnline);
@@ -147,6 +148,7 @@ export default defineComponent({
       vaults,
       activeVault,
       isOnline,
+      presentVaultId,
       vaultIdPresent,
 
       showSidebarVaults,

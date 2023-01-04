@@ -49,6 +49,15 @@
             </div>
         </div>
 
+        <!-- Vault -->
+        <div>
+            <label for="vault" class="block mb-2 font-medium text-gray-900">Vault</label>
+            <select id="vault" v-model="token.vault_id"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <option v-for="vault in vaults" :key="vault.id" :value="vault.id">{{ vault.name }}</option>
+            </select>
+        </div>
+
         <!-- Backup Codes -->
         <!--
         <div>
@@ -139,11 +148,12 @@
 
 <script lang="ts">
 import { PAGES } from '@/router/pages';
-import { defineComponent, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, defineComponent, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { OTPType, OTPAlgorithm } from "@/common/enums/otp";
 import type { Token } from '@/common/interfaces/token';
 import { GlobeIcon, UserIcon, KeyIcon, ClockIcon, PencilIcon, QrcodeIcon, ChevronRightIcon, ChevronDownIcon } from "@heroicons/vue/outline";
+import { useVaultStore } from '@/stores/vaultStore';
 
 export default defineComponent({
     name: "NewToken",
@@ -159,13 +169,20 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter();
+        const route = useRoute();
+        const vaultStore = useVaultStore();
+
+        const vaults = computed(() => vaultStore.getAll);
+        const vaultInQuery = computed(() => route.query.vault);
 
         const token = ref({
             // Set some defaults...
             algorithm: OTPAlgorithm.SHA1,
             type: OTPType.TOTP,
             period: 30,
-            counter: 0
+            counter: 0,
+
+            vault_id: vaultInQuery.value
         } as Token);
         const showAdvanced = ref(false);
 
@@ -177,6 +194,8 @@ export default defineComponent({
 
         return {
             router,
+            vaults,
+            vaultInQuery,
 
             PAGES,
 
