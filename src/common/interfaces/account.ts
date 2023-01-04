@@ -6,5 +6,4 @@ export interface Account {
     name: string;
     session_token: string;
     plan: Plan;
-    active_vault_id?: string;
 }

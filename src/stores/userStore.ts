@@ -29,14 +29,6 @@ export const useUserStore = defineStore({
       this.avatarUrl = url;
     },
 
-    setActiveVault(id: string) {
-      this.account.active_vault_id = id;
-    },
-
-    clearActiveVault() {
-      this.account.active_vault_id = "";
-    },
-
     clear() {
       this.account = null as any;
     }
