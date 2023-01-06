@@ -9,7 +9,7 @@
                     <div class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
                         <CollectionIcon class="w-4 h-4 text-mountain-meadow" />
                     </div>
-                    <p class="text-sm">All Vaults</p>
+                    <p class="text-sm">All Items</p>
                 </div>
             </div>
 
