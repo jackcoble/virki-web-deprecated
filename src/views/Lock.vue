@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import useToaster from "@/composables/useToaster";
@@ -51,6 +51,7 @@ import { PAGES } from "@/router/pages";
 import { useLogout } from "@/composables/useLogout";
 import userService from "@/service/api/userService";
 import { useUserStore } from "@/stores/userStore";
+import { VirkiStorageService } from "@/common/services/storage.service";
 
 export default defineComponent({
     name: "Lock",
@@ -69,6 +70,17 @@ export default defineComponent({
         
         const userStore = useUserStore();
         const keyStore = useKeyStore();
+
+        onMounted(async () => {
+            // Check for an avatar. If it's available as a Blob, create a Data URL from it
+            const storageService = new VirkiStorageService();
+
+            const avatarBlob = await storageService.getAvatar();
+            if (avatarBlob) {
+                const avatarDataURI = URL.createObjectURL(avatarBlob);
+                userStore.setAvatarURL(avatarDataURI);
+            }
+        })
 
         // Handle the unlock process
         const handleUnlock = async () => {
