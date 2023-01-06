@@ -4,7 +4,7 @@
             <!-- Header -->
             <div class="flex justify-center">
                 <img v-if="!avatar" class="w-24" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo" />
-                <img v-else class="w-24 rounded-full border-4 border-gray-300" :src="avatar" alt="Avatar">
+                <img v-else class="w-24 h-24 rounded-full border-4 border-gray-300" :src="avatar" alt="Avatar">
             </div>
             <div space-y-1>
                 <h1 class="text-xl text-center">Hi <span class="text-mountain-meadow">{{ name }}</span> 👋</h1>
