@@ -6,7 +6,7 @@
             <div>
                 <!-- Icon uploader -->
                 <div class="flex justify-center">
-                    <b-icon-upload :image="token.icon" />
+                    <EncryptedFileUpload :encryption-key="masterEncryptionKey" @object-key="handleObjectKey" />
                 </div>
             </div>
 
@@ -154,26 +154,31 @@ import { OTPType, OTPAlgorithm } from "@/common/enums/otp";
 import type { Token } from '@/common/interfaces/token';
 import { GlobeIcon, UserIcon, KeyIcon, ClockIcon, PencilIcon, QrcodeIcon, ChevronRightIcon, ChevronDownIcon } from "@heroicons/vue/outline";
 import { useVaultStore } from '@/stores/vaultStore';
+import EncryptedFileUpload from '@/components/EncryptedFileUpload.vue';
+import { useKeyStore } from '@/stores/keyStore';
 
 export default defineComponent({
     name: "NewToken",
     components: {
-        GlobeIcon,
-        UserIcon,
-        KeyIcon,
-        ClockIcon,
-        PencilIcon,
-        QrcodeIcon,
-        ChevronRightIcon,
-        ChevronDownIcon
-    },
+    GlobeIcon,
+    UserIcon,
+    KeyIcon,
+    ClockIcon,
+    PencilIcon,
+    QrcodeIcon,
+    ChevronRightIcon,
+    ChevronDownIcon,
+    EncryptedFileUpload
+},
     setup() {
         const router = useRouter();
         const route = useRoute();
         const vaultStore = useVaultStore();
+        const keyStore = useKeyStore();
 
         const vaults = computed(() => vaultStore.getAll);
         const vaultInQuery = computed(() => route.query.vault);
+        const masterEncryptionKey = computed(() => keyStore.getMasterEncryptionKey);
 
         const token = ref({
             // Set some defaults...
@@ -189,13 +194,19 @@ export default defineComponent({
         // Handle creating an encrypted token
         const handleCreateToken = async () => {
             // Create a copy of the token ref for us to work on
-            const tokenToEncrypt = { ...token.value };
+            const tokenToEncrypt = { ...token.value };        
+        }
+
+        // When user uploads an icon, set the object key in the token ref
+        const handleObjectKey = (key: string) => {
+            token.value.icon = key;
         }
 
         return {
             router,
             vaults,
             vaultInQuery,
+            masterEncryptionKey,
 
             PAGES,
 
@@ -206,6 +217,7 @@ export default defineComponent({
             showAdvanced,
 
             handleCreateToken,
+            handleObjectKey
         }
     }
 })
