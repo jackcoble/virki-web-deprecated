@@ -1,16 +1,9 @@
 <template>
   <div class="flex flex-col h-full p-4" v-if="!isFirstLoad">
-    <!-- Name, Description and button to add entry -->
-    <div class="flex items-center p-2 pb-4" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
-      <div class="flex flex-grow h-full space-x-2 items-center">
-          <div>
-            <h2 class="text-lg">{{ activeVault.name }} </h2>
-            <p class="text-sm" :class="activeVault?.description ? '' : 'md:p-2.5'">{{ activeVault?.description }}</p>
-          </div>
-      </div>
-
+    <!-- Button to add entry to vault -->
+    <div class="flex justify-end p-2 pb-4" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
       <div class="flex">
-        <b-button class="w-36" @click="router.push(`/tokens/new?vault=${presentVaultId}`)">
+        <b-button class="w-36">
           <div class="flex flex-row justify-center items-center space-x-1">
             <PlusCircleIcon class="w-4" />
             <span>Add</span>
@@ -36,7 +29,7 @@
     <div v-if="vaultIdPresent && vaults.length !== 0 && !showCreateVault && !showEditVault"
       class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
       <EmojiSadIcon class="w-12 text-mountain-meadow" />
-      <p class="text-sm">You have no authentication tokens in <span class="font-bold">{{ activeVault && activeVault.name }}</span>.</p>
+      <p class="text-sm">You have no authentication tokens in this vault.</p>
     </div>
   </div>
 
@@ -89,7 +82,6 @@ export default defineComponent({
     const vaults = computed(() => vaultStore.getAll);
     const presentVaultId = computed(() => route.query.vault);
     const vaultIdPresent = computed(() => !!route.query.vault);
-    const activeVault = computed(() => vaultStore.getAll.find(v => v.id === route.query.vault));
     const isOnline = computed(() => appStore.isOnline);
 
     // Sidebar refs
@@ -98,6 +90,16 @@ export default defineComponent({
     const showEditVault = ref(false);
 
     onMounted(async () => {
+      // If there is no vault ID in the query params, default to showing all
+      if (!route.query.vault) {
+        router.replace({
+          path: PAGES.VAULT,
+          query: {
+            vault: 'all'
+          }
+        })
+      }
+
       // Fetch all the vaults if we're online and decrypt them.
       if (appStore.isOnline) {
         try {
@@ -146,7 +148,6 @@ export default defineComponent({
 
       isFirstLoad,
       vaults,
-      activeVault,
       isOnline,
       presentVaultId,
       vaultIdPresent,

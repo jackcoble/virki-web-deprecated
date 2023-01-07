@@ -15,7 +15,6 @@ import Vault from "@/views/Vault.vue"
 import Account from "@/views/account/Account.vue"
 import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
-import NewToken from "@/views/vaults/tokens/New.vue";
 import AccountSessions from "@/views/account/Sessions.vue";
 import { useAppStore } from '@/stores/appStore'
 
@@ -45,11 +44,6 @@ const router = createRouter({
           path: `${PAGES.VAULT}/edit`,
           name: "EditVault",
           component: EditVault
-        },
-        {
-          path: `${PAGES.VAULT}/tokens/new`,
-          name: "newTokens",
-          component: NewToken
         }
       ]
     },
