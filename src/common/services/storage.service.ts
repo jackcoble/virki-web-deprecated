@@ -140,4 +140,25 @@ export class VirkiStorageService extends Dexie {
             return Promise.reject("There was an error retrieving avatar Blob from local DB!");
         }
     }
+
+    /**
+     * Retrieves the current object key for the avatar
+     * @returns {string}
+     */
+    async getAvatarKey(): Promise<string> {
+        // Fetch a list of all the keys and filter by avatar
+        const keys = await this._files.toCollection().keys();
+        const avatarKeys = keys.filter(k => k.toString().startsWith("avatar"));
+
+        // Fetch the first key and use that as the avatar
+        let avatarKey = avatarKeys[0].toString();
+        if (!avatarKey || avatarKey == "") {
+            return Promise.resolve("");
+        }
+
+        // Need to strip the leading "avatar-" prefix from the string
+        avatarKey = avatarKey.replace("avatar-", "");
+
+        return avatarKey;
+    }
 }
