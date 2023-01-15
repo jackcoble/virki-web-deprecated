@@ -81,10 +81,24 @@ export default defineComponent({
             const storageService = new VirkiStorageService();
             const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
+            // Request for the avatar file. This will enable us to check if the object key
+            // is different.
+            const existingAvatarKey = await storageService.getAvatarKey();
+            const avatar = await userService.GetAvatar();
+
+            let updateAvatar = false;
+            if (existingAvatarKey !== avatar.data.file.key) {
+                // The object key we have from the API is different to what we have locally
+                // so force an update
+                updateAvatar = true;
+            }
+
+            // If we have no local avatar file, or the file needs updating
+            // then decrypt the avatar. 
             const avatarFile = await storageService.getAvatar();
-            if (!avatarFile) {
+            if (!avatarFile || updateAvatar) {
                 // Request for Presigned file URL and metadata
-                let res = await userService.GetAvatar();
+                let res = avatar;
                 const avatarFile = res.data.file;
                 const metadata = res.data.metadata;
 
