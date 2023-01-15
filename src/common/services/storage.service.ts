@@ -97,6 +97,15 @@ export class VirkiStorageService extends Dexie {
      * @returns 
      */
     async addAvatar(key: string, file: Blob): Promise<void> {
+        // First we should look up any existing avatar files in the DB and delete them
+        // before adding the new avatar
+        const keys = await this._files.toCollection().keys();
+        const avatarKeys = keys.filter(k => k.toString().startsWith("avatar"));
+
+        avatarKeys.forEach(async avatarKey => {
+            await this._files.delete(avatarKey.toString());
+        })
+
         try {
             await this.saveFile(`avatar-${key}`, file);
         } catch (e) {
