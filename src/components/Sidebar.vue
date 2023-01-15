@@ -40,7 +40,7 @@
             <div v-if="showSidebarVaults" class="pt-2 space-y-1">
                 <div v-for="vault in vaults" :key="vault.id"
                     class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition"
-                    :class="activeVaultID === vault.id ? 'bg-gray-200' : ''">
+                    :class="route.params.id === vault.id ? 'bg-gray-200' : ''">
                     <!-- Vault icon and name -->
                     <div class="flex flex-1 items-center space-x-2" @click="changeVault(vault.id)">
                         <div class="flex justify-center items-center object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
