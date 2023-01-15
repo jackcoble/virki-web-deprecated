@@ -31,11 +31,13 @@
       <EmojiSadIcon class="w-12 text-mountain-meadow" />
       <p class="text-sm">You have no authentication tokens in this vault.</p>
     </div>
-  </div> 
-  
+  </div>
+
   <!-- Loading spinner -->
   <div v-else class="flex flex-col flex-grow justify-center items-center h-full p-4 text-center space-y-2">
-    <svg class="animate-spin h-10 w-10 text-mountain-meadow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"> <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+    <svg class="animate-spin h-10 w-10 text-mountain-meadow" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
       <path class="opacity-75" fill="currentColor"
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
     </svg>
@@ -67,7 +69,7 @@ export default defineComponent({
     PlusCircleIcon,
     ClockIcon,
     XIcon
-},
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -116,44 +118,52 @@ export default defineComponent({
               decryptedVault.encryption_key = vaultEncryptionKey;
               decryptedVault.name = decryptedName;
 
-              // Whilst we are at it, if the vault has an icon, fetch and decrypt it
-              // then store in IndexedDB
+              // Whilst we are at it, if the vault has an icon, we should
+              // check if it already exists locally. If not, then fetch
+              // and decrypt.
               if (decryptedVault.icon) {
-                console.log("Vault has an icon:", decryptedVault.icon);
-
-                try {
-                  let res = await userService.GetFile(decryptedVault.icon);
-                  const file = res.data.file;
-                  const metadata = res.data.metadata;
-
-                  // First, let us decrypt the encryption key with our master key
-                  const cryptoWorker = await new CryptoWorker();
-                  const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
-
-                  // Decrypt the MIME type with the encryption key
-                  const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
-
-                  // Fetch the contents of the file from directly from S3
-                  res = await axios.get(file.url, {
-                      responseType: "arraybuffer"
-                  });
-                  const rawFile = res.data as ArrayBuffer;
-                  const uintFile = new Uint8Array(rawFile);
-
-                  // Decrypt file into a blob for us to then store in IndexedDB
-                  const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
-                  await storageService.saveFile(file.key, decryptedFile);
-
-                  const iconObjectURL = URL.createObjectURL(decryptedFile);
+                const existingIcon = await storageService.getFile(decryptedVault.icon);
+                if (existingIcon) {
+                  // Create a data URL
+                  const iconObjectURL = URL.createObjectURL(existingIcon);
                   decryptedVault.icon_blob = iconObjectURL;
-                } catch (e) {
-                  console.log(e);
+                }
+                else {
+                  // Otherwise fetch and decrypt...
+                  try {
+                    let res = await userService.GetFile(decryptedVault.icon);
+                    const file = res.data.file;
+                    const metadata = res.data.metadata;
+
+                    // First, let us decrypt the encryption key with our master key
+                    const cryptoWorker = await new CryptoWorker();
+                    const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
+
+                    // Decrypt the MIME type with the encryption key
+                    const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
+
+                    // Fetch the contents of the file from directly from S3
+                    res = await axios.get(file.url, {
+                      responseType: "arraybuffer"
+                    });
+                    const rawFile = res.data as ArrayBuffer;
+                    const uintFile = new Uint8Array(rawFile);
+
+                    // Decrypt file into a blob for us to then store in IndexedDB
+                    const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
+                    await storageService.saveFile(file.key, decryptedFile);
+
+                    const iconObjectURL = URL.createObjectURL(decryptedFile);
+                    decryptedVault.icon_blob = iconObjectURL;
+                  } catch (e) {
+                    console.log(e);
+                  }
                 }
               }
 
               // Add the decrypted vault into the Vault Store
               vaultStore.add(decryptedVault);
-            }) 
+            })
           }
         } catch (e) {
           // TODO: Handle this...
