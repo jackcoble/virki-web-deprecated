@@ -92,6 +92,23 @@ export class VirkiStorageService extends Dexie {
     }
 
     /**
+     * Retrieves decrypted file from IndexedDB
+     * @param key - Object key of a file
+     */
+    async getFile(key: string): Promise<Blob> {
+        try {
+            const file = await this._files.get(key);
+            if (file) {
+                return Promise.resolve(file);
+            } else {
+                return Promise.reject("File not found for this object key!");
+            }
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    /**
      * Save a decrypted file to IndexedDB
      * @param file - Blob of the decrypted avatar to save
      * @returns 
