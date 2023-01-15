@@ -123,7 +123,7 @@ export class VirkiStorageService extends Dexie {
         const avatarKeys = keys.filter(k => k.toString().startsWith("avatar"));
 
         // Fetch the first key and use that as the avatar
-        const avatarKey = avatarKeys[0].toString();
+        const avatarKey = avatarKeys[0] && avatarKeys[0].toString();
         if (!avatarKey || avatarKey == "") {
             return Promise.resolve(null);
         }
@@ -151,7 +151,7 @@ export class VirkiStorageService extends Dexie {
         const avatarKeys = keys.filter(k => k.toString().startsWith("avatar"));
 
         // Fetch the first key and use that as the avatar
-        let avatarKey = avatarKeys[0].toString();
+        let avatarKey = avatarKeys[0] && avatarKeys[0].toString();
         if (!avatarKey || avatarKey == "") {
             return Promise.resolve("");
         }
