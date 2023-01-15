@@ -13,7 +13,6 @@ import Register from "@/views/Register.vue"
 import Lock from "@/views/Lock.vue"
 import Vault from "@/views/Vault.vue"
 import Account from "@/views/account/Account.vue"
-import NewVault from "@/views/vaults/New.vue"
 import EditVault from '@/views/vaults/Edit.vue'
 import AccountSessions from "@/views/account/Sessions.vue";
 import { useAppStore } from '@/stores/appStore'
