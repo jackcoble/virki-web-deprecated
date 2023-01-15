@@ -1,6 +1,6 @@
 // Representation of a Vault
 export interface Vault {
-    id?: string;
+    id: string;
     encryption_key: string;
     name: string;
     icon?: string;
