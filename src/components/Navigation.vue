@@ -104,7 +104,7 @@ export default defineComponent({
                 // Decrypt file into a blob for us to then store in IndexedDB
                 const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
                 const storageService = new VirkiStorageService();
-                await storageService.addAvatar(decryptedFile);
+                await storageService.addAvatar(avatarFile.key, decryptedFile);
 
                 const avatarFileObjectURL = URL.createObjectURL(decryptedFile);
                 userStore.setAvatarURL(avatarFileObjectURL);
