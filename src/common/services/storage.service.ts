@@ -95,13 +95,13 @@ export class VirkiStorageService extends Dexie {
      * Retrieves decrypted file from IndexedDB
      * @param key - Object key of a file
      */
-    async getFile(key: string): Promise<Blob> {
+    async getFile(key: string): Promise<Blob | null> {
         try {
             const file = await this._files.get(key);
             if (file) {
                 return Promise.resolve(file);
             } else {
-                return Promise.reject("File not found for this object key!");
+                return Promise.resolve(null);
             }
         } catch (e) {
             return Promise.reject(e);
