@@ -3,7 +3,7 @@
         <!-- Show frowny face if we've got no tokens, but have vaults available -->
         <div class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
             <StarIcon class="w-12 text-yellow-500" />
-            <p class="text-sm">You have no favourites just yet!</p>
+            <p class="text-sm">Any favourites will appear here!</p>
         </div>
     </div>
 </template>
