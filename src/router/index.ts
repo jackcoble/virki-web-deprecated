@@ -36,6 +36,11 @@ const router = createRouter({
           component: Vault
         },
         {
+          path: `${PAGES.FAVOURITES}`,
+          name: "Favourites",
+          component: Vault
+        },
+        {
           path: PAGES.NEW_VAULT,
           name: "NewVault",
           component: NewVault

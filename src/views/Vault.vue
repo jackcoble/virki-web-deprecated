@@ -88,16 +88,6 @@ export default defineComponent({
     const showEditVault = ref(false);
 
     onMounted(async () => {
-      // If there is no vault ID in the query params, default to showing all
-      if (!route.query.vault) {
-        router.replace({
-          path: PAGES.VAULT,
-          query: {
-            vault: 'all'
-          }
-        })
-      }
-
       // Fetch all the vaults if we're online and decrypt them.
       if (appStore.isOnline) {
         try {
