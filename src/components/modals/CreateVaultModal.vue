@@ -33,7 +33,8 @@ export default defineComponent({
       EncryptedFileUpload,
       BaseModal
     },
-    setup() {
+    emits: ["ok"],
+    setup(props, { emit }) {
       // Stores
       const keyStore = useKeyStore();
 
@@ -83,7 +84,8 @@ export default defineComponent({
 
         // Send the vault object to the API
         try {
-          await vaultService.addVault(encryptedVault)
+          await vaultService.addVault(encryptedVault);
+          emit("ok");
         } catch (e) {
           return toaster.error("Unable to save Vault!");
         }

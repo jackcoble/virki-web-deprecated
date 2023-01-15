@@ -31,7 +31,7 @@
                     <p class="text-sm">Vaults</p>
                 </button>
 
-                <button class="p-1 rounded-full hover:bg-gray-200" @click="router.push(PAGES.NEW_VAULT)">
+                <button class="p-1 rounded-full hover:bg-gray-200" @click="showCreateVaultModal = !showCreateVaultModal">
                     <PlusIcon class="w-4" />
                 </button>
             </div>
@@ -112,6 +112,9 @@
             </div>
         </template>
     </b-modal>
+
+    <!-- Create vault modal -->
+    <CreateVaultModal v-if="showCreateVaultModal" @ok="showCreateVaultModal = !showCreateVaultModal" @cancel="showCreateVaultModal = !showCreateVaultModal" />
 </template>
 
 <script lang="ts">
@@ -142,6 +145,7 @@ import { version } from "../../package.json";
 import { useAppStore } from '@/stores/appStore';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
+import CreateVaultModal from './modals/CreateVaultModal.vue';
 
 export default defineComponent({
     name: "Sidebar",
@@ -162,7 +166,8 @@ export default defineComponent({
     EmojiSadIcon,
     CollectionIcon,
     StarIcon,
-    CubeIcon
+    CubeIcon,
+    CreateVaultModal
 },
     setup() {
         // Stores
@@ -174,7 +179,6 @@ export default defineComponent({
         const route = useRoute();
 
         // Refs for sidebar menus
-        const showSidebarUserOptions = ref(false);
         const showSidebarVaults = ref(true);
         const showCreateVaultModal = ref(false);
 
@@ -201,7 +205,6 @@ export default defineComponent({
 
             PAGES,
 
-            showSidebarUserOptions,
             showSidebarVaults,
             showCreateVaultModal,
 

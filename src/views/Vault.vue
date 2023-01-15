@@ -31,13 +31,11 @@
       <EmojiSadIcon class="w-12 text-mountain-meadow" />
       <p class="text-sm">You have no authentication tokens in this vault.</p>
     </div>
-  </div>
-
+  </div> 
+  
   <!-- Loading spinner -->
   <div v-else class="flex flex-col flex-grow justify-center items-center h-full p-4 text-center space-y-2">
-    <svg class="animate-spin h-10 w-10 text-mountain-meadow" xmlns="http://www.w3.org/2000/svg" fill="none"
-      viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+    <svg class="animate-spin h-10 w-10 text-mountain-meadow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"> <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
       <path class="opacity-75" fill="currentColor"
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
     </svg>
@@ -66,7 +64,7 @@ export default defineComponent({
     PlusCircleIcon,
     ClockIcon,
     XIcon
-  },
+},
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -111,27 +109,23 @@ export default defineComponent({
           const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
           // Decrypt and add to the Pinia vault store
-          vaults.forEach(async vault => {
-            // Decrypt the vault encryption key using the master key
-            const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(vault.key, masterEncryptionKey);
+          if (vaults) {
+            vaults.forEach(async vault => {
+              // Decrypt the vault encryption key using the master key
+              const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(vault.encryption_key, masterEncryptionKey);
 
-            // We can proceed to decrypt the UTF8 name and description
-            let decryptedName, decryptedDescription;
-            decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(vault.name, vaultEncryptionKey);
+              // We can proceed to decrypt the UTF8 name
+              const decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(vault.name, vaultEncryptionKey);
 
-            if (vault.description) {
-              decryptedDescription = await cryptoWorker.decryptFromB64CipherStringToUTF8(vault.description, vaultEncryptionKey);
-            }
+              // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
+              const decryptedVault = { ...vault };
+              decryptedVault.encryption_key = vaultEncryptionKey;
+              decryptedVault.name = decryptedName;
 
-            // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
-            const decryptedVault = { ...vault };
-            decryptedVault.key = vaultEncryptionKey;
-            decryptedVault.name = decryptedName;
-            decryptedVault.description = decryptedDescription;
-
-            // Add the decrypted vault into the Vault Store
-            vaultStore.add(decryptedVault);
-          })
+              // Add the decrypted vault into the Vault Store
+              vaultStore.add(decryptedVault);
+            }) 
+          }
         } catch (e) {
           // TODO: Handle this...
           console.log(e);
