@@ -20,24 +20,6 @@ export const useVaultStore = defineStore({
         })
 
         return vaults;
-    },
-
-    getActiveID: () => {
-      const userStore = useUserStore();
-      return userStore.account.active_vault_id;
-    },
-    getActive: (state) => {
-      const userStore = useUserStore();
-      const activeVaultID = userStore.account.active_vault_id;
-
-      if (activeVaultID) {
-        const vault = state.vaults.get(activeVaultID);
-        if (!vault) {
-          return;
-        }
-
-        return vault;
-      }
     }
   },
 
