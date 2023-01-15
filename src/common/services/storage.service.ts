@@ -109,8 +109,19 @@ export class VirkiStorageService extends Dexie {
      * @returns {Blob | null}
      */
     async getAvatar(): Promise<Blob | null> {
+        // Fetch a list of all the keys and filter by avatar
+        const keys = await this._files.toCollection().keys();
+        const avatarKeys = keys.filter(k => k.toString().startsWith("avatar"));
+
+        // Fetch the first key and use that as the avatar
+        const avatarKey = avatarKeys[0].toString();
+        if (!avatarKey || avatarKey == "") {
+            return Promise.resolve(null);
+        }
+
+        // Retrieve the file for the key
         try {
-            const file = await this._files.get("avatar");
+            const file = await this._files.get(avatarKey);
             if (!file) {
                 return Promise.resolve(null)
             }
