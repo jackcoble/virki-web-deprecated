@@ -77,7 +77,7 @@ export class VirkiStorageService extends Dexie {
     // =========
     // Files
     // =========
-    
+
     /**
      * Saves a decrypted file into IndexedDB
      * @param key - Object key of the file
@@ -96,9 +96,9 @@ export class VirkiStorageService extends Dexie {
      * @param file - Blob of the decrypted avatar to save
      * @returns 
      */
-    async addAvatar(file: Blob): Promise<void> {
+    async addAvatar(key: string, file: Blob): Promise<void> {
         try {
-            await this.saveFile("avatar", file);
+            await this.saveFile(`avatar-${key}`, file);
         } catch (e) {
             return Promise.reject(e);
         }
