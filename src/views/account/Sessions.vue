@@ -68,8 +68,6 @@
                                                 @click="revokeSession(session)">Revoke</button>
                                         </td>
                                     </tr>
-
-                                    <!-- More people... -->
                                 </tbody>
                             </table>
                         </div>
@@ -81,6 +79,7 @@
 </template>
 
 <script lang="ts">import { useLogout } from '@/composables/useLogout';
+import useToaster from '@/composables/useToaster';
 import { PAGES } from '@/router/pages';
 import userService from '@/service/api/userService';
 import { useUserStore } from '@/stores/userStore';
@@ -98,6 +97,7 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter();
+        const toaster = useToaster();
 
         const sessions = ref();
 
@@ -120,6 +120,8 @@ export default defineComponent({
             // If it's this device we're revoking, do a logout
             if (session.this_device) {
                 return await handleLogout();
+            } else {
+                toaster.info("Session was revoked!");
             }
 
             // Update the sessions list
