@@ -8,7 +8,7 @@ export class VirkiStorageService extends Dexie {
     // The Virki storage service uses IndexedDB (with Dexie as a wrapper) for an offline-first data store.
     // Specify the tables and the types they'll be storing.
     private _vaults!: Dexie.Table<Vault, string>; // Stores a vault with the Vault ID in string format acting as a PK
-    private _files!: Dexie.Table<Blob, string>;
+    private _files!: Dexie.Table<Blob, string>; // Stores a decrypted file, with the Object Key being the PK
 
     /**
      * Initialises the storage service constructor
@@ -74,15 +74,40 @@ export class VirkiStorageService extends Dexie {
         }
     }
 
-    async addAvatar(file: Blob): Promise<void> {
+    // =========
+    // Files
+    // =========
+    
+    /**
+     * Saves a decrypted file into IndexedDB
+     * @param key - Object key of the file
+     * @param file - Decrypted file contents
+     */
+    async saveFile(key: string, file: Blob): Promise<void> {
         try {
-            await this._files.put(file, "avatar");
+            await this._files.put(file, key);
         } catch (e) {
-            console.error(e);
-            return Promise.reject("There was an error inserting Blob to local DB!");
+            return Promise.reject("There was an error saving file in local DB!");
         }
     }
 
+    /**
+     * Save a decrypted file to IndexedDB
+     * @param file - Blob of the decrypted avatar to save
+     * @returns 
+     */
+    async addAvatar(file: Blob): Promise<void> {
+        try {
+            await this.saveFile("avatar", file);
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    /**
+     * Retrieves the decrypted avatar file from IndexedDB
+     * @returns {Blob | null}
+     */
     async getAvatar(): Promise<Blob | null> {
         try {
             const file = await this._files.get("avatar");
