@@ -44,7 +44,7 @@
                     <!-- Vault icon and name -->
                     <div class="flex flex-1 items-center space-x-2" @click="changeVault(vault.id)">
                         <div class="flex justify-center items-center object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                            <img v-if="vault.icon" class="rounded-full object-cover" :src="vault.icon" alt="Vault Icon" />
+                            <img v-if="vault.icon_blob" class="rounded-full object-cover" :src="vault.icon_blob" alt="Vault Icon" />
                             <CubeIcon v-else class="w-4 h-4 text-mountain-meadow" />
                         </div>
 

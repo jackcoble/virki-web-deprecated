@@ -56,6 +56,9 @@ import vaultService from "@/service/api/vaultService";
 import type { Vault } from "@/common/interfaces/vault";
 import { CryptoWorker } from "@/common/comlink";
 import { useKeyStore } from "@/stores/keyStore";
+import userService from "@/service/api/userService";
+import { VirkiStorageService } from "@/common/services/storage.service";
+import axios from "axios";
 
 export default defineComponent({
   name: "HomeView",
@@ -96,6 +99,7 @@ export default defineComponent({
 
           // Prepare a CryptoWorker for us to use, along with our master encryption key
           const cryptoWorker = await new CryptoWorker();
+          const storageService = new VirkiStorageService();
           const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
           // Decrypt and add to the Pinia vault store
@@ -111,6 +115,41 @@ export default defineComponent({
               const decryptedVault = { ...vault };
               decryptedVault.encryption_key = vaultEncryptionKey;
               decryptedVault.name = decryptedName;
+
+              // Whilst we are at it, if the vault has an icon, fetch and decrypt it
+              // then store in IndexedDB
+              if (decryptedVault.icon) {
+                console.log("Vault has an icon:", decryptedVault.icon);
+
+                try {
+                  let res = await userService.GetFile(decryptedVault.icon);
+                  const file = res.data.file;
+                  const metadata = res.data.metadata;
+
+                  // First, let us decrypt the encryption key with our master key
+                  const cryptoWorker = await new CryptoWorker();
+                  const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
+
+                  // Decrypt the MIME type with the encryption key
+                  const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
+
+                  // Fetch the contents of the file from directly from S3
+                  res = await axios.get(file.url, {
+                      responseType: "arraybuffer"
+                  });
+                  const rawFile = res.data as ArrayBuffer;
+                  const uintFile = new Uint8Array(rawFile);
+
+                  // Decrypt file into a blob for us to then store in IndexedDB
+                  const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
+                  await storageService.saveFile(file.key, decryptedFile);
+
+                  const iconObjectURL = URL.createObjectURL(decryptedFile);
+                  decryptedVault.icon_blob = iconObjectURL;
+                } catch (e) {
+                  console.log(e);
+                }
+              }
 
               // Add the decrypted vault into the Vault Store
               vaultStore.add(decryptedVault);

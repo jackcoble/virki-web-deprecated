@@ -6,4 +6,7 @@ export interface Vault {
     icon?: string;
     created: number | null;
     modified: number | null;
+
+    // Properties which are local to the client
+    icon_blob?: string;
 }
