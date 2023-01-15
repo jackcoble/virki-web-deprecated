@@ -30,11 +30,11 @@
                         <!-- Footer -->
                         <div>
                             <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
-                                <b-button @click.prevent="okModal" type="button">
+                                <b-button @click="okModal" type="button">
                                     OK
                                 </b-button>
 
-                                <b-button @click.prevent="cancelModal" type="button" classType="light">
+                                <b-button @click="cancelModal" type="button" classType="light">
                                     Cancel
                                 </b-button>
                             </div>
