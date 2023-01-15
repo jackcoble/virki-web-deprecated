@@ -2,10 +2,8 @@ export enum PAGES {
     LOGIN = "/login",
     REGISTER = "/signup",
     LOCK = "/lock",
-    VAULT = "/",
+    VAULT = "/vault",
     FAVOURITES = "/favourites",
-    EDIT_VAULT = "/vaults/edit",
-    NEW_VAULT = "/vaults/new",
 
     // Account management
     ACCOUNT = "/account",

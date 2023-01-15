@@ -22,6 +22,10 @@ const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: "/",
+      redirect: PAGES.VAULT
+    },
+    {
       path: PAGES.VAULT,
       name: "LayoutVault",
       component: RouterView,
@@ -31,25 +35,20 @@ const router = createRouter({
       },
       children: [
         {
-          path: `${PAGES.VAULT}`,
+          path: `${PAGES.VAULT}/:id?`,
           name: "VaultView",
           component: Vault
+        },
+        {
+          path: `${PAGES.VAULT}/:id/edit`,
+          name: "EditVault",
+          component: EditVault
         },
         {
           path: `${PAGES.FAVOURITES}`,
           name: "Favourites",
           component: Vault
         },
-        {
-          path: PAGES.NEW_VAULT,
-          name: "NewVault",
-          component: NewVault
-        },
-        {
-          path: `${PAGES.VAULT}/edit`,
-          name: "EditVault",
-          component: EditVault
-        }
       ]
     },
 

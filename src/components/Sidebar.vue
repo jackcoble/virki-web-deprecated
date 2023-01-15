@@ -195,7 +195,7 @@ export default defineComponent({
 
         // Function to handle changing vaults by updating the ID in the vault store.
         const changeVault = (id: string) => {
-            router.push(`${PAGES.VAULT}?vault=${id}`);
+            router.push(`${PAGES.VAULT}/${id}`);
         }
 
         return {
