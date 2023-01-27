@@ -11,7 +11,6 @@
         <form @submit.prevent="updateVault" class="space-y-4 pt-4 pb-2 mx-auto">
             <b-icon-upload class="mx-auto" @imageData="vault.icon = $event" :image="vault.icon"></b-icon-upload>
             <b-input placeholder="Vault name" v-model="vault.name" required></b-input>
-            <b-text-area placeholder="Description of this Vault" v-model="vault.description"></b-text-area>
             
             <div class="flex space-x-2">
                 <b-button classType="danger" @click="router.push(PAGES.LOGIN)">Cancel</b-button>
