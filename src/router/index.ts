@@ -11,11 +11,13 @@ import LayoutAccount from '@/layouts/LayoutAccount.vue'
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
 import Lock from "@/views/Lock.vue"
-import Vault from "@/views/Vault.vue"
+import Vault from "@/views/vault/Vault.vue"
 import Favourites from "@/views/Favourites.vue";
 import Account from "@/views/account/Account.vue"
-import EditVault from '@/views/vaults/Edit.vue'
+import EditVault from '@/views/vault/Edit.vue'
 import AccountSessions from "@/views/account/Sessions.vue";
+
+import AddToken from "@/views/vault/AddToken.vue";
 
 import { useAppStore } from '@/stores/appStore'
 
@@ -50,6 +52,11 @@ const router = createRouter({
           name: "Favourites",
           component: Favourites
         },
+        {
+          path: PAGES.ADD_TOKEN,
+          name: "Add Token",
+          component: AddToken
+        }
       ]
     },
 
