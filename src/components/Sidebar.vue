@@ -4,9 +4,11 @@
         <!-- Vaults -->
         <div class="p-4 text-gray-700">
             <!-- All items -->
-            <div class="flex p-2 mb-1 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === PAGES.VAULT ? 'bg-gray-200' : ''" @click="router.push(PAGES.VAULT)">
+            <div class="flex p-2 mb-1 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition"
+                :class="route.path === PAGES.VAULT ? 'bg-gray-200' : ''" @click="router.push(PAGES.VAULT)">
                 <div class="flex flex-1 items-center space-x-2">
-                    <div class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                    <div
+                        class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
                         <CollectionIcon class="w-4 h-4 text-mountain-meadow" />
                     </div>
                     <p class="text-sm">All Items</p>
@@ -14,9 +16,11 @@
             </div>
 
             <!-- Favourites -->
-            <div class="flex p-2 mb-4 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === PAGES.FAVOURITES ? 'bg-gray-200' : ''" @click="router.push(PAGES.FAVOURITES)">
+            <div class="flex p-2 mb-4 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition"
+                :class="route.path === PAGES.FAVOURITES ? 'bg-gray-200' : ''" @click="router.push(PAGES.FAVOURITES)">
                 <div class="flex flex-1 items-center space-x-2">
-                    <div class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                    <div
+                        class="flex justify-center items-center cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
                         <StarIcon class="w-4 h-4 text-yellow-500" />
                     </div>
                     <p class="text-sm">Favourites</p>
@@ -31,32 +35,38 @@
                     <p class="text-sm">Vaults</p>
                 </button>
 
-                <button class="p-1 rounded-full hover:bg-gray-200" @click="showCreateVaultModal = !showCreateVaultModal">
+                <button class="p-1 rounded-full hover:bg-gray-200"
+                    @click="showCreateVaultModal = !showCreateVaultModal">
                     <PlusIcon class="w-4" />
                 </button>
             </div>
 
-            <!-- List all vaults -->    
+            <!-- List all vaults -->
             <div v-if="showSidebarVaults" class="pt-2 space-y-1">
-                <div v-for="vault in vaults" :key="vault.id"
-                    class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition"
-                    :class="route.params.id === vault.id ? 'bg-gray-200' : ''">
-                    <!-- Vault icon and name -->
-                    <div class="flex flex-1 items-center space-x-2" @click="changeVault(vault.id)">
-                        <div class="flex justify-center items-center object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                            <img v-if="vault.icon_blob" class="rounded-full object-cover" :src="vault.icon_blob" alt="Vault Icon" />
-                            <CubeIcon v-else class="w-4 h-4 text-mountain-meadow" />
+                <draggable v-model="vaults" item-key="order">
+                    <template #item="{ element }">
+                        <div class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.params.id === element.id ? 'bg-gray-200' : ''">
+                            <!-- Vault icon and name -->
+                            <div class="flex flex-1 items-center space-x-2" @click="changeVault(element.id)">
+                                <div
+                                    class="flex justify-center items-center object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
+                                    <img v-if="element.icon_blob" class="rounded-full object-cover"
+                                        :src="element.icon_blob" alt="Vault Icon" />
+                                    <CubeIcon v-else class="w-4 h-4 text-mountain-meadow" />
+                                </div>
+
+                                <p class="text-sm flex-1">{{ element.name }}</p>
+
+                                <!-- More icon (3 dots) -->
+                                <button class="rounded-full p-1 hover:bg-gray-300 transition"
+                                    @click="router.push(`${PAGES.VAULT}/${element.id}/edit`)">
+                                    <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
+                                </button>
+                            </div>
+
                         </div>
-
-                        <p class="text-sm">{{ vault.name }}</p>
-                    </div>
-
-                    <!-- More icon (3 dots) -->
-                    <button class="rounded-full p-1 hover:bg-gray-300 transition"
-                        @click="router.push(`${PAGES.VAULT}/${vault.id}/edit`)">
-                        <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
-                    </button>
-                </div>
+                    </template>
+                </draggable>
             </div>
 
             <div v-if="showSidebarVaults && vaults.length === 0">
@@ -114,7 +124,8 @@
     </b-modal>
 
     <!-- Create vault modal -->
-    <CreateVaultModal v-if="showCreateVaultModal" @ok="showCreateVaultModal = !showCreateVaultModal" @cancel="showCreateVaultModal = !showCreateVaultModal" />
+    <CreateVaultModal v-if="showCreateVaultModal" @ok="showCreateVaultModal = !showCreateVaultModal"
+        @cancel="showCreateVaultModal = !showCreateVaultModal" />
 </template>
 
 <script lang="ts">
@@ -146,29 +157,31 @@ import { useAppStore } from '@/stores/appStore';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import CreateVaultModal from './modals/CreateVaultModal.vue';
+import draggable from 'vuedraggable';
 
 export default defineComponent({
     name: "Sidebar",
     emits: ["newVault", "editVault"],
     components: {
-    UserIcon,
-    ChevronDownIcon,
-    KeyIcon,
-    LogoutIcon,
-    ChevronRightIcon,
-    PlusIcon,
-    DotsHorizontalIcon,
-    ShieldCheckIcon,
-    DeviceMobileIcon,
-    MailIcon,
-    StatusOfflineIcon,
-    StatusOnlineIcon,
-    EmojiSadIcon,
-    CollectionIcon,
-    StarIcon,
-    CubeIcon,
-    CreateVaultModal
-},
+        UserIcon,
+        ChevronDownIcon,
+        KeyIcon,
+        LogoutIcon,
+        ChevronRightIcon,
+        PlusIcon,
+        DotsHorizontalIcon,
+        ShieldCheckIcon,
+        DeviceMobileIcon,
+        MailIcon,
+        StatusOfflineIcon,
+        StatusOnlineIcon,
+        EmojiSadIcon,
+        CollectionIcon,
+        StarIcon,
+        CubeIcon,
+        CreateVaultModal,
+        draggable
+    },
     setup() {
         // Stores
         const appStore = useAppStore();
@@ -198,6 +211,13 @@ export default defineComponent({
             router.push(`${PAGES.VAULT}/${id}`);
         }
 
+        // Draggable
+        const list = ref([
+            { name: "John", id: 0 },
+            { name: "Joao", id: 1 },
+            { name: "Jean", id: 2 }
+        ])
+
         return {
             router,
             route,
@@ -217,7 +237,10 @@ export default defineComponent({
             activeVaultID,
             vaultIdPresent,
 
-            changeVault
+            changeVault,
+
+            // Dragging
+            list
         }
     }
 })

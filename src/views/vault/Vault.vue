@@ -106,6 +106,8 @@ export default defineComponent({
 
           // Decrypt and add to the Pinia vault store
           if (vaults) {
+            let order = 0;
+
             vaults.forEach(async vault => {
               // Decrypt the vault encryption key using the master key
               const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(vault.encryption_key, masterEncryptionKey);
@@ -155,6 +157,10 @@ export default defineComponent({
 
                     const iconObjectURL = URL.createObjectURL(decryptedFile);
                     decryptedVault.icon_blob = iconObjectURL;
+
+                    decryptedVault.order = order;
+
+                    order++;
                   } catch (e) {
                     console.log(e);
                   }

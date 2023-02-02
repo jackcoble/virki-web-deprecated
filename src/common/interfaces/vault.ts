@@ -1,6 +1,7 @@
 // Representation of a Vault
 export interface Vault {
     id: string;
+    order: number;
     encryption_key: string;
     name: string;
     icon?: string;
