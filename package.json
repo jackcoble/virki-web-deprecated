@@ -27,6 +27,7 @@
     "vue": "^3.2.36",
     "vue-filepond": "^7.0.3",
     "vue-router": "^4.0.15",
+    "vuedraggable": "^4.1.0",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
