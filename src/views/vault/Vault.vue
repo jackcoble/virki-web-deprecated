@@ -3,7 +3,7 @@
     <!-- Button to add entry to vault -->
     <div class="flex justify-end p-2 pb-4" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
       <div class="flex">
-        <b-button class="w-36">
+        <b-button class="w-36" @click="addTokensPage">
           <div class="flex flex-row justify-center items-center space-x-1">
             <PlusCircleIcon class="w-4" />
             <span>Add</span>
@@ -17,12 +17,6 @@
       class="flex flex-col justify-center items-center h-full p-4 text-center space-y-2">
       <img src="@/assets/images/eyes_emoji.gif" alt="Eyes emoji" class="w-16">
       <p class="text-sm">To get started, you need to create a Vault.</p>
-      <b-button class="w-36" @click="router.push(PAGES.NEW_VAULT)">
-        <div class="flex flex-row justify-center items-center space-x-1">
-          <PlusCircleIcon class="w-5 md:-ml-1" />
-          <span>Create Vault</span>
-        </div>
-      </b-button>
     </div>
 
     <!-- Show frowny face if we've got no tokens, but have vaults available -->
@@ -83,12 +77,10 @@ export default defineComponent({
     // should be false.
     const isFirstLoad = ref(true);
     const vaults = computed(() => vaultStore.getAll);
-    const presentVaultId = computed(() => route.query.vault);
     const vaultIdPresent = computed(() => !!route.query.vault);
     const isOnline = computed(() => appStore.isOnline);
 
     // Sidebar refs
-    const showSidebarVaults = ref(false);
     const showCreateVault = ref(false);
     const showEditVault = ref(false);
 
@@ -180,6 +172,14 @@ export default defineComponent({
       isFirstLoad.value = false;
     })
 
+    // Route user to add tokens page for this vault
+    const addTokensPage = () => {
+      const vaultId = route.params.id;
+      if (vaultId) {
+        router.push(`${PAGES.VAULT}/${vaultId}/add-token`)
+      }
+    }
+
     return {
       router,
 
@@ -188,12 +188,12 @@ export default defineComponent({
       isFirstLoad,
       vaults,
       isOnline,
-      presentVaultId,
       vaultIdPresent,
 
-      showSidebarVaults,
       showCreateVault,
-      showEditVault
+      showEditVault,
+
+      addTokensPage
     };
   }
 })
