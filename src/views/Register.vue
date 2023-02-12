@@ -1,6 +1,6 @@
 <template>
-    <div class="flex justify-center items-center h-screen bg-gray-100 p-8">
-        <div class="p-8 md:m-auto space-y-3 xl:w-4/12 md:w-1/2 sm:w-3/4 w-full">
+    <div class="flex flex-col justify-center items-center h-screen bg-gray-100 p-8">
+        <div class="flex flex-col p-8 md:m-auto space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
             <img class="w-24 mx-auto" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo">
             <div space-y-1>
@@ -56,6 +56,11 @@
                 </div>
             </form>
         </div>
+
+         <!-- Version information -->
+         <div class="flex p-2">
+            <p class="text-xs text-center text-gray-500">Virki Web Client - v{{ version }}</p>
+        </div>
     </div>
 </template>
 
@@ -76,6 +81,7 @@ import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
 import type { Account } from "@/common/interfaces/account";
 import { useUserStore } from "@/stores/userStore";
+import { version } from "../../package.json";
 
 export default defineComponent({
     name: "Login",
@@ -192,6 +198,8 @@ export default defineComponent({
             isLoading,
 
             router,
+
+            version,
 
             registerUser
         }
