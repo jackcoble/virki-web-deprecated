@@ -42,8 +42,8 @@
             </div>
 
             <!-- List all vaults -->
-            <div v-if="showSidebarVaults" class="pt-2 space-y-1">
-                <draggable v-model="vaults" item-key="order">
+            <div v-if="showSidebarVaults" class="pt-2">
+                <draggable v-model="vaults" item-key="order" class="space-y-1">
                     <template #item="{ element }">
                         <div class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.params.id === element.id ? 'bg-gray-200' : ''">
                             <!-- Vault icon and name -->
