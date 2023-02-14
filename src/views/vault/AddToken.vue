@@ -1,12 +1,12 @@
 <template>
     <!-- Manual Entry -->
-    <div class="flex flex-col h-full w-1/2 p-4 pt-12 space-y-3 mx-auto">
+    <div class="flex flex-col h-full p-4 space-y-3 mx-auto">
         <!-- Title/Issuer -->
         <div class="flex space-x-4 items-center">
             <div>
                 <!-- Icon uploader -->
                 <div class="flex justify-center">
-                    <EncryptedFileUpload :encryption-key="masterEncryptionKey" @object-key="handleObjectKey" />
+                    <EncryptedFileUpload :encryption-key="tokenEncryptionKey" @object-key="token.icon = $event" />
                 </div>
             </div>
 
@@ -58,24 +58,12 @@
             </select>
         </div>
 
-        <!-- Backup Codes -->
-        <!--
-        <div>
-            <label for="backupcodes" class="block mb-2 font-medium text-gray-900">Backup Codes (Optional)</label>
-            <textarea class="block w-full form-textarea rounded-lg bg-gray-50 border border-gray-300 text-sm" rows="5" placeholder="Enter some backup codes..."></textarea>
-        </div>
-        -->
-
         <!-- Advanced options -->
         <div class="flex">
             <button class="flex flex-1 justify-start items-center space-x-2" @click="showAdvanced = !showAdvanced">
                 <ChevronRightIcon v-if="!showAdvanced" class="w-4" />
                 <ChevronDownIcon v-else class="w-4" />
                 <p>Advanced</p>
-            </button>
-
-            <button class="p-1 rounded-full hover:bg-gray-200" @click="router.push(PAGES.NEW_VAULT)">
-                <PlusIcon class="w-4" />
             </button>
         </div>
         <div v-if="showAdvanced" class="border rounded border-gray-200 p-3 space-y-2">
@@ -148,14 +136,17 @@
 
 <script lang="ts">
 import { PAGES } from '@/router/pages';
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { OTPType, OTPAlgorithm } from "@/common/enums/otp";
 import type { Token } from '@/common/interfaces/token';
 import { GlobeIcon, UserIcon, KeyIcon, ClockIcon, PencilIcon, QrcodeIcon, ChevronRightIcon, ChevronDownIcon } from "@heroicons/vue/outline";
 import { useVaultStore } from '@/stores/vaultStore';
 import EncryptedFileUpload from '@/components/EncryptedFileUpload.vue';
-import { useKeyStore } from '@/stores/keyStore';
+import { CryptoWorker } from '@/common/comlink';
+import { EncryptionType } from '@/common/enums/encryptionType';
+import { serialiseCipherString } from '@/common/utils/cipher';
+import tokenService from '@/service/api/tokenService';
 
 export default defineComponent({
     name: "NewToken",
@@ -174,39 +165,78 @@ export default defineComponent({
         const router = useRouter();
         const route = useRoute();
         const vaultStore = useVaultStore();
-        const keyStore = useKeyStore();
 
         const vaults = computed(() => vaultStore.getAll);
-        const vaultInQuery = computed(() => route.query.vault);
-        const masterEncryptionKey = computed(() => keyStore.getMasterEncryptionKey);
-
-        const token = ref({
-            // Set some defaults...
-            algorithm: OTPAlgorithm.SHA1,
-            type: OTPType.TOTP,
-            period: 30,
-            counter: 0,
-
-            vault_id: vaultInQuery.value
-        } as Token);
+        const token = ref({} as Token);
+        const tokenEncryptionKey = ref("");
         const showAdvanced = ref(false);
+
+        onMounted(async () => {
+            // Improve user experience by pre-populating the vault
+            // which the token should be created for.
+            const vault = vaults.value.find(v => v.id === route.params.id);
+            if (!vault) {
+                return;
+            }
+
+            // Generate a unique encryption key for this entry.
+            // It will be used for icon data encryption and for all of the fields.
+            // In the end it'll be encrypted with the vault encryption key.
+            const cryptoWorker = await new CryptoWorker();
+            tokenEncryptionKey.value = await cryptoWorker.generateEncryptionKey();
+
+            // Set some new token entry defaults
+            token.value = {
+                algorithm: OTPAlgorithm.SHA1,
+                type: OTPType.TOTP,
+                period: 30,
+                counter: 0,
+                vault_id: vault.id
+            } as Token;
+        })
 
         // Handle creating an encrypted token
         const handleCreateToken = async () => {
-            // Create a copy of the token ref for us to work on
-            const tokenToEncrypt = { ...token.value };        
-        }
+            // Create a CryptoWorker and a copy of the token ref for us to work on
+            const cryptoWorker = await new CryptoWorker();
+            const encryptedToken = { ...token.value };
+            
+            // Encrypt the following:
+            // - Service
+            // - Account
+            // - Secret/Seed
+            const encryptedServiceObject = await cryptoWorker.encryptUTF8(token.value.service, tokenEncryptionKey.value);
+            const encryptedService = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedServiceObject.ciphertext, encryptedServiceObject.nonce, encryptedServiceObject.mac);
+            encryptedToken.service = encryptedService;
 
-        // When user uploads an icon, set the object key in the token ref
-        const handleObjectKey = (key: string) => {
-            token.value.icon = key;
+            const encryptedAccountObject = await cryptoWorker.encryptUTF8(token.value.account, tokenEncryptionKey.value);
+            const encryptedAccount = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedAccountObject.ciphertext, encryptedAccountObject.nonce, encryptedAccountObject.mac);
+            encryptedToken.account = encryptedAccount;
+
+            const encryptedSecretObject = await cryptoWorker.encryptUTF8(token.value.account, tokenEncryptionKey.value);
+            const encryptedSecret = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedSecretObject.ciphertext, encryptedSecretObject.nonce, encryptedSecretObject.mac);
+            encryptedToken.secret = encryptedSecret;
+
+            // If the token is HOTP, then we want to encrypt the counter value
+            if (encryptedToken.type === OTPType.HOTP) {
+                const encryptedHotpCounterObject = await cryptoWorker.encryptUTF8(token.value.counter?.toString(), tokenEncryptionKey.value);
+                const encryptedHotpCounter = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedHotpCounterObject.ciphertext, encryptedHotpCounterObject.nonce, encryptedHotpCounterObject.mac);
+                encryptedToken.counter = encryptedHotpCounter;
+            }
+
+            try {
+                // Submit token to API and navigate back to the Vault it was created in to.
+                await tokenService.add(encryptedToken);
+                router.push(`/vault/${encryptedToken.vault_id}`);
+            } catch (e) {
+                // TODO: Handle this better...
+                console.log("Error adding token:", e);
+            }
         }
 
         return {
             router,
             vaults,
-            vaultInQuery,
-            masterEncryptionKey,
 
             PAGES,
 
@@ -214,10 +244,10 @@ export default defineComponent({
             OTPAlgorithm,
 
             token,
+            tokenEncryptionKey,
             showAdvanced,
 
             handleCreateToken,
-            handleObjectKey
         }
     }
 })

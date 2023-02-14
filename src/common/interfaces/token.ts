@@ -14,7 +14,7 @@ export interface Token {
     length: number;
     type: OTPType;
     period?: number;
-    counter?: number;
+    counter?: number | string;
 
     //tags: string[]; // IDs of tags
 
