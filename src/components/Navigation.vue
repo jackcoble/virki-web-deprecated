@@ -87,7 +87,7 @@ export default defineComponent({
             const avatar = await userService.GetAvatar();
 
             let updateAvatar = false;
-            if (existingAvatarKey !== avatar.data.file.key) {
+            if (avatar.data.file && existingAvatarKey !== avatar.data.file.key) {
                 // The object key we have from the API is different to what we have locally
                 // so force an update
                 updateAvatar = true;
