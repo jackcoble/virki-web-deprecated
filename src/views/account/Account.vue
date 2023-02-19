@@ -34,6 +34,8 @@
 
                 <!-- Avatar -->
                 <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" @object-key="handleAvatarUpload" />
+
+                <ImageCropper :placeholder="avatar"></ImageCropper>
             </div>
 
             <hr>
@@ -81,16 +83,17 @@ import useToaster from '@/composables/useToaster';
 import EncryptedFileUpload from "@/components/EncryptedFileUpload.vue";
 import { VirkiStorageService } from '@/common/services/storage.service';
 import axios from 'axios';
+import ImageCropper from '@/components/ImageCropper.vue';
 
 export default defineComponent({
     name: "Sessions",
     components: {
-        UserCircleIcon,
-        CheckIcon,
-        CameraIcon,
-
-        EncryptedFileUpload
-    },
+    UserCircleIcon,
+    CheckIcon,
+    CameraIcon,
+    EncryptedFileUpload,
+    ImageCropper
+},
     setup() {
         const userStore = useUserStore();
         const keyStore = useKeyStore();
