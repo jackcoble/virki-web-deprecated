@@ -174,9 +174,19 @@ export default defineComponent({
 
     // Route user to add tokens page for this vault
     const addTokensPage = () => {
-      const vaultId = route.params.id;
+      // If we can find a vault ID in the params, add the token that vault.
+      let vaultId = route.params.id;
       if (vaultId) {
         router.push(`${PAGES.VAULT}/${vaultId}/add-token`)
+      } else {
+        // If not, then check we've got vaults and use the first one which is returned.
+        // If we have no vaults, just return.
+        if (vaultStore.getAll.length > 0) {
+          vaultId = vaultStore.getAll[0].id;
+          router.push(`${PAGES.VAULT}/${vaultId}/add-token`)
+        } else {
+          return;
+        }
       }
     }
 
