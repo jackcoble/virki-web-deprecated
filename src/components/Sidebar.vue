@@ -59,7 +59,7 @@
 
                                 <!-- More icon (3 dots) -->
                                 <button class="rounded-full p-1 hover:bg-gray-300 transition"
-                                    @click="router.push(`${PAGES.VAULT}/${element.id}/edit`)">
+                                    @click="editVault(element.id)">
                                     <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
                                 </button>
                             </div>
@@ -206,17 +206,12 @@ export default defineComponent({
         const vaultIdPresent = computed(() => !!route.query.vault);
         const activeVaultID = computed(() => route.query.vault);
 
-        // Function to handle changing vaults by updating the ID in the vault store.
         const changeVault = (id: string) => {
             router.push(`${PAGES.VAULT}/${id}`);
         }
-
-        // Draggable
-        const list = ref([
-            { name: "John", id: 0 },
-            { name: "Joao", id: 1 },
-            { name: "Jean", id: 2 }
-        ])
+        const editVault = (id: string) => {
+            router.push(`${PAGES.VAULT}/${id}/edit`);
+        }
 
         return {
             router,
@@ -238,9 +233,7 @@ export default defineComponent({
             vaultIdPresent,
 
             changeVault,
-
-            // Dragging
-            list
+            editVault
         }
     }
 })
