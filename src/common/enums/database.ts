@@ -1,9 +1,4 @@
-// Database versions for Dexie
-export enum DatabaseVersion {
-    V1 = 1
-}
-
-// File attachment versions (for encryption, formats, etc)
-export enum AttachmentVersion {
-    V1 = 1
+// Different document types
+export enum DocType {
+    Vault = 1
 }
