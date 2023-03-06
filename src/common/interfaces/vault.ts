@@ -1,13 +1,13 @@
+import type { DocType } from "../enums/database";
+
 // Representation of a Vault
 export interface Vault {
-    id: string;
-    order: number;
+    _id: string;
+    _rev?: string;
+    doctype: DocType;
     encryption_key: string;
     name: string;
     icon?: string;
-    created: number | null;
-    modified: number | null;
-
-    // Properties which are local to the client
-    icon_blob?: string;
+    createdAt: string;
+    updatedAt: string;
 }
