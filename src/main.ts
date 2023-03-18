@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import mitt from 'mitt';
+import { FirebaseService } from './common/services/firebase.service';
+import { VueFire, VueFireAuth } from 'vuefire';
 
 // Custom components
 import BButton from "@/components/Button.vue";
@@ -29,6 +31,15 @@ const app = createApp(App)
 // Mitt - event emitter
 const emitter = mitt();
 app.config.globalProperties.emitter = emitter;
+
+// Firebase & VueFire
+const firebaseService = new FirebaseService();
+app.use(VueFire, {
+    app: firebaseService.getApp(),
+    modules: [
+        VueFireAuth
+    ]
+})
 
 app.use(createPinia())
 app.use(router)
