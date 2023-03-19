@@ -23,7 +23,6 @@
     "filepond": "^4.30.4",
     "firebase": "^9.18.0",
     "libsodium-wrappers": "^0.7.10",
-    "mitt": "^3.0.0",
     "pinia": "^2.0.14",
     "pouchdb": "^8.0.1",
     "vue": "^3.2.36",

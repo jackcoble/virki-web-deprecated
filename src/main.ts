@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import mitt from 'mitt';
 import { FirebaseService } from './common/services/firebase.service';
 import { VueFire, VueFireAuth } from 'vuefire';
 
@@ -27,10 +26,6 @@ import Toaster from "@meforma/vue-toaster";
 import "@/assets/index.css";
 
 const app = createApp(App)
-
-// Mitt - event emitter
-const emitter = mitt();
-app.config.globalProperties.emitter = emitter;
 
 // Firebase & VueFire
 const firebaseService = new FirebaseService();
