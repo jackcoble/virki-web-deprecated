@@ -53,7 +53,7 @@ import type { Vault } from "@/common/interfaces/vault";
 import { CryptoWorker } from "@/common/comlink";
 import { useKeyStore } from "@/stores/keyStore";
 import userService from "@/service/api/userService";
-import { VirkiStorageService } from "@/common/services/storage/storage.service.service";
+import { VirkiStorageService } from "@/common/services/storage/storage.service";
 import axios from "axios";
 
 export default defineComponent({

@@ -81,7 +81,7 @@ import { useKeyStore } from '@/stores/keyStore';
 import type { StretchedPassword } from '@/common/interfaces/password';
 import useToaster from '@/composables/useToaster';
 import EncryptedFileUpload from "@/components/EncryptedFileUpload.vue";
-import { VirkiStorageService } from '@/common/services/storage/storage.service.service';
+import { VirkiStorageService } from '@/common/services/storage/storage.service';
 import axios from 'axios';
 import ImageCropper from '@/components/ImageCropper.vue';
 
