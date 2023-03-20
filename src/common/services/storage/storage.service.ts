@@ -1,5 +1,7 @@
-import { createRxDatabase, type RxDatabase } from "rxdb";
+import type { Vault } from "@/common/interfaces/vault";
+import { addRxPlugin, createRxDatabase, type RxDatabase } from "rxdb";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
+import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
 import { VaultSchema } from "./storage.schema";
 
 const DB_NAME = "virki_db";
@@ -19,6 +21,11 @@ export class VirkiStorageService {
      * Builder method to return instantiated Storage Service
      */
     static async build(): Promise<VirkiStorageService> {
+        // If we're in development, we want to use the Development mode plugin
+        if (process.env.NODE_ENV !== "production") {
+            addRxPlugin(RxDBDevModePlugin);
+        }
+
         // Create the database
         const database = await createRxDatabase({
             name: DB_NAME,
