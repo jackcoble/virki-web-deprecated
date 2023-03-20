@@ -1,0 +1,46 @@
+{
+    "title": "Accounts",
+    "version": 0,
+    "description": "Account storage for Virki",
+    "primaryKey": "activeAccount",
+    "type": "object",
+    "properties": {
+        "activeAccount": {
+            "type": "string",
+            "maxLength": 36
+        },
+        "accounts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "session": {
+                        "type": "string"
+                    },
+                    "plan": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "email",
+                    "name",
+                    "session",
+                    "plan"
+                ]
+            }
+        }
+    },
+    "attachments": {
+        "encrypted": false
+    }
+}

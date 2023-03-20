@@ -4,6 +4,7 @@ import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
 
 // Schemas
+import accountSchema from "./schemas/accounts.json"
 import vaultSchema from "./schemas/vaults.json";
 
 const DB_NAME = "virki_db";
@@ -39,6 +40,10 @@ export class VirkiStorageService {
         await database.addCollections({
             vaults: {
                 schema: vaultSchema
+            },
+
+            accounts: {
+                schema: accountSchema
             }
         })
 
