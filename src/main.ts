@@ -1,7 +1,5 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { FirebaseService } from './common/services/firebase.service';
-import { VueFire, VueFireAuth } from 'vuefire';
 
 // Custom components
 import BButton from "@/components/Button.vue";
@@ -26,15 +24,6 @@ import Toaster from "@meforma/vue-toaster";
 import "@/assets/index.css";
 
 const app = createApp(App)
-
-// Firebase & VueFire
-const firebaseService = new FirebaseService();
-app.use(VueFire, {
-    app: firebaseService.getApp(),
-    modules: [
-        VueFireAuth
-    ]
-})
 
 app.use(createPinia())
 app.use(router)
