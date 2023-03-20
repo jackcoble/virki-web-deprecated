@@ -1,10 +1,6 @@
-import type { DocType } from "../enums/database";
-
 // Representation of a Vault
 export interface Vault {
-    _id: string;
-    _rev?: string;
-    doctype: DocType;
+    id: string;
     encryption_key: string;
     name: string;
     icon?: string;
