@@ -29,7 +29,8 @@ export class VirkiStorageService {
         // Create the database
         const database = await createRxDatabase({
             name: DB_NAME,
-            storage: getRxStorageDexie()
+            storage: getRxStorageDexie(),
+            ignoreDuplicate: true
         });
 
         // Add collections to the database. We should introduce some type safety here with a schema
@@ -41,5 +42,39 @@ export class VirkiStorageService {
 
         const virkiStorageService = new VirkiStorageService(database);
         return Promise.resolve(virkiStorageService);
+    }
+
+    /**
+     * Add an encrypted vault to the local database
+     * @param vault - Encrypted vault
+     * @returns 
+     */
+    async addVault(vault: Vault): Promise<void> {
+        try {
+            await this._db.collections.vaults.insert(vault)
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    /**
+     * Returns all encrypted vaults in the local database
+     * @returns {Vault[]} - Array of encrypted vaults
+     */
+    async getVaults(): Promise<Vault[]> {
+        const vaults: Vault[] = [];
+
+        try {
+            await this._db.collections.vaults.find().exec().then(documents => {
+                documents.forEach(doc => {
+                    const v = doc.toJSON() as Vault;
+                    vaults.push(v);
+                })
+            })
+        } catch (e) {
+            return Promise.reject(e);
+        }
+
+        return Promise.resolve(vaults);
     }
 }
