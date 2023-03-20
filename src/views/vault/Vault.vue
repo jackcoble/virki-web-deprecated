@@ -53,7 +53,7 @@ import type { Vault } from "@/common/interfaces/vault";
 import { CryptoWorker } from "@/common/comlink";
 import { useKeyStore } from "@/stores/keyStore";
 import userService from "@/service/api/userService";
-import { VirkiStorageService } from "@/common/services/storage.service";
+import { VirkiStorageService } from "@/common/services/storage/storage.service.service";
 import axios from "axios";
 
 export default defineComponent({
@@ -86,6 +86,8 @@ export default defineComponent({
 
     onMounted(async () => {
       // Fetch all the vaults if we're online and decrypt them.
+      const storageService = await VirkiStorageService.build();
+
       if (appStore.isOnline) {
         try {
           const res = await vaultService.getVaults();
@@ -93,7 +95,6 @@ export default defineComponent({
 
           // Prepare a CryptoWorker for us to use, along with our master encryption key
           const cryptoWorker = await new CryptoWorker();
-          const storageService = new VirkiStorageService();
           const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
           // Decrypt and add to the Pinia vault store

@@ -40,7 +40,7 @@ import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/vue/solid"
 import { Menu, MenuButton } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
-import { VirkiStorageService } from '@/common/services/storage.service';
+import { VirkiStorageService } from '@/common/services/storage/storage.service.service';
 import userService from '@/service/api/userService';
 import { CryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
