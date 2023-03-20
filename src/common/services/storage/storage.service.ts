@@ -2,7 +2,9 @@ import type { Vault } from "@/common/interfaces/vault";
 import { addRxPlugin, createRxDatabase, type RxDatabase } from "rxdb";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
-import { VaultSchema } from "./storage.schema";
+
+// Schemas
+import vaultSchema from "./schemas/vaults.json";
 
 const DB_NAME = "virki_db";
 
@@ -36,7 +38,7 @@ export class VirkiStorageService {
         // Add collections to the database. We should introduce some type safety here with a schema
         await database.addCollections({
             vaults: {
-                schema: VaultSchema
+                schema: vaultSchema
             }
         })
 
