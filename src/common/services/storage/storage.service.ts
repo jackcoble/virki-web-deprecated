@@ -6,6 +6,7 @@ import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
 // Schemas
 import accountSchema from "./schemas/accounts.json"
 import vaultSchema from "./schemas/vaults.json";
+import type { Account } from "@/common/interfaces/account";
 
 const DB_NAME = "virki_db";
 
@@ -49,6 +50,27 @@ export class VirkiStorageService {
 
         const virkiStorageService = new VirkiStorageService(database);
         return Promise.resolve(virkiStorageService);
+    }
+
+    /**
+     * Store the account in the local database and set it to be the active one
+     * @param account - Account information
+     */
+    async addAccount(account: Account): Promise<void> {
+        // We want to check for an existing account. If one is present
+        // then do an upsert
+        const query = this._db.collections.accounts.findOne(account.id);
+        const existingAccountResult = await query.exec();
+        if (existingAccountResult) {
+            // Upsert
+            await this._db.collections.accounts.upsert(account);
+        } else {
+            // New record
+            await this._db.collections.accounts.insert(account);
+        }
+
+        // The newly inserted account should become the active one
+        localStorage.setItem("activeAccount", account.id);
     }
 
     /**
