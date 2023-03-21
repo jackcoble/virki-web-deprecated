@@ -6,7 +6,8 @@
     "type": "object",
     "properties": {
         "id": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 36
         },
         "email": {
             "type": "string"
