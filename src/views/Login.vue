@@ -59,6 +59,7 @@ import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
 import type { Account } from "@/common/interfaces/account";
 import { version } from "../../package.json";
+import { VirkiStorageService } from "@/common/services/storage/storage.service";
 
 export default defineComponent({
     name: "Login",
@@ -99,7 +100,7 @@ export default defineComponent({
                 res = await userService.Login(email.value, stretchedPassword.hash);
                 const encryptedMasterKey = res.data.encrypted_keys.master_encryption_key;
 
-                // Set account details
+                // Save the account details in the local database
                 const accountDetails: Account = {
                     id: res.data.user_id,
                     email: res.data.email,
@@ -107,6 +108,10 @@ export default defineComponent({
                     session_token: res.data.session_token,
                     plan: res.data.plan
                 }
+
+                const storageService = await VirkiStorageService.build();
+                await storageService.addAccount(accountDetails);
+
                 userStore.setAccount(accountDetails);
 
                 // Parse cipher string for master encryption key
