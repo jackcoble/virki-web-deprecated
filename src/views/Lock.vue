@@ -51,7 +51,7 @@ import { PAGES } from "@/router/pages";
 import { useLogout } from "@/composables/useLogout";
 import userService from "@/service/api/userService";
 import { useUserStore } from "@/stores/userStore";
-import { VirkiStorageService } from "@/common/services/storage/storage.service";
+import VirkiStorageService from '@/common/services/storage';
 
 export default defineComponent({
     name: "Lock",

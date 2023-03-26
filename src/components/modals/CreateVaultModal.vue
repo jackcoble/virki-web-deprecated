@@ -25,7 +25,7 @@ import useToaster from '@/composables/useToaster';
 import { serialiseCipherString } from '@/common/utils/cipher';
 import { EncryptionType } from '@/common/enums/encryptionType';
 import type { Vault } from '@/common/interfaces/vault';
-import vaultService from '@/service/api/vaultService';
+import VirkiStorageService from '@/common/services/storage';
 
 export default defineComponent({
     name: "CreateVaultModal",
@@ -70,25 +70,21 @@ export default defineComponent({
         const encryptedName = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedNameObject.ciphertext, encryptedNameObject.nonce, encryptedNameObject.mac);
 
         // Pack everything into a vault object
-        const encryptedVault: Vault = {
+        const encryptedVault = {
+          id: window.crypto.randomUUID(),
           encryption_key: encryptedVaultKey,
-          name: encryptedName,
-          created: null,
-          modified: null
-        }
+          name: encryptedName
+        } as Vault;
 
         // Don't forget the vault icon key!
         if (vaultIconKey.value) {
           encryptedVault.icon = vaultIconKey.value
         }
 
-        // Send the vault object to the API
-        try {
-          await vaultService.addVault(encryptedVault);
-          emit("ok");
-        } catch (e) {
-          return toaster.error("Unable to save Vault!");
-        }
+        // Store the vault locally in the storage service
+        const storageService = await VirkiStorageService.build();
+        await storageService.addVault(encryptedVault);
+        emit("ok");
       }
 
       return {

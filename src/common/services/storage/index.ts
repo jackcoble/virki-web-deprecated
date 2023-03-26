@@ -10,7 +10,7 @@ import type { Account } from "@/common/interfaces/account";
 
 const DB_NAME = "virki_db";
 
-export class VirkiStorageService {
+export default class VirkiStorageService {
     // The Virki storage service uses RxDB for a reactive and offline-first data store.
     private _db: RxDatabase;
 

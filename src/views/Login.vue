@@ -59,7 +59,7 @@ import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
 import type { Account } from "@/common/interfaces/account";
 import { version } from "../../package.json";
-import { VirkiStorageService } from "@/common/services/storage/storage.service";
+import VirkiStorageService from '@/common/services/storage';
 
 export default defineComponent({
     name: "Login",

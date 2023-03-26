@@ -48,12 +48,10 @@ import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
 
 import { PAGES } from "@/router/pages";
-import vaultService from "@/service/api/vaultService";
-import type { Vault } from "@/common/interfaces/vault";
 import { CryptoWorker } from "@/common/comlink";
 import { useKeyStore } from "@/stores/keyStore";
 import userService from "@/service/api/userService";
-import { VirkiStorageService } from "@/common/services/storage/storage.service";
+import VirkiStorageService from '@/common/services/storage';
 import axios from "axios";
 
 export default defineComponent({
@@ -85,13 +83,10 @@ export default defineComponent({
     const showEditVault = ref(false);
 
     onMounted(async () => {
-      // Fetch all the vaults if we're online and decrypt them.
+      // Decrypt all the local vaults
       const storageService = await VirkiStorageService.build();
-
-      if (appStore.isOnline) {
-        try {
-          const res = await vaultService.getVaults();
-          const vaults: Vault[] = res.data;
+      try {
+          const vaults = await storageService.getVaults();
 
           // Prepare a CryptoWorker for us to use, along with our master encryption key
           const cryptoWorker = await new CryptoWorker();
@@ -168,7 +163,6 @@ export default defineComponent({
           // TODO: Handle this...
           console.log(e);
         }
-      }
 
       isFirstLoad.value = false;
     })

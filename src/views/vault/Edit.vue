@@ -50,7 +50,7 @@ import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import { TrashIcon } from "@heroicons/vue/outline"
-import { VirkiStorageService } from '@/common/services/storage/storage.service';
+import VirkiStorageService from '@/common/services/storage';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from '@vue/reactivity';
 
