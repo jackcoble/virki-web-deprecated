@@ -4,3 +4,7 @@ export enum LocalStorageKeys {
     SESSION = "session",
     ACCOUNT = "account"
 }
+
+export enum SessionStorageKeys {
+    MASTER_ENCRYPTION_KEY = "master_encryption_key"
+}
