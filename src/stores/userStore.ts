@@ -1,7 +1,7 @@
 import type { Account } from '@/common/interfaces/account';
 import { defineStore } from 'pinia'
 import { useStorage } from "@vueuse/core"
-import { LocalStorageKeys } from '@/common/enums/localStorage';
+import { LocalStorageKeys } from '@/common/enums/storage';
 
 export const useUserStore = defineStore({
   id: 'userStore',

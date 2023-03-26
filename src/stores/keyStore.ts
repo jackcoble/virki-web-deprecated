@@ -4,8 +4,7 @@ import { useStorage, useSessionStorage } from "@vueuse/core";
 import { useUserStore } from './userStore';
 import type { Keys } from '@/common/interfaces/keys';
 
-import { LocalStorageKeys } from '@/common/enums/localStorage';
-import { SessionStorageKeys } from '@/common/enums/sessionStorage';
+import { LocalStorageKeys, SessionStorageKeys } from '@/common/enums/storage';
 
 export const useKeyStore = defineStore({
   id: 'keyStore',
