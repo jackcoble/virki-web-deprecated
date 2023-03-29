@@ -2,18 +2,18 @@ import { useLogout } from "@/composables/useLogout";
 import router from "@/router";
 import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
-import axios, { AxiosError } from "axios";
+import * as apiClient from "@/common/types";
+import type { AxiosError } from "axios";
 
-export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "/api",
-    headers: {
-        "Content-Type": "application/json"
-    }
-})
+export const api = new apiClient.DefaultApi();
+
+// For the interceptors to work, we need to access the protected Axios property.
+// See https://github.com/OpenAPITools/openapi-generator/issues/11799#issuecomment-1153546079 for more details...
 
 // If we've got a session token in the store,
 // attach it to every request
-api.interceptors.request.use(
+//@ts-ignore
+api.axios.interceptors.request.use(
     config => {
         const keyStore = useKeyStore();
         const sessionToken = keyStore.getSessionToken;
@@ -31,7 +31,8 @@ api.interceptors.request.use(
 
 // Intercept the responses. If we receive a 401, the session
 // has been revoked, so force data to be cleared and push to logout.
-api.interceptors.response.use(
+//@ts-ignore
+api.axios.interceptors.response.use(
     response => {
         return response;
     },
