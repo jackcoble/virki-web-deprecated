@@ -5,7 +5,7 @@ import { useKeyStore } from "@/stores/keyStore";
 import * as apiClient from "@/common/types";
 import type { AxiosError } from "axios";
 
-export const api = new apiClient.DefaultApi();
+const api = new apiClient.DefaultApi();
 
 // For the interceptors to work, we need to access the protected Axios property.
 // See https://github.com/OpenAPITools/openapi-generator/issues/11799#issuecomment-1153546079 for more details...
@@ -52,3 +52,5 @@ api.axios.interceptors.response.use(
         return error;
     }
 )
+
+export default api;
