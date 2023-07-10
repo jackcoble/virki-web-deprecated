@@ -1,5 +1,5 @@
 import * as Comlink from "comlink";
-import CWorker from "@/common/worker/crypto.worker?worker&inline"
+import CWorker from "@/common/worker/crypto.worker?worker"
 import type { ICryptoWorker } from "../worker/crypto.worker";
 
 export interface ComlinkWorker {
@@ -16,4 +16,4 @@ export const getDedicatedCryptoWorker = (): ComlinkWorker => {
     return { comlink, worker };
 }
 
-export const cryptoWorker = getDedicatedCryptoWorker()?.comlink;
+export const cryptoWorker = getDedicatedCryptoWorker().comlink;

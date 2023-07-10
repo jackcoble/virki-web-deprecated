@@ -196,30 +196,6 @@ export interface AccountRegisterPost200ResponseAllOf {
 export interface AccountRegisterPostRequest {
     /**
      * 
-     * @type {EncryptedKeysKek}
-     * @memberof AccountRegisterPostRequest
-     */
-    'kek': EncryptedKeysKek;
-    /**
-     * 
-     * @type {EncryptedKeysKeypair}
-     * @memberof AccountRegisterPostRequest
-     */
-    'keypair': EncryptedKeysKeypair;
-    /**
-     * 
-     * @type {EncryptedKeysRecovery}
-     * @memberof AccountRegisterPostRequest
-     */
-    'recovery': EncryptedKeysRecovery;
-    /**
-     * 
-     * @type {string}
-     * @memberof AccountRegisterPostRequest
-     */
-    'masterEncryptionKey': string;
-    /**
-     * 
      * @type {string}
      * @memberof AccountRegisterPostRequest
      */
@@ -230,6 +206,12 @@ export interface AccountRegisterPostRequest {
      * @memberof AccountRegisterPostRequest
      */
     'name': string;
+    /**
+     * 
+     * @type {EncryptedKeys}
+     * @memberof AccountRegisterPostRequest
+     */
+    'encryptedKeys': EncryptedKeys;
 }
 /**
  * 
@@ -249,6 +231,12 @@ export interface AccountRegisterPostRequestAllOf {
      * @memberof AccountRegisterPostRequestAllOf
      */
     'name': string;
+    /**
+     * 
+     * @type {EncryptedKeys}
+     * @memberof AccountRegisterPostRequestAllOf
+     */
+    'encryptedKeys': EncryptedKeys;
 }
 /**
  * 
@@ -607,6 +595,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        accountLoginPost: async (accountPreloginPostRequest: AccountPreloginPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'accountPreloginPostRequest' is not null or undefined
+            assertParamExists('accountLoginPost', 'accountPreloginPostRequest', accountPreloginPostRequest)
+            const localVarPath = `/account/login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(accountPreloginPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {AccountPreloginPostRequest} accountPreloginPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         accountPreloginPost: async (accountPreloginPostRequest: AccountPreloginPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'accountPreloginPostRequest' is not null or undefined
             assertParamExists('accountPreloginPost', 'accountPreloginPostRequest', accountPreloginPostRequest)
@@ -687,6 +710,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async accountLoginPost(accountPreloginPostRequest: AccountPreloginPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountRegisterPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.accountLoginPost(accountPreloginPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {AccountPreloginPostRequest} accountPreloginPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async accountPreloginPost(accountPreloginPostRequest: AccountPreloginPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountPreloginPost200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountPreloginPost(accountPreloginPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -717,6 +750,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        accountLoginPost(accountPreloginPostRequest: AccountPreloginPostRequest, options?: any): AxiosPromise<AccountRegisterPost200Response> {
+            return localVarFp.accountLoginPost(accountPreloginPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AccountPreloginPostRequest} accountPreloginPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         accountPreloginPost(accountPreloginPostRequest: AccountPreloginPostRequest, options?: any): AxiosPromise<AccountPreloginPost200Response> {
             return localVarFp.accountPreloginPost(accountPreloginPostRequest, options).then((request) => request(axios, basePath));
         },
@@ -739,6 +781,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  * @extends {BaseAPI}
  */
 export class DefaultApi extends BaseAPI {
+    /**
+     * 
+     * @param {AccountPreloginPostRequest} accountPreloginPostRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public accountLoginPost(accountPreloginPostRequest: AccountPreloginPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).accountLoginPost(accountPreloginPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {AccountPreloginPostRequest} accountPreloginPostRequest 
