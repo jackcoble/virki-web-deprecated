@@ -16,4 +16,4 @@ export const getDedicatedCryptoWorker = (): ComlinkWorker => {
     return { comlink, worker };
 }
 
-export const CryptoWorker = getDedicatedCryptoWorker()?.comlink;
+export const cryptoWorker = getDedicatedCryptoWorker()?.comlink;
