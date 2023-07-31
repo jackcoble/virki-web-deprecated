@@ -20,7 +20,7 @@ export interface ICryptoWorker {
     fromBase64(input: string): Promise<Uint8Array>
 }
 
-export class Crypto implements ICryptoWorker {
+export class Crypto {
     async stretchPassword(password: string, salt?: string, opsLimit?: number, memLimit?: number) {
         return stretchPassword(password, salt, opsLimit, memLimit);
     }
