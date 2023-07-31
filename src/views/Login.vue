@@ -53,7 +53,7 @@ import userService from "@/service/api/userService";
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
-import { CryptoWorker } from "@/common/comlink";
+import { cryptoWorker } from "@/common/comlink";
 import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
@@ -93,7 +93,7 @@ export default defineComponent({
                 } as StretchedPassword;
 
                 // Stretch password
-                const cryptoWorker = await new CryptoWorker();
+                const cryptoWorker = await new cryptoWorker();
                 const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, argon.salt, argon.opsLimit, argon.memLimit);
                 
                 // Request for the encrypted key material

@@ -44,7 +44,7 @@ import { useRouter } from "vue-router";
 import useToaster from "@/composables/useToaster";
 import { LogoutIcon, LockOpenIcon } from "@heroicons/vue/outline";
 import type { StretchedPassword } from "@/common/interfaces/password";
-import { CryptoWorker } from "@/common/comlink";
+import { cryptoWorker } from "@/common/comlink";
 import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
@@ -88,7 +88,7 @@ export default defineComponent({
 
             // Fetch the encrypted keys from the Key Store.
             // We can then use that data to decrypt everything using the password.
-            const cryptoWorker = await new CryptoWorker();
+            const cryptoWorker = await new cryptoWorker();
             const encryptedKeys = keyStore.getEncryptedKeys;
 
             try {

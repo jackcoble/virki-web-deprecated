@@ -48,7 +48,7 @@ import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
 
 import { PAGES } from "@/router/pages";
-import { CryptoWorker } from "@/common/comlink";
+import { cryptoWorker } from "@/common/comlink";
 import { useKeyStore } from "@/stores/keyStore";
 import userService from "@/service/api/userService";
 import VirkiStorageService from '@/common/services/storage';
@@ -88,8 +88,8 @@ export default defineComponent({
       try {
           const vaults = await storageService.getVaults();
 
-          // Prepare a CryptoWorker for us to use, along with our master encryption key
-          const cryptoWorker = await new CryptoWorker();
+          // Prepare a cryptoWorker for us to use, along with our master encryption key
+          const cryptoWorker = await new cryptoWorker();
           const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
           // Decrypt and add to the Pinia vault store
@@ -126,7 +126,7 @@ export default defineComponent({
                     const metadata = res.data.metadata;
 
                     // First, let us decrypt the encryption key with our master key
-                    const cryptoWorker = await new CryptoWorker();
+                    const cryptoWorker = await new cryptoWorker();
                     const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
 
                     // Decrypt the MIME type with the encryption key

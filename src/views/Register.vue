@@ -69,7 +69,7 @@ import useToaster from "@/composables/useToaster";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { CryptoWorker } from "@/common/comlink";
+import { cryptoWorker } from "@/common/comlink";
 import type { StretchedPassword } from "@/common/interfaces/password";
 import type { EncryptionResult } from "@/common/interfaces/encryption";
 import { serialiseCipherString } from "@/common/utils/cipher";
@@ -118,7 +118,7 @@ export default defineComponent({
             isLoading.value = true;
 
             // Stretch the provided password into a Key Encryption Key (KEK)
-            const cryptoWorker = await new CryptoWorker();
+            const cryptoWorker = await new cryptoWorker();
             const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value)
             
             // Generate a standalone encryption key and encrypt it with the KEK

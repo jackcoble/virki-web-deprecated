@@ -42,7 +42,7 @@ import { Menu, MenuButton } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
 import VirkiStorageService from '@/common/services/storage';
 import userService from '@/service/api/userService';
-import { CryptoWorker } from '@/common/comlink';
+import { cryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
 import axios from 'axios';
 
@@ -77,7 +77,7 @@ export default defineComponent({
             // Attempt to retrieve and set the avatar file from IndexedDB.
             // If we don't have it present there, then we should request for the file from the API
             // and decrypt it.
-            const cryptoWorker = await new CryptoWorker();
+            const cryptoWorker = await new cryptoWorker();
             const storageService = new VirkiStorageService();
             const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 

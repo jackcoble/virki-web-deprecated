@@ -43,7 +43,7 @@
 import { useVaultStore } from '@/stores/vaultStore';
 import { EncryptionType } from "@/common/enums/encryptionType";
 import type { Vault } from '@/common/interfaces/vault';
-import { CryptoWorker } from '@/common/comlink';
+import { cryptoWorker } from '@/common/comlink';
 import { sleep } from '@/common/utils/sleep';
 import { serialiseCipherString } from '@/common/utils/cipher';
 import { defineComponent, onMounted, ref, watch } from 'vue';
@@ -110,8 +110,8 @@ export default defineComponent({
                 return;
             }
 
-            // Spin up a CryptoWorker and get the vault encryption key
-            const cryptoWorker = await new CryptoWorker();
+            // Spin up a cryptoWorker and get the vault encryption key
+            const cryptoWorker = await new cryptoWorker();
             const vaultEncryptionKey = vault.value.key;
 
             // We need to then re-encrypt the name, description and icon with the vault encryption key.

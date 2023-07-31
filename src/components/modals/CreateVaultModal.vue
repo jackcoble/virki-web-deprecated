@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { CryptoWorker } from '@/common/comlink';
+import { cryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
 import { defineComponent, computed, ref } from 'vue';
 
@@ -50,7 +50,7 @@ export default defineComponent({
 
       // Handle encrypting the vault attributes into a suitable payload
       const handleVaultCreation = async () => {
-        const cryptoWorker = await new CryptoWorker();
+        const cryptoWorker = await new cryptoWorker();
 
         // Generate a symmetric key which all items inside this vault will be encrypted with.
         const vaultEncryptionKey = await cryptoWorker.generateEncryptionKey();
