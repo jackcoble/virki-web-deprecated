@@ -12,13 +12,13 @@
                 <!-- Email input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Email Address</p>
-                    <b-input type="email" required v-model="email" />
+                    <b-input type="email" required v-model="email" autofocus />
                 </div>
 
                 <!-- Name input -->
                 <div class="space-y-1.5">
                     <p class="font-bold text-sm">Name</p>
-                    <b-input type="text" required v-model="name" autofocus />
+                    <b-input type="text" required v-model="name" />
                 </div>
 
                 <!-- Password -->
