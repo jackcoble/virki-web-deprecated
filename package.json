@@ -23,6 +23,7 @@
     "pinia": "^2.1.6",
     "rxdb": "^14.15.1",
     "rxjs": "^7.8.1",
+    "virki-axios": "git+https://github.com/virki-io/Virki-Axios",
     "vue": "^3.3.4",
     "vue-advanced-cropper": "^2.8.8",
     "vue-router": "^4.2.4",
