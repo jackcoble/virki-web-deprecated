@@ -1,18 +1,14 @@
 import * as Comlink from "comlink";
-import CWorker from "@/common/worker/crypto.worker?worker"
-import type { ICryptoWorker } from "../worker/crypto.worker";
+import { CryptoWorker } from "../worker/crypto.worker"
 
-export interface ComlinkWorker {
-    comlink: any;
-    worker: Worker;
+// Spawns a CryptoWorker inside a Web Worker
+export const getDedicatedCryptoWorker = async () => {
+    const worker = new Worker(new URL("../worker/crypto.worker", import.meta.url), { type: "module" });
+    const instance = Comlink.wrap<typeof CryptoWorker>(worker);
+    const cryptoWorker = await new instance();
+
+    return Promise.resolve(cryptoWorker);
 }
 
-// Returns a Crypto worker
-export const getDedicatedCryptoWorker = (): ComlinkWorker => {
-    const worker = new CWorker()
-
-    const comlink = Comlink.wrap(worker);
-    return { comlink, worker };
-}
-
-export const cryptoWorker: ICryptoWorker = getDedicatedCryptoWorker().comlink;
+// Exports a singleton of the available CryptoWorker
+export const cryptoWorker = await getDedicatedCryptoWorker().then(worker => worker);
