@@ -75,7 +75,7 @@ import type { EncryptionResult } from "@/common/interfaces/encryption";
 import { serialiseCipherString } from "@/common/utils/cipher";
 import { EncryptionType } from "@/common/enums/encryptionType";
 import type { Keys } from "@/common/interfaces/keys";
-import type { StringKeyPair } from "libsodium-wrappers";
+import type { StringKeyPair } from "libsodium-wrappers-sumo";
 import userService from "@/service/api/userService";
 import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
@@ -84,7 +84,7 @@ import { useUserStore } from "@/stores/userStore";
 import { version } from "../../package.json";
 
 export default defineComponent({
-    name: "Login",
+    name: "Register",
     setup() {
         // Refs to keep track of user data
         const email = ref("");
@@ -118,7 +118,6 @@ export default defineComponent({
             isLoading.value = true;
 
             // Stretch the provided password into a Key Encryption Key (KEK)
-            const cryptoWorker = await new cryptoWorker();
             const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value)
             
             // Generate a standalone encryption key and encrypt it with the KEK
