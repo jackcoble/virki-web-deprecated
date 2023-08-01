@@ -1,4 +1,4 @@
-import sodium from "libsodium-wrappers";
+import sodium from "libsodium-wrappers-sumo";
 import { EncryptionType } from "../enums/encryptionType";
 import type { EncryptionResult, RawEncryptionResult } from "../interfaces/encryption";
 import type { EncryptedFile } from "../interfaces/file";

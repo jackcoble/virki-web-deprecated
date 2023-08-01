@@ -1,6 +1,6 @@
 import type { StretchedPassword } from "@/common/interfaces/password";
 import * as sodiumUtils from "./sodium";
-import sodium from "libsodium-wrappers";
+import sodium from "libsodium-wrappers-sumo";
 
 /**
  * Stretches a provided password using Argon2.
