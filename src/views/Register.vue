@@ -74,14 +74,13 @@ import type { StretchedPassword } from "@/common/interfaces/password";
 import type { EncryptionResult } from "@/common/interfaces/encryption";
 import { serialiseCipherString } from "@/common/utils/cipher";
 import { EncryptionType } from "@/common/enums/encryptionType";
-import type { Keys } from "@/common/interfaces/keys";
 import type { StringKeyPair } from "libsodium-wrappers-sumo";
-import userService from "@/service/api/userService";
 import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
-import type { Account } from "@/common/interfaces/account";
 import { useUserStore } from "@/stores/userStore";
 import { version } from "../../package.json";
+import { api } from "@/api";
+import type { RegisterAccountRequest } from "virki-axios";
 
 export default defineComponent({
     name: "Register",
@@ -141,44 +140,32 @@ export default defineComponent({
             const masterKeyEncryptedWithRecoveryKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, masterKeyEncryptedWithRecoveryKey.ciphertext, masterKeyEncryptedWithRecoveryKey.nonce, masterKeyEncryptedWithRecoveryKey.mac);
             const recoveryKeyEncryptedWithMasterKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, recoveryKeyEncryptedWithMasterKey.ciphertext, recoveryKeyEncryptedWithMasterKey.nonce, recoveryKeyEncryptedWithMasterKey.mac);
             
-            const keys = {
-                kek: {
-                    hash: stretchedPassword.hash,
-                    salt: stretchedPassword.salt,
-                    ops_limit: stretchedPassword.opsLimit,
-                    mem_limit: stretchedPassword.memLimit
-                },
-                master_encryption_key: encryptedMasterKeyCipherString,
-                keypair: {
-                    public_key: keypair.publicKey,
-                    private_key: keypairEncryptedCipherString
-                },
-                recovery: {
-                    master_key_encrypted_with_recovery_key: masterKeyEncryptedWithRecoveryKeyCipherString,
-                    recovery_key_encrypted_with_master_key: recoveryKeyEncryptedWithMasterKeyCipherString
-                }
-            } as Keys;
-
-            // Submit the encrypted keys to the API
+            // Submit the user information and encrypted keys to the API.
+            // We want to send the encrypted cipher strings here...
             try {
-                // In this response we're expecting a session token to be returned
-                // so set that in the store as well as the master key
-                const res = await userService.Register(email.value, name.value, keys);
-
-                // Set account details
-                const accountDetails: Account = {
-                    id: res.data.user_id,
-                    email: res.data.email,
-                    name: res.data.name,
-                    session_token: res.data.session_token,
-                    plan: res.data.plan
+                const requestBody: RegisterAccountRequest = {
+                    email: email.value,
+                    name: name.value,
+                    encryptedKeys: {
+                        kek: {
+                            hash: stretchedPassword.hash,
+                            salt: stretchedPassword.salt,
+                            opsLimit: stretchedPassword.opsLimit,
+                            memLimit: stretchedPassword.memLimit
+                        },
+                        masterEncryptionKey: encryptedMasterKeyCipherString,
+                        keypair: {
+                            publicKey: keypair.publicKey,
+                            privateKey: keypairEncryptedCipherString
+                        },
+                        recovery: {
+                            masterKeyEncryptedWithRecoveryKey: masterKeyEncryptedWithRecoveryKeyCipherString,
+                            recoveryKeyEncryptedWithMasterKey: recoveryKeyEncryptedWithMasterKeyCipherString
+                        }
+                    }
                 }
-
-                userStore.setAccount(accountDetails);
-
-                // Store the decrypted master encryption key, as well as the encrypted material
-                keyStore.setMasterEncryptionKey(encryptionKey);
-                keyStore.setEncryptedKeys(res.data.encrypted_keys);
+                
+                await api.authApi.apiAuthRegisterPost(requestBody);
 
                 router.push(PAGES.LOGIN);
             } catch (e) {
