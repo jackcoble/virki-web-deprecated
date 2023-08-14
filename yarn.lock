@@ -5687,7 +5687,7 @@ validator@^13.7.0:
 
 "virki-axios@git+https://github.com/virki-io/Virki-Axios":
   version "1.0.0"
-  resolved "git+https://github.com/virki-io/Virki-Axios#c5191ebf29caf18f1b74d0c5604c05ecff5c6aff"
+  resolved "git+https://github.com/virki-io/Virki-Axios#20f0f0c04adfa6d5fa5479508e9fa73fdeaf80f4"
   dependencies:
     axios "^0.27.2"
 
