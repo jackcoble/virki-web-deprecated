@@ -165,7 +165,9 @@ export default defineComponent({
                     }
                 }
                 
-                await api.authApi.apiAuthRegisterPost(requestBody);
+                // Send off all the account details. If successful, then we'll get an empty body.
+                // We can then make a request to the /userinfo endpoint to fetch all the information we need.
+                await api.authApi.v1AuthRegisterPost(requestBody);
 
                 router.push(PAGES.LOGIN);
             } catch (e) {
