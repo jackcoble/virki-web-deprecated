@@ -50,6 +50,8 @@ import { useRouter } from "vue-router";
 import useToaster from "@/composables/useToaster";
 import userService from "@/service/api/userService";
 
+import { api } from "@/api";
+
 import { ClockIcon, LoginIcon, UserAddIcon } from "@heroicons/vue/outline";
 import { useUserStore } from "@/stores/userStore";
 import type { StretchedPassword } from "@/common/interfaces/password";
@@ -85,18 +87,26 @@ export default defineComponent({
 
             // Using the email address, request the prelogin (password salt), and stretch the password
             try {
-                let res = await userService.PreLogin(email.value);
+                const res = await api.authApi.v1AuthPreloginPost({
+                    email: email.value
+                });
+               
                 const argon = {
                     salt: res.data.salt,
-                    opsLimit: res.data.ops_limit,
-                    memLimit: res.data.mem_limit
+                    opsLimit: res.data.opsLimit,
+                    memLimit: res.data.memLimit
                 } as StretchedPassword;
 
                 // Stretch password
-                const cryptoWorker = await new cryptoWorker();
                 const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, argon.salt, argon.opsLimit, argon.memLimit);
                 
-                // Request for the encrypted key material
+                // Login the user
+                const loginRes = await api.authApi.v1AuthLoginPost({
+                    email: email.value,
+                    password: stretchedPassword.hash
+                });
+
+                /*
                 res = await userService.Login(email.value, stretchedPassword.hash);
                 const encryptedMasterKey = res.data.encrypted_keys.master_encryption_key;
 
@@ -122,6 +132,7 @@ export default defineComponent({
                 keyStore.setMasterEncryptionKey(encryptionKey);
 
                 router.push(PAGES.VAULT);
+                */
             } catch (e) {
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
