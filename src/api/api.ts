@@ -1,4 +1,5 @@
 import {
+    AccountApi,
     AuthApi,
     Configuration,
     VaultsApi
@@ -8,6 +9,7 @@ export class VirkiAPI {
     private configuration: Configuration;
 
     public authApi: AuthApi;
+    public accountApi: AccountApi;
     public vaultsApi: VaultsApi;
 
     /**
@@ -19,7 +21,16 @@ export class VirkiAPI {
         });
 
         this.authApi = new AuthApi(this.configuration);
+        this.accountApi = new AccountApi(this.configuration);
         this.vaultsApi = new VaultsApi(this.configuration);
+    }
+
+    /**
+     * Set the Bearer authorization token
+     * @param accessToken - JWT Access Token
+     */
+    setAccessToken(accessToken: string) {
+        this.configuration.accessToken = accessToken;
     }
 }
 
