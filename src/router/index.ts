@@ -20,6 +20,7 @@ import AccountSessions from "@/views/account/Sessions.vue";
 import AddToken from "@/views/vault/AddToken.vue";
 
 import { useAppStore } from '@/stores/appStore'
+import { useUserStore } from '@/stores/userStore'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -107,11 +108,12 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const appStore = useAppStore();
+  const userStore = useUserStore();
   const keyStore = useKeyStore();
 
-  const session = keyStore.getSessionToken;
+  const accessToken = userStore.getAccessToken;
   const masterEncryptionKey = keyStore.getMasterEncryptionKey;
-  const encryptedKeys = keyStore.getEncryptedKeys;
+  const encryptedKeys = userStore.getEncryptedKeys;
 
   // More of a UX improvement here, but if the mobile dropdown menu state is open, and we're navigating to a
   // page other than the one we're currently on, we should close it.
@@ -121,21 +123,21 @@ router.beforeEach(async (to, from, next) => {
 
   // If the user is going to the root path, already has a session, the encrypted data, and encryption key
   // in memory, allow them to navigate straight to the vault page
-  if (to.path === PAGES.LOGIN && session && (encryptedKeys && encryptedKeys.master_encryption_key) && (masterEncryptionKey && masterEncryptionKey.length !== 0)) {
+  if (to.path === PAGES.LOGIN && accessToken && (encryptedKeys && encryptedKeys.master_encryption_key) && (masterEncryptionKey && masterEncryptionKey.length !== 0)) {
     return next({ path: PAGES.VAULT });
   }
 
   // We don't want the user being able to go to the Lock page if they don't have a session or encrypted key on their device,
   // or if they already have the decrypted master key
   if (to.path === PAGES.LOCK) {
-    if (!session || !encryptedKeys.master_encryption_key || (masterEncryptionKey && masterEncryptionKey.length !== 0)) {
+    if (!accessToken || !encryptedKeys.master_encryption_key || (masterEncryptionKey && masterEncryptionKey.length !== 0)) {
       return next({ path: PAGES.LOGIN })
     }
   }
 
   // If the path we're going to is the root, and the device has encrypted keys and a session token, but no decrypted key
   // allow them to "unlock" their account.
-  if (to.path === PAGES.LOGIN && (encryptedKeys && encryptedKeys.master_encryption_key) && session && !masterEncryptionKey) {
+  if (to.path === PAGES.LOGIN && (encryptedKeys && encryptedKeys.master_encryption_key) && accessToken && !masterEncryptionKey) {
     return next({ path: PAGES.LOCK });
   } 
 
@@ -144,9 +146,9 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some(route => !route.meta.public && route.path !== PAGES.LOCK)) {
     // At all times, private routes require the encrypted keys, decrypted key and a session.
     // If we don't have all of this, redirect to the root.
-    const hasAllKeys = (encryptedKeys && encryptedKeys.master_encryption_key) && session && (masterEncryptionKey && masterEncryptionKey.length !== 0);
+    const hasAllKeys = (encryptedKeys && encryptedKeys.master_encryption_key) && accessToken && (masterEncryptionKey && masterEncryptionKey.length !== 0);
     if (!hasAllKeys) {
-      next({ path: PAGES.LOGIN });
+      return next({ path: PAGES.LOGIN });
     }
   }
 
