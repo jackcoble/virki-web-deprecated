@@ -48,7 +48,6 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import useToaster from "@/composables/useToaster";
-import userService from "@/service/api/userService";
 
 import { api } from "@/api";
 
@@ -59,9 +58,7 @@ import { cryptoWorker } from "@/common/comlink";
 import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
-import type { Account } from "@/common/interfaces/account";
 import { version } from "../../package.json";
-import VirkiStorageService from '@/common/services/storage';
 
 export default defineComponent({
     name: "Login",
@@ -90,49 +87,37 @@ export default defineComponent({
                 const res = await api.authApi.v1AuthPreloginPost({
                     email: email.value
                 });
-               
-                const argon = {
-                    salt: res.data.salt,
-                    opsLimit: res.data.opsLimit,
-                    memLimit: res.data.memLimit
-                } as StretchedPassword;
 
-                // Stretch password
-                const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, argon.salt, argon.opsLimit, argon.memLimit);
-                
-                // Login the user
-                const loginRes = await api.authApi.v1AuthLoginPost({
+                // Stretch password and attempt a login
+                const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, res.data.salt, res.data.opsLimit, res.data.memLimit);
+                const loginInfo = await api.authApi.v1AuthLoginPost({
                     email: email.value,
                     password: stretchedPassword.hash
                 });
 
-                /*
-                res = await userService.Login(email.value, stretchedPassword.hash);
-                const encryptedMasterKey = res.data.encrypted_keys.master_encryption_key;
+                // Store the access and refresh tokens for subsequent requests
+                api.setAccessToken(loginInfo.data.accessToken);
+                userStore.setTokens(loginInfo.data.accessToken, loginInfo.data.refreshToken);
 
-                // Save the account details in the local database
-                const accountDetails: Account = {
-                    id: res.data.user_id,
-                    email: res.data.email,
-                    name: res.data.name,
-                    session_token: res.data.session_token,
-                    plan: res.data.plan
+                // Retrieve the user information and set the account details.
+                // This gets stored in the browser for offline usage
+                const userInfo = await api.accountApi.v1AccountGet();
+                userStore.setAccount(userInfo.data);
+
+                // Attempt to parse the master encryption key cipher string
+                // and store it in SessionStorage.
+                const encryptedMasterKey = userInfo.data.masterEncryptionKey;
+                if (!encryptedMasterKey) {
+                    toaster.error("Master encryption key cipherstring not present!");
+                    return;
                 }
 
-                const storageService = await VirkiStorageService.build();
-                await storageService.addAccount(accountDetails);
-
-                userStore.setAccount(accountDetails);
-
-                // Parse cipher string for master encryption key
                 const encryptionKeyCipher = await parseCipherString(encryptedMasterKey);
                 const encryptionKey = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
-
-                keyStore.setEncryptedKeys(res.data.encrypted_keys);
                 keyStore.setMasterEncryptionKey(encryptionKey);
 
+                // Navigate to the primary vault page
                 router.push(PAGES.VAULT);
-                */
             } catch (e) {
                 if (e.response.data && e.response.data.error) {
                     toaster.error(e.response.data.error);
