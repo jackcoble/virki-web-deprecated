@@ -88,8 +88,7 @@ export default defineComponent({
 
             // Fetch the encrypted keys from the Key Store.
             // We can then use that data to decrypt everything using the password.
-            const cryptoWorker = await new cryptoWorker();
-            const encryptedKeys = keyStore.getEncryptedKeys;
+            const encryptedKeys = userStore.getEncryptedKeys;
 
             try {
                 const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
