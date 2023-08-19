@@ -6,8 +6,9 @@
 
           <EncryptedFileUpload :encryption-key="masterEncryptionKey" @object-key="vaultIconKey = $event" />
 
-          <form class="w-full" @submit.prevent="handleVaultCreation">
+          <form class="w-full space-y-2" @submit.prevent="handleVaultCreation">
               <b-input v-model="vaultName" placeholder="Vault name" autofocus></b-input>
+              <b-text-area v-model="vaultDescription" placeholder="Description"></b-text-area>
           </form>
         </div>
       </template>
@@ -15,7 +16,6 @@
 </template>
 
 <script lang="ts">
-import { cryptoWorker } from '@/common/comlink';
 import { useKeyStore } from '@/stores/keyStore';
 import { defineComponent, computed, ref } from 'vue';
 
@@ -24,8 +24,9 @@ import EncryptedFileUpload from '../EncryptedFileUpload.vue';
 import useToaster from '@/composables/useToaster';
 import { serialiseCipherString } from '@/common/utils/cipher';
 import { EncryptionType } from '@/common/enums/encryptionType';
-import type { Vault } from '@/common/interfaces/vault';
-import VirkiStorageService from '@/common/services/storage';
+import { cryptoWorker } from '@/common/comlink';
+import type { VaultRequest } from 'virki-axios';
+import { api } from '@/api';
 
 export default defineComponent({
     name: "CreateVaultModal",
@@ -46,12 +47,11 @@ export default defineComponent({
 
       // Values to bind vault creation to
       const vaultName = ref();
+      const vaultDescription = ref();
       const vaultIconKey = ref();
 
       // Handle encrypting the vault attributes into a suitable payload
       const handleVaultCreation = async () => {
-        const cryptoWorker = await new cryptoWorker();
-
         // Generate a symmetric key which all items inside this vault will be encrypted with.
         const vaultEncryptionKey = await cryptoWorker.generateEncryptionKey();
 
@@ -69,21 +69,29 @@ export default defineComponent({
         const encryptedNameObject = await cryptoWorker.encryptUTF8(vaultName.value, vaultEncryptionKey);
         const encryptedName = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedNameObject.ciphertext, encryptedNameObject.nonce, encryptedNameObject.mac);
 
-        // Pack everything into a vault object
-        const encryptedVault = {
-          id: window.crypto.randomUUID(),
-          encryption_key: encryptedVaultKey,
-          name: encryptedName
-        } as Vault;
+        // Pack everything into a Vault object
+        const apiVaultObject: VaultRequest = {
+          name: encryptedName,
+          icon: "FIX ME"
+        };
+
+        // Encrypt the description too if we have it
+        if (vaultDescription.value && vaultDescription.value.trim().length > 0) {
+          const encryptedDescriptionObject = await cryptoWorker.encryptUTF8(vaultDescription.value, vaultEncryptionKey);
+          const encryptedDescription = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedDescriptionObject.ciphertext, encryptedDescriptionObject.nonce, encryptedDescriptionObject.mac);
+        
+          apiVaultObject.description = encryptedDescription;
+        }
 
         // Don't forget the vault icon key!
         if (vaultIconKey.value) {
-          encryptedVault.icon = vaultIconKey.value
+          apiVaultObject.icon = vaultIconKey.value
         }
 
-        // Store the vault locally in the storage service
-        const storageService = await VirkiStorageService.build();
-        await storageService.addVault(encryptedVault);
+        // Submit the new vault to be sent to the API
+        await api.vaultsApi.v1VaultsPost(apiVaultObject);
+
+        // Close the modal
         emit("ok");
       }
 
@@ -91,6 +99,7 @@ export default defineComponent({
         masterEncryptionKey,
 
         vaultName,
+        vaultDescription,
         vaultIconKey,
 
         handleVaultCreation
