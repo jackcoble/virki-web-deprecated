@@ -7,6 +7,7 @@ import { useAppStore } from './stores/appStore';
 import { useKeyStore } from './stores/keyStore';
 import { useUserStore } from './stores/userStore';
 import { useVaultStore } from './stores/vaultStore';
+import { api } from './api';
 
 const appStore = useAppStore();
 const keyStore = useKeyStore();
@@ -29,13 +30,19 @@ document.addEventListener("click", () => {
 
 let inactivityInterval: any;
 onMounted(() => {
+  // Fetch the access token from the store and set the API to use it
+  const accessToken = userStore.getAccessToken;
+  if (accessToken) {
+    api.setAccessToken(accessToken);
+  }
+
   // Check every second to make sure the 15 minute inactivity timeout hasn't been reached
   inactivityInterval = setInterval(() => {
     const lastActiveTimestamp = appStore.getLastActiveTimestamp;
     const leastActivityDate = sub(new Date(), { minutes: 15 });
-    const sessionToken = userStore.getSessionToken;
+    const accessToken = userStore.getAccessToken;
 
-    if (leastActivityDate > fromUnixTime(lastActiveTimestamp) && (route.path !== PAGES.LOCK || PAGES.LOGIN) && sessionToken) {
+    if (leastActivityDate > fromUnixTime(lastActiveTimestamp) && (route.path !== PAGES.LOCK || PAGES.LOGIN) && accessToken) {
       // Clear the encryption key and vaults
       keyStore.clearMasterEncryptionKey();
       vaultStore.clear();
