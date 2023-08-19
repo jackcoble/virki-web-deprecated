@@ -63,6 +63,7 @@ export const useUserStore = defineStore({
 
     clear() {
       this.account = null as any;
+      this.tokens = null;
     }
   },
 })

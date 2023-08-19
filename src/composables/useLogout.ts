@@ -10,7 +10,7 @@ export function useLogout() {
     const vaultStore = useVaultStore();
 
     // Clear all the data...
-    keyStore.clear();
+    keyStore.clearMasterEncryptionKey();
     userStore.clear();
     vaultStore.clear();
 }
