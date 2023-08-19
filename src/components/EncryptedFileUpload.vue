@@ -75,7 +75,6 @@ export default defineComponent({
             }
 
             // We can then encrypt the file.
-            const cryptoWorker = await new cryptoWorker();
             const encryptedFile: EncryptedFile = await cryptoWorker.encryptFile(file.type, fileContents, presignedURL.key);
 
             // The "key" property we get back in the encrypted file object isn't encrypted. So we need to encrypt that key with our "master encryption key" before

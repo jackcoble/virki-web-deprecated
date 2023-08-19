@@ -77,7 +77,6 @@ export default defineComponent({
             // Attempt to retrieve and set the avatar file from IndexedDB.
             // If we don't have it present there, then we should request for the file from the API
             // and decrypt it.
-            const cryptoWorker = await new cryptoWorker();
             const storageService = new VirkiStorageService();
             const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 

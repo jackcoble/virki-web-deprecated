@@ -182,7 +182,6 @@ export default defineComponent({
             // Generate a unique encryption key for this entry.
             // It will be used for icon data encryption and for all of the fields.
             // In the end it'll be encrypted with the vault encryption key.
-            const cryptoWorker = await new cryptoWorker();
             tokenEncryptionKey.value = await cryptoWorker.generateEncryptionKey();
 
             // Set some new token entry defaults
@@ -197,8 +196,7 @@ export default defineComponent({
 
         // Handle creating an encrypted token
         const handleCreateToken = async () => {
-            // Create a cryptoWorker and a copy of the token ref for us to work on
-            const cryptoWorker = await new cryptoWorker();
+            // Create a copy of the token ref for us to work on
             const encryptedToken = { ...token.value };
             
             // Encrypt the following:

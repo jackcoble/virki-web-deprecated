@@ -89,7 +89,6 @@ export default defineComponent({
           const vaults = await storageService.getVaults();
 
           // Prepare a cryptoWorker for us to use, along with our master encryption key
-          const cryptoWorker = await new cryptoWorker();
           const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
           // Decrypt and add to the Pinia vault store
@@ -126,7 +125,6 @@ export default defineComponent({
                     const metadata = res.data.metadata;
 
                     // First, let us decrypt the encryption key with our master key
-                    const cryptoWorker = await new cryptoWorker();
                     const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
 
                     // Decrypt the MIME type with the encryption key

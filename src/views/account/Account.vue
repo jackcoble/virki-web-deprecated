@@ -33,9 +33,8 @@
                 </div>
 
                 <!-- Avatar -->
-                <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" @object-key="handleAvatarUpload" />
-
-                <ImageCropper :placeholder="avatar"></ImageCropper>
+                <!-- <EncryptedFileUpload :encryption-key="encryptionKey" :placeholder="avatar" @object-key="handleAvatarUpload" /> -->
+                <!-- <ImageCropper :placeholder="avatar"></ImageCropper> -->
             </div>
 
             <hr>
@@ -113,7 +112,6 @@ export default defineComponent({
             updatingEmail.value = true;
 
             // Stretch the plaintext password into a hashed version
-            const cryptoWorker = await new cryptoWorker();
             const encryptedKeys = keyStore.getEncryptedKeys;
             const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
 
@@ -172,7 +170,6 @@ export default defineComponent({
             const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
             // First, let us decrypt the encryption key with our master key
-            const cryptoWorker = await new cryptoWorker();
             const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
 
             // Decrypt the MIME type with the encryption key

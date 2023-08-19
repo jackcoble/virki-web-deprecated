@@ -110,8 +110,6 @@ export default defineComponent({
                 return;
             }
 
-            // Spin up a cryptoWorker and get the vault encryption key
-            const cryptoWorker = await new cryptoWorker();
             const vaultEncryptionKey = vault.value.key;
 
             // We need to then re-encrypt the name, description and icon with the vault encryption key.
