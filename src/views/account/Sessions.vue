@@ -68,6 +68,12 @@
                                                 @click="revokeSession(session)">Revoke</button>
                                         </td>
                                     </tr>
+
+                                    <tr v-if="!sessions">
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            No sessions available...
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
