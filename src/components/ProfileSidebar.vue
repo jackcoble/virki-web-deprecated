@@ -26,6 +26,12 @@
                 <h2 class="text-sm">Password</h2>
             </router-link>
 
+            <!-- Account Recovery -->
+            <router-link :to="PAGES.LOGIN" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
+                <SupportIcon class="w-6 text-red-500" />
+                <h2 class="text-sm">Recovery</h2>
+            </router-link>
+
             <!-- Subscription -->
             <router-link :to="PAGES.LOGIN" class="flex p-2 rounded items-center space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.path === '' ? 'bg-gray-200 rounded p-2' : ''">
                 <SparklesIcon class="w-6 text-yellow-500" />
@@ -62,13 +68,13 @@ import {
     UserIcon,
     LogoutIcon,
     LockClosedIcon,
-    ArrowLeftIcon
-
+    ArrowLeftIcon,
+    SupportIcon
 } from "@heroicons/vue/outline";
+
 import { PAGES } from '@/router/pages';
 import { useLogout } from '@/composables/useLogout';
 import { useRoute, useRouter } from 'vue-router';
-import userService from '@/service/api/userService';
 import { useKeyStore } from '@/stores/keyStore';
 import { useVaultStore } from '@/stores/vaultStore';
 
@@ -81,7 +87,8 @@ export default defineComponent({
         UserIcon,
         LogoutIcon,
         LockClosedIcon,
-        ArrowLeftIcon
+        ArrowLeftIcon,
+        SupportIcon
     },
     setup() {
         const router = useRouter();
@@ -102,7 +109,7 @@ export default defineComponent({
         const doLogout = async () => {
             // Attempt to revoke token
             try {
-                await userService.Logout();
+                // await userService.Logout();
             } finally {
                 useLogout();
                 router.push(PAGES.LOGIN);
