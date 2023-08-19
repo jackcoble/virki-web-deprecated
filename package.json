@@ -1,5 +1,5 @@
 {
-  "name": "authoriser",
+  "name": "virki-web",
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
