@@ -1,6 +1,4 @@
-import { useLogout } from "@/composables/useLogout";
-import router from "@/router";
-import { PAGES } from "@/router/pages";
+import { useUserStore } from "@/stores/userStore";
 import type { AxiosError } from "axios";
 import axios from "axios";
 import {
@@ -34,19 +32,28 @@ export class VirkiAPI {
                 return response;
             },
             
-            (error: AxiosError) => {
-                // Something has gone wrong, so lets investigate! First we shall check the status code.
-                // If it is 401, then clear all local data and logout.
+            async (error: AxiosError) => {
+                // Attempt to refresh tokens
                 if (error.response && error.response.status === 401) {
-                    console.log("Unable to refresh tokens, clearing data and logging out...");
-        
-                    useLogout();
-                    router.push(PAGES.LOGIN);
-        
-                    return;
+                    const originalRequest = error.config;
+                    const userStore = useUserStore();
+
+                    const existingRefreshToken = userStore.getRefreshToken;
+                    const newTokens = await this.authApi.v1AuthRefreshPost({
+                        refreshToken: existingRefreshToken
+                    });
+
+                    // Update the tokens in the store, and for any subsequent requests made by
+                    // this API service
+                    userStore.setTokens(newTokens.data.accessToken, newTokens.data.refreshToken);
+                    this.setAccessToken(newTokens.data.accessToken);
+
+                    // Attempt the request again (with the updated header)
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${newTokens.data.accessToken}`;
+                    return axios(originalRequest);
                 }
         
-                return error;
+                return Promise.reject(error);
             }
         )
 
