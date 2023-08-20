@@ -49,8 +49,11 @@ export class VirkiAPI {
                     this.setAccessToken(newTokens.data.accessToken);
 
                     // Attempt the request again (with the updated header)
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${newTokens.data.accessToken}`;
-                    return axios(originalRequest);
+                    if (originalRequest.headers) {
+                        originalRequest.headers["Authorization"] = `Bearer ${newTokens.data.accessToken}`;
+                    }
+
+                    return baseApi(originalRequest);
                 }
         
                 return Promise.reject(error);
