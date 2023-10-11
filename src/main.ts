@@ -10,10 +10,6 @@ import BIconUpload from "@/components/IconUpload.vue";
 import PasswordStrength from "@/components/PasswordStrength.vue";
 import BModal from "@/components/Modal.vue";
 
-// Buffer
-import { Buffer } from 'buffer';
-window.Buffer = Buffer;
-
 import App from './App.vue'
 import router from './router'
 
