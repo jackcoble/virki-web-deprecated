@@ -7,16 +7,12 @@ import type { Keys } from '@/common/interfaces/keys';
 export const useUserStore = defineStore({
   id: 'userStore',
   state: () => ({
-    account: useStorage(LocalStorageKeys.ACCOUNT, {} as AccountInfoResponse),
-    tokens: useStorage(LocalStorageKeys.TOKENS, {
-      accessToken: null,
-      refreshToken: null
-    } as any)
+    account: useStorage<AccountInfoResponse>(LocalStorageKeys.ACCOUNT, {}),
+    session: useStorage<string>(LocalStorageKeys.SESSION, null)
   }),
 
   getters: {
-    getAccessToken: (state) => state.tokens.accessToken,
-    getRefreshToken: (state) => state.tokens.refreshToken,
+    getSessionToken: (state) => state.session,
 
     getUserID: (state) => state.account.id,
     getEmail: (state) => state.account ? state.account.email : "",
@@ -49,10 +45,9 @@ export const useUserStore = defineStore({
   },
 
   actions: {
-    // Persist the access + refresh tokens in LocalStorage
-    setTokens(accessToken: string, refreshToken: string) {
-      this.tokens.accessToken = accessToken;
-      this.tokens.refreshToken = refreshToken;
+    // Persist the session token
+    setSessionToken(token: string) {
+      this.session = token;
     },
 
     // Persist the account information response as it
@@ -63,7 +58,7 @@ export const useUserStore = defineStore({
 
     clear() {
       this.account = null as any;
-      this.tokens = null;
+      this.session = null as any;
     }
   },
 })

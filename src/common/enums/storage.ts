@@ -1,7 +1,7 @@
 export enum LocalStorageKeys {
     ENCRYPTED_KEYS = "encrypted_keys",
     ACCOUNT = "account",
-    TOKENS = "tokens"
+    SESSION = "session"
 }
 
 export enum SessionStorageKeys {
