@@ -9,7 +9,6 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@cloudflare/opaque-ts": "^0.7.5",
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "v1",
     "@meforma/vue-toaster": "^1.3.0",
@@ -21,9 +20,6 @@
     "events": "^3.3.0",
     "libsodium-wrappers-sumo": "^0.7.11",
     "pinia": "^2.1.6",
-    "rxdb": "^14.15.1",
-    "rxjs": "^7.8.1",
-    "virki-axios": "git+https://github.com/virki-io/Virki-Axios",
     "vue": "^3.3.4",
     "vue-advanced-cropper": "^2.8.8",
     "vue-router": "^4.2.4",
