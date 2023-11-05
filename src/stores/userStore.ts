@@ -13,7 +13,8 @@ export const useUserStore = defineStore({
 
   getters: {
     getEmail: (state) => state.email,
-    getSessionToken: (state) => state.session
+    getSessionToken: (state) => state.session,
+    getKeys: (state) => state.keys
   },
 
   actions: {
