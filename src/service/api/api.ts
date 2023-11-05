@@ -1,7 +1,7 @@
 import { useLogout } from "@/composables/useLogout";
 import router from "@/router";
 import { PAGES } from "@/router/pages";
-import { useKeyStore } from "@/stores/keyStore";
+import { useUserStore } from "@/stores/userStore";
 import axios, { AxiosError } from "axios";
 
 export const api = axios.create({
@@ -15,8 +15,8 @@ export const api = axios.create({
 // attach it to every request
 api.interceptors.request.use(
     config => {
-        const keyStore = useKeyStore();
-        const sessionToken = keyStore.getSessionToken;
+        const userStore = useUserStore();
+        const sessionToken = userStore.getSessionToken;
 
         if (config.headers && sessionToken) {
             config.headers["X-Auth-Token"] = sessionToken;
