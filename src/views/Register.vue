@@ -177,8 +177,9 @@ export default defineComponent({
                     userStore.setKeys(res.data);
                 })
 
-                // Set the raw master encryption key (in session storage)
+                // Set the raw master encryption key, and sharing private key (in session storage)
                 keyStore.setMasterEncryptionKey(encryptionKey);
+                keyStore.setSharingPrivateKey(keypair.privateKey);
 
                 router.push(PAGES.LOGIN);
             } catch (e) {
