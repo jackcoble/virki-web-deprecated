@@ -1,7 +1,7 @@
 import { api } from "@/service/api/api";
-import type { Keys } from "@/common/interfaces/keys";
 import type { AxiosResponse } from "axios";
 import type { EncryptedFile } from "@/common/interfaces/file";
+import type { AccountRegistrationRequestBody } from "./types";
 
 export default {
     PreLogin(email: string): Promise<AxiosResponse> {
@@ -17,16 +17,12 @@ export default {
         })
     },
 
-    Register(email: string, name: string, keys: Keys): Promise<AxiosResponse> {
-        return api.post("/v1/users/register", {
-            email: email,
-            name: name,
-            encrypted_keys: keys
-        })
+    Register(payload: AccountRegistrationRequestBody): Promise<AxiosResponse> {
+        return api.post("/v1/account/register", payload)
     },
 
     GetKeys(): Promise<AxiosResponse> {
-        return api.get("/v1/users/keys");
+        return api.get("/v1/account/keys");
     },
 
     GetAccount(): Promise<AxiosResponse> {
