@@ -36,6 +36,7 @@ export const useUserStore = defineStore({
     clear() {
       this.email = "";
       this.session = "";
+      this.keys = {};
     }
   },
 })
