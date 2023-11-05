@@ -5,5 +5,6 @@ export enum LocalStorageKeys {
 }
 
 export enum SessionStorageKeys {
-    MASTER_ENCRYPTION_KEY = "master_encryption_key"
+    MASTER_ENCRYPTION_KEY = "master_encryption_key",
+    SHARING_PRIVATE_KEY = "sharing_private_key"
 }

@@ -5,7 +5,8 @@ import { SessionStorageKeys } from '@/common/enums/storage';
 export const useKeyStore = defineStore({
   id: 'keyStore',
   state: () => ({
-    master_encryption_key: useSessionStorage(SessionStorageKeys.MASTER_ENCRYPTION_KEY, "")
+    master_encryption_key: useSessionStorage(SessionStorageKeys.MASTER_ENCRYPTION_KEY, ""),
+    sharing_private_key: useSessionStorage(SessionStorageKeys.SHARING_PRIVATE_KEY, "")
   }),
 
   getters: {
