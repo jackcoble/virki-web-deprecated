@@ -27,3 +27,15 @@ export interface AccountRegistrationRequestBody {
 export interface AccountRegistrationResponseBody {
     session: string;
 }
+
+export interface GetKeysResponse {
+    masterEncryptionKey: string;
+    sharing: {
+        publicKey: string;
+        privateKey: string;
+    }
+    recovery: {
+        masterKeyEncryptedWithRecoveryKey: string;
+        recoveryKeyEncryptedWithMasterKey: string;
+    }
+}
