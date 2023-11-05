@@ -166,7 +166,13 @@ export default defineComponent({
                 // Send off all the account details. If successful, then we'll get a response containing
                 // a session token. We can store this in the store.
                 await userService.Register(requestBody).then(res => {
+                    userStore.setEmail(requestBody.email);
                     userStore.setSessionToken(res.data.session);
+                })
+
+                // Fetch the encrypted keys for the account. These should be saved
+                await userService.GetKeys().then(res => {
+                    userStore.setKeys(res.data);
                 })
 
                 router.push(PAGES.LOGIN);

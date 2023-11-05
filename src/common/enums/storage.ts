@@ -1,5 +1,5 @@
 export enum LocalStorageKeys {
-    ENCRYPTED_KEYS = "encrypted_keys",
+    KEYS = "keys",
     ACCOUNT = "account",
     EMAIL = "email",
     SESSION = "session"
