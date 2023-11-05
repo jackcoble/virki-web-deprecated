@@ -30,6 +30,11 @@ export interface AccountRegistrationResponseBody {
 
 export interface GetKeysResponse {
     masterEncryptionKey: string;
+    kek: {
+        salt: string;
+        memLimit: number;
+        opsLimit: number;
+    }
     sharing: {
         publicKey: string;
         privateKey: string;
