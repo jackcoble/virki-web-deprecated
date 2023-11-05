@@ -20,9 +20,15 @@ export const useKeyStore = defineStore({
       this.master_encryption_key = key;
     },
 
-    // Removes the decrypted master key in SessionStorage
-    clearMasterEncryptionKey() {
+    // Persist the decrypted sharing private key in SessionStorage
+    setSharingPrivateKey(key: string) {
+      this.sharing_private_key = key;
+    },
+
+    // Removes the keys in SessionStorage
+    clear() {
       this.master_encryption_key = null as any;
+      this.sharing_private_key = null as any;
     }
   },
 })

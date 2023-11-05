@@ -10,7 +10,7 @@ export async function useLogout() {
     const vaultStore = useVaultStore();
 
     // Clear all the data...
-    keyStore.clearMasterEncryptionKey();
+    keyStore.clear();
     userStore.clear();
     vaultStore.clear();
 
