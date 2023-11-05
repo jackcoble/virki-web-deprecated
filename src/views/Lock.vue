@@ -3,11 +3,10 @@
         <div class="p-8 md:m-auto space-y-3 xl:w-3/12 md:w-1/2 sm:w-3/4 w-full">
             <!-- Header -->
             <div class="flex justify-center">
-                <img v-if="!avatar" class="w-24" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo" />
-                <img v-else class="w-24 h-24 rounded-full border-4 border-gray-300" :src="avatar" alt="Avatar">
+                <img class="w-24" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo" />
             </div>
             <div space-y-1>
-                <h1 class="text-xl text-center">Hi <span class="text-mountain-meadow">{{ name }}</span> 👋</h1>
+                <h1 class="text-xl text-center">Hi <span class="text-mountain-meadow">{{ email }}</span> 👋</h1>
                 <p class="text-xs text-center">Please enter your master password to unlock your account.</p>
             </div>
 
@@ -38,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import useToaster from "@/composables/useToaster";
@@ -51,7 +50,7 @@ import { PAGES } from "@/router/pages";
 import { useLogout } from "@/composables/useLogout";
 import userService from "@/service/api/userService";
 import { useUserStore } from "@/stores/userStore";
-import VirkiStorageService from '@/common/services/storage';
+import type { GetKeysResponse } from "@/service/api/types";
 
 export default defineComponent({
     name: "Lock",
@@ -60,9 +59,8 @@ export default defineComponent({
         LockOpenIcon
     },
     setup() {
-        const name = computed(() => userStore.getName);
+        const email = computed(() => userStore.getEmail);
         const password = ref("");
-        const avatar = computed(() => userStore.getAvatarURL);
         const isLoading = ref(false);
 
         const router = useRouter();
@@ -71,28 +69,17 @@ export default defineComponent({
         const userStore = useUserStore();
         const keyStore = useKeyStore();
 
-        onMounted(async () => {
-            // Check for an avatar. If it's available as a Blob, create a Data URL from it
-            const storageService = new VirkiStorageService();
-
-            const avatarBlob = await storageService.getAvatar();
-            if (avatarBlob) {
-                const avatarDataURI = URL.createObjectURL(avatarBlob);
-                userStore.setAvatarURL(avatarDataURI);
-            }
-        })
-
         // Handle the unlock process
         const handleUnlock = async () => {
             isLoading.value = true;
 
             // Fetch the encrypted keys from the Key Store.
             // We can then use that data to decrypt everything using the password.
-            const encryptedKeys = userStore.getEncryptedKeys;
+            const encryptedKeys = userStore.getKeys as GetKeysResponse;
 
             try {
                 const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
-                const encryptionKeyCipher = await parseCipherString(encryptedKeys.master_encryption_key);
+                const encryptionKeyCipher = await parseCipherString(encryptedKeys.masterEncryptionKey);
                 const encryptionKey = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
 
                 // Set the encryption key and navigate to the vault
@@ -109,18 +96,16 @@ export default defineComponent({
         // Handle logout
         const handleLogout = async () => {
             try {
-                await userService.Logout();
+                await useLogout();
             } finally {
                 // Ignore any errors just force the logout
-                useLogout();
                 router.push(PAGES.LOGIN);
             }
         }
 
         return {
-            name,
+            email,
             password,
-            avatar,
             isLoading,
 
             router,

@@ -3,7 +3,7 @@ import { useUserStore } from "@/stores/userStore";
 import { useVaultStore } from "@/stores/vaultStore";
 
 // Use logout clears LocalStorage, SessionStorage, IndexedDB and the different Pinia stores.
-export function useLogout() {
+export async function useLogout() {
     // Stores
     const keyStore = useKeyStore();
     const userStore = useUserStore();
@@ -13,4 +13,6 @@ export function useLogout() {
     keyStore.clearMasterEncryptionKey();
     userStore.clear();
     vaultStore.clear();
+
+    // TODO: Revoke the user session
 }
