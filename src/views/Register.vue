@@ -80,6 +80,7 @@ import { version } from "../../package.json";
 import userService from "@/service/api/userService"
 import { useUserStore } from "@/stores/userStore";
 import type { AccountRegistrationRequestBody } from "@/service/api/types";
+import { useKeyStore } from "@/stores/keyStore";
 
 export default defineComponent({
     name: "Register",
@@ -96,6 +97,7 @@ export default defineComponent({
         const router = useRouter();
 
         const userStore = useUserStore();
+        const keyStore = useKeyStore();
 
         // Create a user account
         const registerUser = async () => {
@@ -174,6 +176,9 @@ export default defineComponent({
                 await userService.GetKeys().then(res => {
                     userStore.setKeys(res.data);
                 })
+
+                // Set the raw master encryption key (in session storage)
+                keyStore.setMasterEncryptionKey(encryptionKey);
 
                 router.push(PAGES.LOGIN);
             } catch (e) {
