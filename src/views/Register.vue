@@ -76,11 +76,10 @@ import { serialiseCipherString } from "@/common/utils/cipher";
 import { EncryptionType } from "@/common/enums/encryptionType";
 import type { StringKeyPair } from "libsodium-wrappers-sumo";
 import { PAGES } from "@/router/pages";
-import { useKeyStore } from "@/stores/keyStore";
-import { useUserStore } from "@/stores/userStore";
 import { version } from "../../package.json";
-import { api } from "@/api";
-import type { RegisterAccountRequest } from "virki-axios";
+import userService from "@/service/api/userService"
+import { useUserStore } from "@/stores/userStore";
+import type { AccountRegistrationRequestBody } from "@/service/api/types";
 
 export default defineComponent({
     name: "Register",
@@ -97,7 +96,6 @@ export default defineComponent({
         const router = useRouter();
 
         const userStore = useUserStore();
-        const keyStore = useKeyStore();
 
         // Create a user account
         const registerUser = async () => {
@@ -143,10 +141,10 @@ export default defineComponent({
             // Submit the user information and encrypted keys to the API.
             // We want to send the encrypted cipher strings here...
             try {
-                const requestBody: RegisterAccountRequest = {
+                const requestBody: AccountRegistrationRequestBody = {
                     email: email.value,
                     name: name.value,
-                    encryptedKeys: {
+                    keys: {
                         kek: {
                             hash: stretchedPassword.hash,
                             salt: stretchedPassword.salt,
@@ -154,7 +152,7 @@ export default defineComponent({
                             memLimit: stretchedPassword.memLimit
                         },
                         masterEncryptionKey: encryptedMasterKeyCipherString,
-                        keypair: {
+                        sharing: {
                             publicKey: keypair.publicKey,
                             privateKey: keypairEncryptedCipherString
                         },
@@ -165,9 +163,11 @@ export default defineComponent({
                     }
                 }
                 
-                // Send off all the account details. If successful, then we'll get an empty body.
-                // We can then make a request to the /userinfo endpoint to fetch all the information we need.
-                await api.authApi.v1AuthRegisterPost(requestBody);
+                // Send off all the account details. If successful, then we'll get a response containing
+                // a session token. We can store this in the store.
+                await userService.Register(requestBody).then(res => {
+                    userStore.setSessionToken(res.data.session);
+                })
 
                 router.push(PAGES.LOGIN);
             } catch (e) {
