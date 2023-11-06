@@ -51,6 +51,7 @@ import { useAppStore } from "@/stores/appStore";
 
 import { PAGES } from "@/router/pages";
 import { useKeyStore } from "@/stores/keyStore";
+import useToaster from "@/composables/useToaster";
 
 export default defineComponent({
   name: "HomeView",
@@ -63,6 +64,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const toaster = useToaster();
 
     const appStore = useAppStore();
     const keyStore = useKeyStore();
@@ -106,8 +108,9 @@ export default defineComponent({
           })
         })
       } catch (e) {
-        alert("An error occurred!");
-        return;
+        return toaster.error("An unknown error has occurred!");
+      } finally {
+        isFirstLoad.value = false;
       }
     })
 
