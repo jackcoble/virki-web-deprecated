@@ -60,3 +60,12 @@ export interface VaultCreationResponseBody {
     icon?: string;
     created: string;
 }
+
+export interface GetVaultsResponseBody {
+    id: string;
+    encryptionKey: string;
+    name: string;
+    description?: string;
+    icon?: string;
+    created: string;
+}
