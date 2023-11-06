@@ -155,8 +155,9 @@ export default defineComponent({
       // delete the existing vault from the device, as the server
       // has no record of it. Creating vaults is an ONLINE action...
       const vaultIDsToDelete = existingVaultIDs.filter((id) => { return latestVaultIDs.indexOf(id) == -1; });
-      vaultIDsToDelete.forEach(id => {
-        console.log(`Deleting ${id} from device.`)
+      vaultIDsToDelete.forEach(async id => {
+        vaultStore.delete(id);
+        await storageService.DeleteVault(id);
       })
     })
 
