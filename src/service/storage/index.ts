@@ -20,8 +20,17 @@ export class StorageService extends Dexie {
      * Adds a Vault to the DB
      * @param vault - Encrypted copy of the Vault
      */
-    async addVault(vault: GetVaultsResponseBody) {
+    async AddVault(vault: GetVaultsResponseBody) {
         await this.vaults.put(vault);
+    }
+
+    /**
+     * Gets all the Vaults in the DB
+     * @returns {GetVaultsResponseBody[]}
+     */
+    async GetVaults(): Promise<GetVaultsResponseBody[]> {
+        const vaults = await this.vaults.toCollection().toArray();
+        return vaults;
     }
 }
 
