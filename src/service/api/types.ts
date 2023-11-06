@@ -44,3 +44,19 @@ export interface GetKeysResponse {
         recoveryKeyEncryptedWithMasterKey: string;
     }
 }
+
+export interface VaultCreationRequestBody {
+    encryptionKey: string;
+    name: string;
+    description?: string;
+    icon?: string;
+}
+
+export interface VaultCreationResponseBody {
+    id: string;
+    encryptionKey: string;
+    name: string;
+    description?: string;
+    icon?: string;
+    created: string;
+}
