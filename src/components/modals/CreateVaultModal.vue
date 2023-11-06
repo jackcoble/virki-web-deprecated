@@ -25,8 +25,8 @@ import useToaster from '@/composables/useToaster';
 import { serialiseCipherString } from '@/common/utils/cipher';
 import { EncryptionType } from '@/common/enums/encryptionType';
 import { cryptoWorker } from '@/common/comlink';
-import type { VaultRequest } from 'virki-axios';
-import { api } from '@/api';
+import type { VaultCreationRequestBody } from '@/service/api/types';
+import userService from '@/service/api/userService';
 
 export default defineComponent({
     name: "CreateVaultModal",
@@ -70,9 +70,9 @@ export default defineComponent({
         const encryptedName = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedNameObject.ciphertext, encryptedNameObject.nonce, encryptedNameObject.mac);
 
         // Pack everything into a Vault object
-        const apiVaultObject: VaultRequest = {
-          name: encryptedName,
-          icon: "FIX ME"
+        const apiVaultObject: VaultCreationRequestBody = {
+          encryptionKey: encryptedVaultKey,
+          name: encryptedName
         };
 
         // Encrypt the description too if we have it
@@ -89,7 +89,7 @@ export default defineComponent({
         }
 
         // Submit the new vault to be sent to the API
-        await api.vaultsApi.v1VaultsPost(apiVaultObject);
+        await userService.CreateVault(apiVaultObject);
 
         // Close the modal
         emit("ok");
