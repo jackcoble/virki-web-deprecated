@@ -4,7 +4,7 @@ import type { GetVaultsResponseBody } from "../api/types";
 export class StorageService extends Dexie {
     // Maintains the following:
     // - Vaults
-    vaults!: Table<GetVaultsResponseBody>
+    private vaults!: Table<GetVaultsResponseBody>
 
     /**
      * Constructor
@@ -14,6 +14,14 @@ export class StorageService extends Dexie {
         this.version(1).stores({
             vaults: "id"
         })
+    }
+
+    /**
+     * Adds a Vault to the DB
+     * @param vault - Encrypted copy of the Vault
+     */
+    async addVault(vault: GetVaultsResponseBody) {
+        await this.vaults.put(vault);
     }
 }
 
