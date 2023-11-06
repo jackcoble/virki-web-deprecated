@@ -17,6 +17,7 @@
     "axios": "0.27.2",
     "comlink": "^4.4.1",
     "date-fns": "^2.30.0",
+    "dexie": "^3.2.4",
     "events": "^3.3.0",
     "libsodium-wrappers-sumo": "^0.7.11",
     "pinia": "^2.1.6",
