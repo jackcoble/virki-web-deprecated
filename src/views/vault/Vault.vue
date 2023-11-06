@@ -87,7 +87,12 @@ export default defineComponent({
       // vault in the response, but on the device, we can delete it
       // from the device as the server has no record of it existing.
       const existingVaults = await storageService.GetVaults();
+      const existingVaultIDs: string[] = [];
+      const latestVaultIDs: string[] = [];
+
       existingVaults.forEach(async v => {
+        existingVaultIDs.push(v.id);
+
         // Decrypt the vault encryption key using the master key
         const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(v.encryptionKey, masterEncryptionKey);
 
@@ -115,6 +120,8 @@ export default defineComponent({
         await userService.GetVaults().then(res => {
           const encryptedVaults = res.data;
           encryptedVaults.forEach(async v => {
+            latestVaultIDs.push(v.id);
+
             // Decrypt the vault encryption key using the master key
             const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(v.encryptionKey, masterEncryptionKey);
 
@@ -142,6 +149,15 @@ export default defineComponent({
       } finally {
         isFirstLoad.value = false;
       }
+
+      // Compare the existing vault IDs against the latest vault IDs.
+      // If there isn't an existing vault ID in the latest vault ID array,
+      // delete the existing vault from the device, as the server
+      // has no record of it. Creating vaults is an ONLINE action...
+      const vaultIDsToDelete = existingVaultIDs.filter((id) => { return latestVaultIDs.indexOf(id) == -1; });
+      vaultIDsToDelete.forEach(id => {
+        console.log(`Deleting ${id} from device.`)
+      })
     })
 
     // Sidebar refs
