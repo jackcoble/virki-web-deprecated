@@ -19,9 +19,7 @@
             <div>
                 <MenuButton class="flex rounded-full bg-gray-200 text-sm focus:outline-none" @click="router.push(PAGES.ACCOUNT)">
                     <span class="sr-only">Open user menu</span>
-                    <img v-if="avatar" class="h-8 w-8 rounded-full"
-                        :src="avatar" />
-                    <div v-else>
+                    <div>
                         <UserCircleIcon class="text-mountain-meadow w-8 h-8" />
                     </div>
                 </MenuButton>
@@ -40,11 +38,6 @@ import { useUserStore } from '@/stores/userStore';
 import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/vue/solid"
 import { Menu, MenuButton } from '@headlessui/vue'
 import { useAppStore } from '@/stores/appStore';
-import VirkiStorageService from '@/common/services/storage';
-import userService from '@/service/api/userService';
-import { cryptoWorker } from '@/common/comlink';
-import { useKeyStore } from '@/stores/keyStore';
-import axios from 'axios';
 
 export default defineComponent({
     name: "Navigation",
@@ -59,9 +52,7 @@ export default defineComponent({
         const router = useRouter();
         const userStore = useUserStore();
         const appStore = useAppStore();
-        const keyStore = useKeyStore();
 
-        const avatar = computed(() => userStore.getAvatarURL);
         const email = computed(() => userStore.getEmail);
         const openMobileMenu = computed(() => appStore.shouldOpenMobileMenu);
 
@@ -73,68 +64,11 @@ export default defineComponent({
             appStore.setOpenMobileMenu(!currentOpenMobileMenu);
         }
 
-        onMounted(async () => {
-            // Attempt to retrieve and set the avatar file from IndexedDB.
-            // If we don't have it present there, then we should request for the file from the API
-            // and decrypt it.
-            const storageService = new VirkiStorageService();
-            const masterEncryptionKey = keyStore.getMasterEncryptionKey;
-
-            // Request for the avatar file. This will enable us to check if the object key
-            // is different.
-            const existingAvatarKey = await storageService.getAvatarKey();
-            const avatar = await userService.GetAvatar();
-
-            let updateAvatar = false;
-            if (avatar.data.file && existingAvatarKey !== avatar.data.file.key) {
-                // The object key we have from the API is different to what we have locally
-                // so force an update
-                updateAvatar = true;
-            }
-
-            // If we have no local avatar file, or the file needs updating
-            // then decrypt the avatar. 
-            const avatarFile = await storageService.getAvatar();
-            if (!avatarFile || updateAvatar) {
-                // Request for Presigned file URL and metadata
-                let res = avatar;
-                const avatarFile = res.data.file;
-                const metadata = res.data.metadata;
-
-                // First, let us decrypt the encryption key with our master key
-                const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
-
-                // Decrypt the MIME type with the encryption key
-                const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
-
-                // Fetch the contents of the file from directly from S3
-                res = await axios.get(avatarFile.url, {
-                    responseType: "arraybuffer"
-                });
-                const file = res.data as ArrayBuffer;
-                const uintFile = new Uint8Array(file);
-
-                // Decrypt file into a blob for us to then store in IndexedDB
-                const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
-                const storageService = new VirkiStorageService();
-                await storageService.addAvatar(avatarFile.key, decryptedFile);
-
-                const avatarFileObjectURL = URL.createObjectURL(decryptedFile);
-                userStore.setAvatarURL(avatarFileObjectURL);
-            } else {
-                // We found the file locally...
-                const avatarFileObjectURL = URL.createObjectURL(avatarFile);
-                userStore.setAvatarURL(avatarFileObjectURL);
-            }
-        })
-
         return {
             toggleMobileMenu,
             openMobileMenu,
 
             router,
-
-            avatar,
 
             email,
             PAGES
