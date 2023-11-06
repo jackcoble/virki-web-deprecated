@@ -44,15 +44,13 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/outline"
 import { useRoute, useRouter } from "vue-router";
 
+import userService from "@/service/api/userService";
+import { cryptoWorker } from "@/common/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
 
 import { PAGES } from "@/router/pages";
-import { cryptoWorker } from "@/common/comlink";
 import { useKeyStore } from "@/stores/keyStore";
-import userService from "@/service/api/userService";
-import VirkiStorageService from '@/common/services/storage';
-import axios from "axios";
 
 export default defineComponent({
   name: "HomeView",
@@ -67,8 +65,8 @@ export default defineComponent({
     const route = useRoute();
 
     const appStore = useAppStore();
-    const vaultStore = useVaultStore();
     const keyStore = useKeyStore();
+    const vaultStore = useVaultStore();
 
     // We don't want to allow any token related actions until the user
     // has vaults available. If they have just signed up, then this value
@@ -78,92 +76,44 @@ export default defineComponent({
     const vaultIdPresent = computed(() => !!route.query.vault);
     const isOnline = computed(() => appStore.isOnline);
 
+    onMounted(async () => {
+      // Fetch the vaults for the user and decrypt them
+      const masterEncryptionKey = keyStore.getMasterEncryptionKey;
+
+      try {
+        await userService.GetVaults().then(res => {
+          const encryptedVaults = res.data;
+          encryptedVaults.forEach(async v => {
+            // Decrypt the vault encryption key using the master key
+            const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(v.encryptionKey, masterEncryptionKey);
+
+            // We can proceed to decrypt the UTF8 name
+            const decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(v.name, vaultEncryptionKey);
+
+            // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
+            const decryptedVault = { ...v };
+            decryptedVault.encryptionKey = vaultEncryptionKey;
+            decryptedVault.name = decryptedName;
+
+            // Try and decrypt the description if that is available
+            if (v.description) {
+              const decryptedDescription = await cryptoWorker.decryptFromB64CipherStringToUTF8(v.description, vaultEncryptionKey);
+              decryptedVault.description = decryptedDescription
+            }
+
+            // Add the decrypted vault to the vault store
+            vaultStore.add(decryptedVault);
+          })
+        })
+      } catch (e) {
+        alert("An error occurred!");
+        return;
+      }
+    })
+
     // Sidebar refs
     const showCreateVault = ref(false);
     const showEditVault = ref(false);
-
-    onMounted(async () => {
-      // Decrypt all the local vaults
-      const storageService = await VirkiStorageService.build();
-      try {
-          const vaults = await storageService.getVaults();
-
-          // Prepare a cryptoWorker for us to use, along with our master encryption key
-          const masterEncryptionKey = keyStore.getMasterEncryptionKey;
-
-          // Decrypt and add to the Pinia vault store
-          if (vaults) {
-            let order = 0;
-
-            vaults.forEach(async vault => {
-              // Decrypt the vault encryption key using the master key
-              const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(vault.encryption_key, masterEncryptionKey);
-
-              // We can proceed to decrypt the UTF8 name
-              const decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(vault.name, vaultEncryptionKey);
-
-              // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
-              const decryptedVault = { ...vault };
-              decryptedVault.encryption_key = vaultEncryptionKey;
-              decryptedVault.name = decryptedName;
-
-              // Whilst we are at it, if the vault has an icon, we should
-              // check if it already exists locally. If not, then fetch
-              // and decrypt.
-              if (decryptedVault.icon) {
-                const existingIcon = await storageService.getFile(decryptedVault.icon);
-                if (existingIcon) {
-                  // Create a data URL
-                  const iconObjectURL = URL.createObjectURL(existingIcon);
-                  decryptedVault.icon_blob = iconObjectURL;
-                }
-                else {
-                  // Otherwise fetch and decrypt...
-                  try {
-                    let res = await userService.GetFile(decryptedVault.icon);
-                    const file = res.data.file;
-                    const metadata = res.data.metadata;
-
-                    // First, let us decrypt the encryption key with our master key
-                    const encryptionKey = await cryptoWorker.decryptFromB64CipherString(metadata.encryption_key, masterEncryptionKey);
-
-                    // Decrypt the MIME type with the encryption key
-                    const mimeType = await cryptoWorker.decryptFromB64CipherStringToUTF8(metadata.mime_type, encryptionKey);
-
-                    // Fetch the contents of the file from directly from S3
-                    res = await axios.get(file.url, {
-                      responseType: "arraybuffer"
-                    });
-                    const rawFile = res.data as ArrayBuffer;
-                    const uintFile = new Uint8Array(rawFile);
-
-                    // Decrypt file into a blob for us to then store in IndexedDB
-                    const decryptedFile: Blob = await cryptoWorker.decryptFile(uintFile, mimeType, metadata.encryption_header, encryptionKey);
-                    await storageService.saveFile(file.key, decryptedFile);
-
-                    const iconObjectURL = URL.createObjectURL(decryptedFile);
-                    decryptedVault.icon_blob = iconObjectURL;
-
-                    decryptedVault.order = order;
-
-                    order++;
-                  } catch (e) {
-                    console.log(e);
-                  }
-                }
-              }
-
-              // Add the decrypted vault into the Vault Store
-              vaultStore.add(decryptedVault);
-            })
-          }
-        } catch (e) {
-          // TODO: Handle this...
-          console.log(e);
-        }
-
-      isFirstLoad.value = false;
-    })
 
     // Route user to add tokens page for this vault
     const addTokensPage = () => {
