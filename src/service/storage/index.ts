@@ -25,6 +25,14 @@ export class StorageService extends Dexie {
     }
 
     /**
+     * Deletes a Vault from the DB
+     * @param id - Vault ID to delete
+     */
+    async DeleteVault(id: string) {
+        await this.vaults.delete(id);
+    }
+
+    /**
      * Gets all the Vaults in the DB
      * @returns {GetVaultsResponseBody[]}
      */
