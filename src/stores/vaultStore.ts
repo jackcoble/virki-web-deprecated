@@ -1,6 +1,5 @@
-import type { Vault } from '@/common/interfaces/vault';
 import { defineStore } from 'pinia'
-import { useUserStore } from './userStore';
+import type { GetVaultsResponseBody } from '@/service/api/types';
 
 /*
 The vault store is dedicated to hold a decrypted copy of the vault data.
@@ -9,12 +8,12 @@ The vault store is dedicated to hold a decrypted copy of the vault data.
 export const useVaultStore = defineStore({
   id: 'vaultStore',
   state: () => ({
-    vaults: new Map<string, Vault>
+    vaults: new Map<string, GetVaultsResponseBody>
   }),
 
   getters: {
     getAll: (state) => {
-        const vaults: Vault[] = [];
+        const vaults: GetVaultsResponseBody[] = [];
         state.vaults.forEach((v, k) => {
             vaults.push(v);
         })
@@ -24,7 +23,7 @@ export const useVaultStore = defineStore({
   },
 
   actions: {
-    add(vault: Vault) {
+    add(vault: GetVaultsResponseBody) {
       this.vaults.set(vault.id, vault);
     },
 
