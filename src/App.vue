@@ -38,7 +38,7 @@ onMounted(() => {
 
     if (leastActivityDate > fromUnixTime(lastActiveTimestamp) && (route.path !== PAGES.LOCK || PAGES.LOGIN) && sessionToken) {
       // Clear the encryption key and vaults
-      keyStore.clearMasterEncryptionKey();
+      keyStore.clear();
       vaultStore.clear();
       
       router.push(PAGES.LOCK);
