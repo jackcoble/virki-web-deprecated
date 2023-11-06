@@ -45,6 +45,7 @@ import { EmojiSadIcon, PlusCircleIcon, ClockIcon, XIcon } from "@heroicons/vue/o
 import { useRoute, useRouter } from "vue-router";
 
 import userService from "@/service/api/userService";
+import storageService from "@/service/storage"
 import { cryptoWorker } from "@/common/comlink";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useAppStore } from "@/stores/appStore";
@@ -79,9 +80,37 @@ export default defineComponent({
     const isOnline = computed(() => appStore.isOnline);
 
     onMounted(async () => {
-      // Fetch the vaults for the user and decrypt them
       const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
+      // Decrypt existing vaults on the device first. When we fetch
+      // an up to date list of vaults after this, if there isn't a
+      // vault in the response, but on the device, we can delete it
+      // from the device as the server has no record of it existing.
+      const existingVaults = await storageService.GetVaults();
+      existingVaults.forEach(async v => {
+        // Decrypt the vault encryption key using the master key
+        const vaultEncryptionKey = await cryptoWorker.decryptFromB64CipherString(v.encryptionKey, masterEncryptionKey);
+
+        // We can proceed to decrypt the UTF8 name
+        const decryptedName = await cryptoWorker.decryptFromB64CipherStringToUTF8(v.name, vaultEncryptionKey);
+
+        // Create a copy of the encrypted vault (to retain all the metadata) and replace the encrypted data with decrypted...
+        const decryptedVault = { ...v };
+        decryptedVault.encryptionKey = vaultEncryptionKey;
+        decryptedVault.name = decryptedName;
+
+        // Try and decrypt the description if that is available
+        if (v.description) {
+          const decryptedDescription = await cryptoWorker.decryptFromB64CipherStringToUTF8(v.description, vaultEncryptionKey);
+          decryptedVault.description = decryptedDescription
+        }
+
+        // Add the decrypted vault to the vault store
+        vaultStore.add(decryptedVault);
+      })
+
+      // We can then fetch an up-to-date list of vaults
+      // and decrypt those too.
       try {
         await userService.GetVaults().then(res => {
           const encryptedVaults = res.data;
@@ -103,8 +132,9 @@ export default defineComponent({
               decryptedVault.description = decryptedDescription
             }
 
-            // Add the decrypted vault to the vault store
+            // Add the decrypted vault to the vault store and offline DB
             vaultStore.add(decryptedVault);
+            await storageService.AddVault(v);
           })
         })
       } catch (e) {
