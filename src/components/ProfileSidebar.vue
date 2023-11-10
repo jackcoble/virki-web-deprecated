@@ -99,7 +99,7 @@ export default defineComponent({
 
         // Clear the master encryption key from cache and then navigate to the lock page
         const doLock = () => {
-            keyStore.clearMasterEncryptionKey();
+            keyStore.clear();
             vaultStore.clear();
       
             router.push(PAGES.LOCK);
