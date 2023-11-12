@@ -59,15 +59,15 @@ export function serialiseCipherString(encryptionType: EncryptionType, cipherText
     switch (encryptionType) {
         case EncryptionType.XCHACHA20_POLY1305:
             // Make sure the parameters are not null or empty
-            if (typeof cipherText == undefined && !cipherText) {
+            if (typeof cipherText == undefined || !cipherText) {
                 return Promise.reject("Ciphertext cannot be empty!")
             }
 
-            if (typeof nonce == undefined && !nonce) {
+            if (typeof nonce == undefined || !nonce) {
                 return Promise.reject("Nonce cannot be empty!")
             }
 
-            if (typeof mac == undefined && !mac) {
+            if (typeof mac == undefined || !mac) {
                 return Promise.reject("MAC cannot be empty!")
             }
 

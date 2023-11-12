@@ -33,4 +33,50 @@ describe("serialiseCipherString", () => {
         const cipherString = await serialiseCipherString(parameters.encryptionType, parameters.cipherText, parameters.nonce, parameters.mac);
         expect(cipherString).toBeDefined();
     })
+
+    test("shouldn't serialise a XCHACHA20_POLY1305 cipher string with missing parameters", () => {
+        const checks = [
+            {
+                encryptionType: 1, // XCHACHA20_POLY1305
+                cipherText: "",
+                nonce: "Nonce",
+                mac: "MAC"
+            },
+            {
+                encryptionType: 1, // XCHACHA20_POLY1305
+                cipherText: "CipherText",
+                nonce: "",
+                mac: "MAC"
+            },
+            {
+                encryptionType: 1, // XCHACHA20_POLY1305
+                cipherText: "CipherText",
+                nonce: "Nonce",
+                mac: ""
+            }
+        ]
+        
+        // Carry out each check
+        checks.forEach(async (check, index) => {
+            // Different errors we are expecting depending on the check we are running
+            const result = expect(serialiseCipherString(check.encryptionType, check.cipherText, check.nonce, check.mac)).rejects;
+
+            switch (index) {
+                case 0:
+                    result.toEqual("Ciphertext cannot be empty!")
+                    break;
+
+                case 1:
+                    result.toEqual("Nonce cannot be empty!")
+                    break;
+
+                case 2:
+                    result.toEqual("MAC cannot be empty!")
+                    break;
+            
+                default:
+                    break;
+            }
+        })
+    })
 })
