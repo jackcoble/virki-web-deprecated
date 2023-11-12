@@ -34,6 +34,18 @@ describe("serialiseCipherString", () => {
         expect(cipherString).toBeDefined();
     })
 
+    test("shouldn't serialise a XCHACHA20_POLY1305 cipher string with invalid encryption type", async () => {
+        const parameters = {
+            encryptionType: 999,
+            cipherText: "CipherText",
+            nonce: "Nonce",
+            mac: "MAC"
+        }
+
+        const result = await expect(serialiseCipherString(parameters.encryptionType, parameters.cipherText, parameters.nonce, parameters.mac)).rejects;
+        result.toEqual("Encryption type is invalid!")
+    })
+
     test("shouldn't serialise a XCHACHA20_POLY1305 cipher string with missing parameters", () => {
         const checks = [
             {
