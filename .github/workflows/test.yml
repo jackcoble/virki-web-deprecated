@@ -22,7 +22,5 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "yarn"
-
-      - name: Execute Unit tests
 	    - run: yarn --frozen-lockfile
       - run: yarn test
