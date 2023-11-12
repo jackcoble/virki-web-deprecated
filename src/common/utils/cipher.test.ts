@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseCipherString } from "./cipher";
+import { parseCipherString, serialiseCipherString } from "./cipher";
 import { EncryptionType } from "../enums/encryptionType";
 
 describe("parseCipherString", () => {
@@ -19,8 +19,18 @@ describe("parseCipherString", () => {
         const invalidCipherString = "999.CipherText|Nonce|MAC";
         await expect(parseCipherString(invalidCipherString)).rejects.toEqual("Encryption type is invalid!")
     })
+})
 
-    test("should handle missing properties depending on the encryption type", () => {
-        // TODO...
+describe("serialiseCipherString", () => {
+    test("should serialise a valid XCHACHA20_POLY1305 cipher string", async () => {
+        const parameters = {
+            encryptionType: 1, // XCHACHA20_POLY1305
+            cipherText: "CipherText",
+            nonce: "Nonce",
+            mac: "MAC"
+        }
+
+        const cipherString = await serialiseCipherString(parameters.encryptionType, parameters.cipherText, parameters.nonce, parameters.mac);
+        expect(cipherString).toBeDefined();
     })
-}) 
+})
