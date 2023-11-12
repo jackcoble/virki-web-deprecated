@@ -58,6 +58,19 @@ export function serialiseCipherString(encryptionType: EncryptionType, cipherText
 
     switch (encryptionType) {
         case EncryptionType.XCHACHA20_POLY1305:
+            // Make sure the parameters are not null or empty
+            if (typeof cipherText == undefined && !cipherText) {
+                return Promise.reject("Ciphertext cannot be empty!")
+            }
+
+            if (typeof nonce == undefined && !nonce) {
+                return Promise.reject("Nonce cannot be empty!")
+            }
+
+            if (typeof mac == undefined && !mac) {
+                return Promise.reject("MAC cannot be empty!")
+            }
+
             // XChaCha20-Poly1305 ciphers must be represented in the following format:
             // 1.CipherText|Nonce|MAC
             const cipherString = `${EncryptionType.XCHACHA20_POLY1305}.${cipherText}|${nonce}|${mac}`;
