@@ -26,19 +26,15 @@ export function parseCipherString(cipherString: string): Promise<Cipher> {
     // So depending on the algorithm, we can parse it accordingly.
     const cipherSplit = cipherString.split(".")[1].split("|");
 
-    switch (encryptionType) {
-        case EncryptionType.XCHACHA20_POLY1305:
-            const cipher: Cipher = {
-                type: EncryptionType.XCHACHA20_POLY1305,
-                ciphertext: cipherSplit[0],
-                nonce: cipherSplit[1],
-                mac: cipherSplit[2]
-            }
+    if (encryptionType === EncryptionType.XCHACHA20_POLY1305) {
+        const cipher: Cipher = {
+            type: EncryptionType.XCHACHA20_POLY1305,
+            ciphertext: cipherSplit[0],
+            nonce: cipherSplit[1],
+            mac: cipherSplit[2]
+        }
 
-            return Promise.resolve(cipher);
-    
-        default:
-            return Promise.reject("Unexpected error parsing cipher string!")
+        return Promise.resolve(cipher);
     }
 }
 
