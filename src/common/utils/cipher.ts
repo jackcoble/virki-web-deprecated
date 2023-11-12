@@ -25,17 +25,16 @@ export function parseCipherString(cipherString: string): Promise<Cipher> {
     // possibly due to additional options being required for that encryption algorithm.
     // So depending on the algorithm, we can parse it accordingly.
     const cipherSplit = cipherString.split(".")[1].split("|");
+    const cipher = {} as Cipher;
 
     if (encryptionType === EncryptionType.XCHACHA20_POLY1305) {
-        const cipher: Cipher = {
-            type: EncryptionType.XCHACHA20_POLY1305,
-            ciphertext: cipherSplit[0],
-            nonce: cipherSplit[1],
-            mac: cipherSplit[2]
-        }
-
-        return Promise.resolve(cipher);
+        cipher.type = EncryptionType.XCHACHA20_POLY1305;
+        cipher.ciphertext = cipherSplit[0];
+        cipher.nonce = cipherSplit[1];
+        cipher.mac = cipherSplit[2];
     }
+
+    return Promise.resolve(cipher);
 }
 
 /**
@@ -51,6 +50,8 @@ export function serialiseCipherString(encryptionType: EncryptionType, cipherText
     if (!Object.values(EncryptionType).includes(encryptionType)) {
         return Promise.reject("Encryption type is invalid!");
     }
+
+    let cipherString = "";
 
     switch (encryptionType) {
         case EncryptionType.XCHACHA20_POLY1305:
@@ -69,10 +70,8 @@ export function serialiseCipherString(encryptionType: EncryptionType, cipherText
 
             // XChaCha20-Poly1305 ciphers must be represented in the following format:
             // 1.CipherText|Nonce|MAC
-            const cipherString = `${EncryptionType.XCHACHA20_POLY1305}.${cipherText}|${nonce}|${mac}`;
-            return Promise.resolve(cipherString);
-    
-        default:
-            return Promise.reject("Unexpected error serialising cipher string!");
+            cipherString = `${EncryptionType.XCHACHA20_POLY1305}.${cipherText}|${nonce}|${mac}`;
     }
+
+    return Promise.resolve(cipherString);
 }
