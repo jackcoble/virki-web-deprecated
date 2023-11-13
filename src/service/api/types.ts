@@ -69,3 +69,8 @@ export interface GetVaultsResponseBody {
     icon?: string;
     created: string;
 }
+
+export interface FilePresignedURLResponseBody {
+    key: string;
+    url: string;
+}
