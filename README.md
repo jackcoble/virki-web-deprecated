@@ -2,6 +2,8 @@
 
 Web application for Virki which is built with Vue.js and Tailwind 💚
 
+![login](screenshots/login.png)
+
 > ⚠️ This project is very much a work in progress, so it should be considered unstable!
 
 ## ✨ Features
