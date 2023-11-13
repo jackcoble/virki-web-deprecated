@@ -27,7 +27,7 @@ Here's the technologies in use here:
 * Redis
 * S3 Object Storage
 
-## Getting Started
+## 🛠️ Getting Started
 
 ```bash
 $ git clone https://github.com/virki-io/Virki-Web.git
@@ -36,7 +36,7 @@ $ yarn
 $ yarn dev
 ```
 
-### Docker (Development)
+### 🚢 Docker (Development)
 You can get up and running with Virki web client development with nothing but Docker and Docker Compose installed on your system.
 
 ```bash
