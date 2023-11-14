@@ -25,8 +25,10 @@ import useToaster from '@/composables/useToaster';
 import { serialiseCipherString } from '@/common/utils/cipher';
 import { EncryptionType } from '@/common/enums/encryptionType';
 import { cryptoWorker } from '@/common/comlink';
-import type { VaultCreationRequestBody } from '@/service/api/types';
+import type { GetVaultsResponseBody, VaultCreationRequestBody } from '@/service/api/types';
 import userService from '@/service/api/userService';
+import { useVaultStore } from '@/stores/vaultStore';
+import storageService from "@/service/storage"
 
 export default defineComponent({
     name: "CreateVaultModal",
@@ -38,6 +40,7 @@ export default defineComponent({
     setup(props, { emit }) {
       // Stores
       const keyStore = useKeyStore();
+      const vaultStore = useVaultStore();
 
       // Toaster
       const toaster = useToaster();
@@ -89,7 +92,20 @@ export default defineComponent({
         }
 
         // Submit the new vault to be sent to the API
-        await userService.CreateVault(apiVaultObject);
+        const res = await userService.CreateVault(apiVaultObject);
+
+        // Add the decrypted vault to the vault store and offline DB
+        const decryptedVault: GetVaultsResponseBody = {
+          id: res.data.id,
+          encryptionKey: vaultEncryptionKey,
+          name: vaultName.value,
+          description: vaultDescription.value,
+          icon: vaultIconKey.value,
+          created: res.data.created
+        }
+        
+        vaultStore.add(decryptedVault);
+        await storageService.AddVault(res.data);
 
         // Close the modal
         emit("ok");
