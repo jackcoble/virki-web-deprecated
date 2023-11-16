@@ -74,15 +74,21 @@ export default defineComponent({
 
             // Fetch the encrypted keys from the Key Store.
             // We can then use that data to decrypt everything using the password.
-            const encryptedKeys = userStore.getKeys as GetKeysResponse;
+            const encryptedKeys = userStore.getKeys;
 
             try {
-                const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
+                // Decrypt the master encryption key and the sharing private encryption key.
+                const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, encryptedKeys.kek.salt, encryptedKeys.kek.opsLimit, encryptedKeys.kek.memLimit);
                 const encryptionKeyCipher = await parseCipherString(encryptedKeys.masterEncryptionKey);
                 const encryptionKey = await cryptoWorker.decryptFromB64(encryptionKeyCipher.ciphertext, encryptionKeyCipher.mac, encryptionKeyCipher.nonce, stretchedPassword.key);
 
-                // Set the encryption key and navigate to the vault
+                const sharingPrivateKeyCipher = await parseCipherString(encryptedKeys.sharing.privateKey);
+                const sharingPrivateKey = await cryptoWorker.decryptFromB64(sharingPrivateKeyCipher.ciphertext, sharingPrivateKeyCipher.mac, sharingPrivateKeyCipher.nonce, encryptionKey);
+
+                // Store them both in the key store and navigate to the vault page.
                 keyStore.setMasterEncryptionKey(encryptionKey);
+                keyStore.setSharingPrivateKey(sharingPrivateKey);
+                
                 router.push(PAGES.VAULT);
             } catch (e) {
                 toaster.error("Unable to decrypt account!")
