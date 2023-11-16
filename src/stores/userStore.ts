@@ -1,26 +1,25 @@
 import { defineStore } from 'pinia'
 import { useStorage } from "@vueuse/core"
 import { LocalStorageKeys } from '@/common/enums/storage';
-import type { GetKeysResponse } from '@/service/api/types';
+import type { GetAccountResponseBody, GetKeysResponse } from '@/service/api/types';
 
 export const useUserStore = defineStore({
   id: 'userStore',
   state: () => ({
-    email: useStorage<string>(LocalStorageKeys.EMAIL, ""),
-    session: useStorage<string>(LocalStorageKeys.SESSION, ""),
-    keys: useStorage(LocalStorageKeys.KEYS, {})
+    account: useStorage<GetAccountResponseBody>(LocalStorageKeys.ACCOUNT, {} as any),
+    keys: useStorage<GetKeysResponse>(LocalStorageKeys.KEYS, {} as any),
+    session: useStorage<string>(LocalStorageKeys.SESSION, "")
   }),
 
   getters: {
-    getEmail: (state) => state.email,
+    getEmail: (state) => state.account.email,
     getSessionToken: (state) => state.session,
     getKeys: (state) => state.keys
   },
 
   actions: {
-    // Persist user email
-    setEmail(email: string) {
-      this.email = email;
+    setAccount(account: GetAccountResponseBody) {
+      this.account = account;
     },
 
     // Persist the session token
@@ -34,9 +33,9 @@ export const useUserStore = defineStore({
     },
 
     clear() {
-      this.email = "";
+      this.account = null as any;
+      this.keys = null as any;
       this.session = "";
-      this.keys = {};
     }
   },
 })
