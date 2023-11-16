@@ -6,7 +6,7 @@
                 <img class="w-24" src="@/assets/images/virki_logo_transparent.png" alt="Virki Logo" />
             </div>
             <div space-y-1>
-                <h1 class="text-xl text-center">Hi <span class="text-mountain-meadow">{{ email }}</span> 👋</h1>
+                <h1 class="text-xl text-center">Hi <span class="text-mountain-meadow">{{ name }}</span> 👋</h1>
                 <p class="text-xs text-center">Please enter your master password to unlock your account.</p>
             </div>
 
@@ -48,7 +48,6 @@ import { parseCipherString } from "@/common/utils/cipher";
 import { useKeyStore } from "@/stores/keyStore";
 import { PAGES } from "@/router/pages";
 import { useLogout } from "@/composables/useLogout";
-import userService from "@/service/api/userService";
 import { useUserStore } from "@/stores/userStore";
 import type { GetKeysResponse } from "@/service/api/types";
 
@@ -59,7 +58,7 @@ export default defineComponent({
         LockOpenIcon
     },
     setup() {
-        const email = computed(() => userStore.getEmail);
+        const name = computed(() => userStore.getName);
         const password = ref("");
         const isLoading = ref(false);
 
@@ -104,7 +103,7 @@ export default defineComponent({
         }
 
         return {
-            email,
+            name,
             password,
             isLoading,
 
