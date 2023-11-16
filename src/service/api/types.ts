@@ -74,3 +74,10 @@ export interface FilePresignedURLResponseBody {
     key: string;
     url: string;
 }
+
+export interface GetAccountResponseBody {
+    id: string;
+    email: string;
+    name: string;
+    created: string;
+}
