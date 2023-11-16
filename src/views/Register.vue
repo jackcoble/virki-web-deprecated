@@ -168,8 +168,12 @@ export default defineComponent({
                 // Send off all the account details. If successful, then we'll get a response containing
                 // a session token. We can store this in the store.
                 await userService.Register(requestBody).then(res => {
-                    userStore.setEmail(requestBody.email);
                     userStore.setSessionToken(res.data.session);
+                })
+
+                // Fetch the basic account information. These should be saved
+                await userService.GetAccount().then(res => {
+                    userStore.setAccount(res.data);
                 })
 
                 // Fetch the encrypted keys for the account. These should be saved
