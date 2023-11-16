@@ -21,9 +21,11 @@ import sodium from "libsodium-wrappers-sumo";
     // Generate salt if not provided as parameter
     const saltBuffer = salt ? await sodiumUtils.fromBase64(salt) : await sodiumUtils.fromBase64(await sodiumUtils.generateSalt());
 
-    // Determine opsLimit and memLimit
-    opsLimit = opsLimit ? opsLimit : sodium.crypto_pwhash_OPSLIMIT_SENSITIVE;
-    memLimit = memLimit ? memLimit : sodium.crypto_pwhash_MEMLIMIT_SENSITIVE;
+    // Determine opsLimit and memLimit. If not provided, fall-back to the MODERATE values.
+    // Further explanation can be found here: https://libsodium.gitbook.io/doc/password_hashing/default_phf#key-derivation
+    // Basically this key is used for interactive operations, so we want the right balance of speed and security.
+    opsLimit = opsLimit ? opsLimit : sodium.crypto_pwhash_OPSLIMIT_MODERATE;
+    memLimit = memLimit ? memLimit : sodium.crypto_pwhash_MEMLIMIT_MODERATE;
 
     // If any operation fails due to insufficient memory, double the computation allowed and halve the memory limit.
     const minMemLimit = sodium.crypto_pwhash_MEMLIMIT_MIN;
