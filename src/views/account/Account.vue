@@ -80,9 +80,9 @@ import { useKeyStore } from '@/stores/keyStore';
 import type { StretchedPassword } from '@/common/interfaces/password';
 import useToaster from '@/composables/useToaster';
 import EncryptedFileUpload from "@/components/EncryptedFileUpload.vue";
-import VirkiStorageService from '@/common/services/storage';
 import axios from 'axios';
 import ImageCropper from '@/components/ImageCropper.vue';
+import type { UpdateAccountRequestBody } from '@/service/api/types';
 
 export default defineComponent({
     name: "Sessions",
@@ -100,7 +100,6 @@ export default defineComponent({
 
         const email = ref(userStore.getEmail);
         const name = ref(userStore.getName);
-        const avatar = computed(() => userStore.getAvatarURL);
         const password = ref("");
         const emailChanged = computed(() => email.value === userStore.getEmail);
         const updatingEmail = ref(false);
@@ -112,7 +111,7 @@ export default defineComponent({
             updatingEmail.value = true;
 
             // Stretch the plaintext password into a hashed version
-            const encryptedKeys = keyStore.getEncryptedKeys;
+            const encryptedKeys = userStore.getKeys;
             const stretchedPassword: StretchedPassword = await cryptoWorker.stretchPassword(password.value, encryptedKeys.kek.salt, encryptedKeys.kek.ops_limit, encryptedKeys.kek.mem_limit);
 
             try {
@@ -135,18 +134,20 @@ export default defineComponent({
         // Function to update users name via API
         const doUpdateName = async () => {
             try {
-                await userService.UpdateName(name.value);
+                const body: UpdateAccountRequestBody = {
+                    name: name.value
+                }
+
+                await userService.UpdateAccount(body);
             } catch (e) {
                 return toaster.error(e.response.data.error);
             }
 
-            // Update the name in the store
-            const account = { ...userStore.account };
-            account.name = name.value;
-            userStore.setAccount(account);
-
-            // Success!
-            toaster.success("Name was updated!");
+            // Fetch latest account information
+            await userService.GetAccount().then(res => {
+                userStore.setAccount(res.data);
+                toaster.success("Name was updated!");
+            })
         }
 
         // When we receeive an object-key event (containing the object key from S3), we want to
@@ -165,8 +166,6 @@ export default defineComponent({
 
             const avatarFile = res.data.file;
             const metadata = res.data.metadata;
-
-            const storageService = new VirkiStorageService();
             const masterEncryptionKey = keyStore.getMasterEncryptionKey;
 
             // First, let us decrypt the encryption key with our master key
@@ -200,7 +199,6 @@ export default defineComponent({
             email,
             name,
             password,
-            avatar,
             emailChanged,
             updatingEmail,
 
