@@ -24,7 +24,7 @@
                     </div>
 
                     <!-- Save button -->
-                    <b-button class="md:w-1/3 w-full" @click="doUpdateName">
+                    <b-button class="md:w-1/3 w-full" @click="doUpdateName" :loading="updatingName">
                         <div class="flex flex-row justify-center items-center">
                             <CheckIcon class="w-4 mr-1" />
                             <span>Save</span>
@@ -102,7 +102,10 @@ export default defineComponent({
         const name = ref(userStore.getName);
         const password = ref("");
         const emailChanged = computed(() => email.value === userStore.getEmail);
+
+        const updatingName = ref(false);
         const updatingEmail = ref(false);
+    
 
         const encryptionKey = computed(() => keyStore.getMasterEncryptionKey);
 
@@ -133,21 +136,25 @@ export default defineComponent({
 
         // Function to update users name via API
         const doUpdateName = async () => {
+            updatingName.value = true;
+
             try {
                 const body: UpdateAccountRequestBody = {
                     name: name.value
                 }
 
                 await userService.UpdateAccount(body);
+
+                // Fetch latest account information
+                await userService.GetAccount().then(res => {
+                    userStore.setAccount(res.data);
+                    toaster.success("Name was updated!");
+                })
             } catch (e) {
                 return toaster.error(e.response.data.error);
+            } finally {
+                updatingName.value = false;
             }
-
-            // Fetch latest account information
-            await userService.GetAccount().then(res => {
-                userStore.setAccount(res.data);
-                toaster.success("Name was updated!");
-            })
         }
 
         // When we receeive an object-key event (containing the object key from S3), we want to
@@ -200,6 +207,8 @@ export default defineComponent({
             name,
             password,
             emailChanged,
+
+            updatingName,
             updatingEmail,
 
             encryptionKey,
