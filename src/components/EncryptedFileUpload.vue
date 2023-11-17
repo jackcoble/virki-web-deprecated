@@ -66,8 +66,8 @@ export default defineComponent({
             // user wants to upload to S3. Let's fetch a pre-signed URL and keep it for later.
             let presignedURL: any;
             try {
-                const res = await userService.GetUploadURLs();
-                presignedURL = res.data[0]; // Only requested for 1 URL, so it'll be the first item in the array
+                const res = await userService.GetUploadURL();
+                presignedURL = res.data; // Only requested for 1 URL, so it'll be the first item in the array
             } catch (e: any) {
                 // TODO: Handle this better...
                 emit("error", "Error fetching pre-signed URL for file upload.");
@@ -83,30 +83,28 @@ export default defineComponent({
             const encryptedFileKeyCipherString = await serialiseCipherString(EncryptionType.XCHACHA20_POLY1305, encryptedFileKey.ciphertext, encryptedFileKey.nonce, encryptedFileKey.mac);
             encryptedFile.encryption_key = encryptedFileKeyCipherString;
 
-            // Everything is encrypted now. We can begin uploading the metadata to our API, and then the encrypted file contents to S3 via the presigned URL.
-            // Send metadata to API
-            try {
-                await userService.UploadFile(encryptedFile);
-            } catch (e: any) {
-                // TODO: Handle this better
-                emit("error", "Error uploading file metadata to API.")
-                return;
-            }
-
-            // Send encrypted contents to S3
+            // Everything is encrypted now. We can upload the encrypted file directly to the S3 bucket, followed by the encrypted metadata to our API
             try {
                 await axios.put(
                     presignedURL.url,
                     encryptedFile.content,
                     {
                         headers: {
-                            "Content-Type": 'application/octet-stream' // Always will be application/octet-stream
+                            "Content-Type": 'application/octet-stream'
                         }
                     }
                 )
             } catch (e: any) {
                 // TODO: Handle this better
                 emit("error", "Error uploading file contents to object storage.")
+                return;
+            }
+
+            try {
+                // await userService.UploadFile(encryptedFile);
+            } catch (e: any) {
+                // TODO: Handle this better
+                emit("error", "Error uploading file metadata to API.")
                 return;
             }
 
