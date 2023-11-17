@@ -1,6 +1,6 @@
 import { api } from "@/service/api/api";
 import type { AxiosResponse } from "axios";
-import type { AccountRegistrationRequestBody, AccountRegistrationResponseBody, FilePresignedURLResponseBody, GetAccountResponseBody, GetKeysResponse, GetVaultsResponseBody, VaultCreationRequestBody, VaultCreationResponseBody } from "./types";
+import type { AccountRegistrationRequestBody, AccountRegistrationResponseBody, FilePresignedURLResponseBody, GetAccountResponseBody, GetKeysResponse, GetVaultsResponseBody, UpdateAccountRequestBody, VaultCreationRequestBody, VaultCreationResponseBody } from "./types";
 
 export default {
     Register(payload: AccountRegistrationRequestBody): Promise<AxiosResponse<AccountRegistrationResponseBody>> {
@@ -13,6 +13,10 @@ export default {
 
     GetKeys(): Promise<AxiosResponse<GetKeysResponse>> {
         return api.get("/v1/account/keys");
+    },
+
+    UpdateAccount(payload: UpdateAccountRequestBody): Promise<AxiosResponse> {
+        return api.put("/v1/account", payload)
     },
 
     CreateVault(payload: VaultCreationRequestBody): Promise<AxiosResponse<VaultCreationResponseBody>> {

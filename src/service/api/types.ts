@@ -81,3 +81,9 @@ export interface GetAccountResponseBody {
     name: string;
     created: string;
 }
+
+export interface UpdateAccountRequestBody {
+    name?: string;
+    email?: string;
+    masterPassword?: string;
+}
