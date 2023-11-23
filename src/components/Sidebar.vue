@@ -120,7 +120,7 @@
         @cancel="showCreateVaultModal = !showCreateVaultModal" />
 
     <!-- Delete vault modal -->
-    <DeleteVaultModal v-if="showDeleteVaultModal" :vault-id="''" @cancel="showDeleteVaultModal = !showDeleteVaultModal" />
+    <DeleteVaultModal v-if="showDeleteVaultModal" :vault-id="vaultContextMenu.vaultId" @cancel="showDeleteVaultModal = !showDeleteVaultModal" />
 
     <!-- Vault context menu -->
     <VaultContextMenu v-if="vaultContextMenu.show"

@@ -2,7 +2,7 @@
     <BaseModal>
         <template v-slot:body>
             <div class="flex flex-col items-center space-y-3">
-                <h1 class="text-xl">Delete your vault?</h1>
+                <h1 class="text-xl">Delete <strong>{{ vaultToDelete && vaultToDelete.name }}</strong> vault?</h1>
 
                 <p class="p-3 rounded bg-red-200 text-sm text-red-800">
                     Deleting your vault is a permanent action. Any tokens which reside in this vault
@@ -33,12 +33,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import BaseModal from './BaseModal.vue';
+import { useVaultStore } from '@/stores/vaultStore';
 
 const props = defineProps<{
     vaultId: string
 }>()
 
+// Stores
+const vaultStore = useVaultStore();
+
 // User has to type the word "delete" for the Delete button to be enabled
 const deleteConfirmation = ref("");
 const allowDelete = computed(() => deleteConfirmation.value === "delete");
+
+const vaultToDelete = computed(() => vaultStore.getAll.find(v => v.id === props.vaultId));
 </script>
