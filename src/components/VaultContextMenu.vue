@@ -1,7 +1,7 @@
 <template>
     <div class="fixed z-50" :style="{ left: x + 'px', top: y + 'px' }" ref="contextMenu">
         <div class="bg-white w-48 border border-gray-300 rounded-lg flex flex-col text-sm py-2 px-2 space-y-1 text-gray-500 shadow-lg">
-            <div v-for="action in actions" :key="action.name" @click="emitEvent(action.emits)" class="flex hover:bg-gray-100 py-1 px-2 rounded">
+            <div v-for="action in actions" :key="action.name" @click="emitEvent(action.emits)" class="flex hover:bg-gray-100 py-1 px-2 rounded cursor-pointer">
                 <div>{{ action.name }}</div>
             </div>
         </div>
