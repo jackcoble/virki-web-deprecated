@@ -26,13 +26,13 @@ const { x, y, actions } = defineProps<{
     actions: any[]
 }>();
 
-// Emit close context menu event when clicking outside
+// Emit an action to close context menu
 onClickOutside(contextMenu, (() => {
-    emit("close-menu");
+    emit("action", "close-menu");
 }));
 
 // Emits a specified action
 const emitEvent = (event: string) => {
-    emit(event);
+    emit("action", event);
 }
 </script>
