@@ -28,7 +28,7 @@
                         </div>
 
                         <!-- Footer -->
-                        <div>
+                        <slot name="footer">
                             <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
                                 <b-button @click="okModal" type="button">
                                     OK
@@ -38,7 +38,7 @@
                                     Cancel
                                 </b-button>
                             </div>
-                        </div>
+                        </slot>
                     </div>
                 </div>
             </div>
