@@ -26,8 +26,9 @@ onClickOutside(contextMenu, (() => {
     emit("action", "close-menu");
 }));
 
-// Emits a specified action
+// Emits a specified action and then the close-menu event
 const emitEvent = (event: string) => {
     emit("action", event);
+    emit("action", "close-menu")
 }
 </script>
