@@ -1,13 +1,8 @@
 <template>
     <div class="fixed z-50" :style="{ left: x + 'px', top: y + 'px' }" ref="contextMenu">
-        <div class="p-1">
-            <div id="dropdown"
-                class="bg-white rounded-lg shadow w-44">
-                <ul v-for="action in actions" :key="action.name" class="py-2 text-xs text-gray-700" aria-labelledby="dropdownDefaultButton">
-                    <li>
-                        <button class="w-full text-left block px-4 py-2 hover:bg-gray-100" @click="emitEvent(action.emits)">{{ action.name }}</button>
-                    </li>
-                </ul>
+        <div class="bg-white w-48 border border-gray-300 rounded-lg flex flex-col text-sm py-4 px-2 text-gray-500 shadow-lg">
+            <div v-for="action in actions" :key="action.name" @click="emitEvent(action.emits)" class="flex hover:bg-gray-100 py-1 px-2 rounded">
+                <div>{{ action.name }}</div>
             </div>
         </div>
     </div>
