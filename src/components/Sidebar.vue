@@ -35,38 +35,30 @@
                     <p class="text-sm">Vaults</p>
                 </button>
 
-                <button class="p-1 rounded-full hover:bg-gray-200"
-                    @click="showCreateVaultModal = !showCreateVaultModal">
+                <button class="p-1 rounded-full hover:bg-gray-200" @click="showCreateVaultModal = !showCreateVaultModal">
                     <PlusIcon class="w-4" />
                 </button>
             </div>
 
             <!-- List all vaults -->
             <div v-if="showSidebarVaults" class="pt-2">
-                <draggable v-model="vaults" item-key="order" class="space-y-1">
-                    <template #item="{ element }">
-                        <div class="flex p-2 rounded items-center justify-between space-x-2 cursor-pointer hover:bg-gray-200 transition" :class="route.params.id === element.id ? 'bg-gray-200' : ''">
+                <div class="space-y-1">
+                    <div v-for="vault in vaults" :key="vault.id" @contextmenu.prevent="handleContextMenu(vault.id)">
+                        <div class="flex p-2 rounded items-center justify-between space-x-2 space-y-1 cursor-pointer hover:bg-gray-200 transition"
+                            :class="route.params.id === vault.id ? 'bg-gray-200' : ''">
                             <!-- Vault icon and name -->
-                            <div class="flex flex-1 items-center space-x-2" @click="changeVault(element.id)">
+                            <div class="flex flex-1 items-center space-x-2" @click="changeVault(vault.id)">
                                 <div
                                     class="flex justify-center items-center object-contain cursor-pointer rounded-full border-2 border-gray-300 bg-gray-200 h-8 w-8">
-                                    <img v-if="element.icon_blob" class="rounded-full object-cover"
-                                        :src="element.icon_blob" alt="Vault Icon" />
-                                    <CubeIcon v-else class="w-4 h-4 text-mountain-meadow" />
+                                    <!-- <img v-if="!!vault.icon" class="rounded-full object-cover" :src="vault.icon" alt="Vault Icon" /> -->
+                                    <CubeIcon class="w-4 h-4 text-mountain-meadow" />
                                 </div>
 
-                                <p class="text-sm flex-1">{{ element.name }}</p>
-
-                                <!-- More icon (3 dots) -->
-                                <button class="rounded-full p-1 hover:bg-gray-300 transition"
-                                    @click="editVault(element.id)">
-                                    <DotsHorizontalIcon class="w-4 h-4 text-gray-400" />
-                                </button>
+                                <p class="text-sm flex-1">{{ vault.name }}</p>
                             </div>
-
                         </div>
-                    </template>
-                </draggable>
+                    </div>
+                </div>
             </div>
 
             <div v-if="showSidebarVaults && vaults.length === 0">
@@ -126,6 +118,14 @@
     <!-- Create vault modal -->
     <CreateVaultModal v-if="showCreateVaultModal" @ok="showCreateVaultModal = !showCreateVaultModal"
         @cancel="showCreateVaultModal = !showCreateVaultModal" />
+
+    <!-- Vault context menu -->
+    <VaultContextMenu v-if="vaultContextMenu.show"
+        :x="vaultContextMenu.x"
+        :y="vaultContextMenu.y"
+        :actions="vaultContextMenu.actions"
+        @action="handleContextMenuAction"
+    />
 </template>
 
 <script lang="ts">
@@ -157,7 +157,9 @@ import { useAppStore } from '@/stores/appStore';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import CreateVaultModal from './modals/CreateVaultModal.vue';
+import VaultContextMenu from './VaultContextMenu.vue';
 import draggable from 'vuedraggable';
+import { useMouse } from '@vueuse/core';
 
 export default defineComponent({
     name: "Sidebar",
@@ -180,6 +182,7 @@ export default defineComponent({
         StarIcon,
         CubeIcon,
         CreateVaultModal,
+        VaultContextMenu,
         draggable
     },
     setup() {
@@ -190,6 +193,25 @@ export default defineComponent({
 
         const router = useRouter();
         const route = useRoute();
+
+        // X and Y cursor values
+        const { x, y } = useMouse();
+        const vaultContextMenu = ref({
+            show: false,
+            x: 0,
+            y: 0,
+            actions: [
+                {
+                    name: "Edit vault",
+                    emits: "edit-vault"
+                },
+                {
+                    name: "Delete vault",
+                    emits: "delete-vault"
+                }
+            ],
+            vaultId: ""
+        });
 
         // Refs for sidebar menus
         const showSidebarVaults = ref(true);
@@ -213,6 +235,32 @@ export default defineComponent({
             router.push(`${PAGES.VAULT}/${id}/edit`);
         }
 
+        // Handle what happens when we receive the context menu event
+        // We should set X and Y values, as well as the Vault ID context.
+        const handleContextMenu = (vaultId: string) => {
+            vaultContextMenu.value.show = true;
+            vaultContextMenu.value.x = x.value;
+            vaultContextMenu.value.y = y.value;
+            vaultContextMenu.value.vaultId = vaultId;
+        }
+
+        // Handle the action we receive back from the context menu component
+        const handleContextMenuAction = (action: string) => {
+            switch (action) {
+                case "edit-vault": {
+                    console.log("Need to edit vault...");
+                    break;
+                }
+                case "delete-vault": {
+                    console.log("Need to delete vault...");
+                    break;
+                }
+                case "close-menu": {
+                    vaultContextMenu.value.show = false;
+                }
+            }
+        }
+
         return {
             router,
             route,
@@ -231,9 +279,12 @@ export default defineComponent({
             vaults,
             activeVaultID,
             vaultIdPresent,
+            vaultContextMenu,
 
             changeVault,
-            editVault
+            editVault,
+            handleContextMenu,
+            handleContextMenuAction
         }
     }
 })
