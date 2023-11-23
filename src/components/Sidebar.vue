@@ -119,6 +119,9 @@
     <CreateVaultModal v-if="showCreateVaultModal" @ok="showCreateVaultModal = !showCreateVaultModal"
         @cancel="showCreateVaultModal = !showCreateVaultModal" />
 
+    <!-- Delete vault modal -->
+    <DeleteVaultModal v-if="showDeleteVaultModal" :vault-id="''" @cancel="showDeleteVaultModal = !showDeleteVaultModal" />
+
     <!-- Vault context menu -->
     <VaultContextMenu v-if="vaultContextMenu.show"
         :x="vaultContextMenu.x"
@@ -157,6 +160,7 @@ import { useAppStore } from '@/stores/appStore';
 import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import CreateVaultModal from './modals/CreateVaultModal.vue';
+import DeleteVaultModal from './modals/DeleteVaultModal.vue';
 import VaultContextMenu from './VaultContextMenu.vue';
 import draggable from 'vuedraggable';
 import { useMouse } from '@vueuse/core';
@@ -182,6 +186,7 @@ export default defineComponent({
         StarIcon,
         CubeIcon,
         CreateVaultModal,
+        DeleteVaultModal,
         VaultContextMenu,
         draggable
     },
@@ -216,6 +221,7 @@ export default defineComponent({
         // Refs for sidebar menus
         const showSidebarVaults = ref(true);
         const showCreateVaultModal = ref(false);
+        const showDeleteVaultModal = ref(false);
 
         // Refs for online/offline modals
         const showOnlineModal = ref(false);
@@ -253,6 +259,7 @@ export default defineComponent({
                 }
                 case "delete-vault": {
                     console.log("Need to delete vault...");
+                    showDeleteVaultModal.value = true;
                     break;
                 }
                 case "close-menu": {
@@ -270,6 +277,7 @@ export default defineComponent({
 
             showSidebarVaults,
             showCreateVaultModal,
+            showDeleteVaultModal,
 
             showOnlineModal,
             showOfflineModal,
