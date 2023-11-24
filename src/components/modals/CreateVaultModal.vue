@@ -102,9 +102,11 @@ export default defineComponent({
         }
 
         // Don't forget the vault icon key!
+        /*
         if (vaultIconKey.value) {
           apiVaultObject.icon = vaultIconKey.value
         }
+        */
 
         // Submit the new vault to be sent to the API
         const res = await userService.CreateVault(apiVaultObject);
