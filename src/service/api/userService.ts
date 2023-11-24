@@ -23,6 +23,10 @@ export default {
         return api.post("/v1/vaults", payload);
     },
 
+    DeleteVault(vaultId: string): Promise<AxiosResponse> {
+        return api.delete(`/v1/vaults/${vaultId}`);
+    },
+
     GetVaults(): Promise<AxiosResponse<GetVaultsResponseBody[]>> {
         return api.get("/v1/vaults");
     },
