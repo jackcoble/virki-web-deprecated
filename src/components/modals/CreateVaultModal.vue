@@ -1,5 +1,5 @@
 <template>
-    <BaseModal @ok="handleVaultCreation">
+    <BaseModal>
       <template v-slot:body>
         <div class="flex flex-col items-center space-y-4">
           <h1 class="text-xl">Create a new vault</h1>
@@ -10,6 +10,18 @@
               <b-input v-model="vaultName" placeholder="Vault name" autofocus></b-input>
               <b-text-area v-model="vaultDescription" placeholder="Description"></b-text-area>
           </form>
+        </div>
+      </template>
+
+      <template v-slot:footer>
+        <div class="mt-5 sm:mt-4 flex items-end space-y-2 space-x-2">
+            <b-button @click="handleVaultCreation" type="button" :loading="isCreatingVault">
+                Create
+            </b-button>
+
+            <b-button @click="$emit('cancel')" type="button" classType="light">
+                Cancel
+            </b-button>
         </div>
       </template>
   </BaseModal>
@@ -36,7 +48,7 @@ export default defineComponent({
       EncryptedFileUpload,
       BaseModal
     },
-    emits: ["ok"],
+    emits: ["ok", "cancel"],
     setup(props, { emit }) {
       // Stores
       const keyStore = useKeyStore();
@@ -52,9 +64,12 @@ export default defineComponent({
       const vaultName = ref();
       const vaultDescription = ref();
       const vaultIconKey = ref();
+      const isCreatingVault = ref(false);
 
       // Handle encrypting the vault attributes into a suitable payload
       const handleVaultCreation = async () => {
+        isCreatingVault.value = true;
+
         // Generate a symmetric key which all items inside this vault will be encrypted with.
         const vaultEncryptionKey = await cryptoWorker.generateEncryptionKey();
 
@@ -107,6 +122,8 @@ export default defineComponent({
         vaultStore.add(decryptedVault);
         await storageService.AddVault(res.data);
 
+        isCreatingVault.value = false;
+
         // Close the modal
         emit("ok");
       }
@@ -117,6 +134,7 @@ export default defineComponent({
         vaultName,
         vaultDescription,
         vaultIconKey,
+        isCreatingVault,
 
         handleVaultCreation
       }
