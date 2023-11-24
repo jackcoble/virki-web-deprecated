@@ -40,6 +40,20 @@ export class StorageService extends Dexie {
         const vaults = await this.vaults.toCollection().toArray();
         return vaults;
     }
+
+    /**
+     * Returns a single vault from provided ID
+     * @param vaultId - Vault ID to look up
+     * @returns {GetVaultsResponseBody}
+     */
+    async GetVault(vaultId: string): Promise<GetVaultsResponseBody> {
+        const vault = await this.vaults.get(vaultId);
+        if (!vault) {
+            return Promise.reject("Vault not found!");
+        }
+
+        return Promise.resolve(vault);
+    }
 }
 
 // Export access to the DB as a singleton
