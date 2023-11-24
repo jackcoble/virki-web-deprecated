@@ -1,5 +1,5 @@
 <template>
-    <BaseModal>
+    <BaseModal @ok="handleVaultChanges">
         <template v-slot:body>
             <div class="flex flex-col items-center space-y-4">
                 <h1 class="text-xl">Editing <strong>{{ vault && vault.name }}</strong> vault</h1>
@@ -13,6 +13,11 @@
                     <b-input v-model="editedVault.name" placeholder="Vault name" autofocus></b-input>
                     <b-text-area v-model="editedVault.description" placeholder="Description"></b-text-area>
                 </form>
+
+                <!-- Creation date -->
+                <p class="text-gray-500">
+                    <small>Created at {{ vault && parseTimestamp(vault.created) }}</small>
+                </p>
             </div>
         </template>
     </BaseModal>
@@ -21,9 +26,11 @@
 <script setup lang="ts">
 import BaseModal from "@/components/modals/BaseModal.vue";
 import type { GetVaultsResponseBody } from "@/service/api/types";
+import storageService from "@/service/storage";
 import { useVaultStore } from "@/stores/vaultStore";
 import { computed, onMounted, ref } from "vue";
-
+import { parseISO } from "date-fns"
+ 
 const props = defineProps<{
     vaultId: string
 }>();
@@ -45,4 +52,19 @@ onMounted(() => {
 
     editedVault.value = { ...vault.value }
 })
+
+// Format ISO8601 date to something more human friendly
+const parseTimestamp = (timestamp: string): string => {
+    const parsed = parseISO(timestamp);
+    return `${parsed.toLocaleDateString()} @ ${parsed.toLocaleTimeString()}`
+}
+
+// Handle any changes that have been made to the vault.
+const handleVaultChanges = async () => {
+    // Fetch the encrypted version of the vault.
+    // We want this just in case some of the metadata hasn't changed at all.
+    // Rather than re-encrypt, we can re-use instead...
+    const encryptedVault = await storageService.GetVault(props.vaultId);
+    console.log(encryptedVault)
+}
 </script>
