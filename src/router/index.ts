@@ -14,7 +14,7 @@ import Lock from "@/views/Lock.vue"
 import Vault from "@/views/vault/Vault.vue"
 import Favourites from "@/views/Favourites.vue";
 import Account from "@/views/account/Account.vue"
-import EditVault from '@/views/vault/Edit.vue'
+
 import AccountSessions from "@/views/account/Sessions.vue";
 
 import AddToken from "@/views/vault/AddToken.vue";
@@ -43,11 +43,6 @@ const router = createRouter({
           path: `${PAGES.VAULT}/:id?`,
           name: "VaultView",
           component: Vault
-        },
-        {
-          path: `${PAGES.VAULT}/:id/edit`,
-          name: "EditVault",
-          component: EditVault
         },
         {
           path: `${PAGES.FAVOURITES}`,
