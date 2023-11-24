@@ -35,6 +35,7 @@ import { serialiseCipherString } from "@/common/utils/cipher";
 import { EncryptionType } from "@/common/enums/encryptionType";
 import userService from "@/service/api/userService";
  
+const emit = defineEmits();
 const props = defineProps<{
     vaultId: string
 }>();
@@ -112,14 +113,17 @@ const handleVaultChanges = async () => {
     // Whatever the API receives in this object, the details will be reflected.
     const updatedVaultRequest: UpdateVaultRequestBody = {
         name: encryptedVault.name,
-        description: encryptedVault.description,
-        icon: encryptedVault.icon
+        description: encryptedVault.description
     }
 
     try {
         await userService.UpdateVault(encryptedVault.id, updatedVaultRequest);
     } catch (e) {
         errorMessage.value = e.response.data.error;
+        return;
     }
+
+    // Close the modal
+    emit("close");
 }
 </script>

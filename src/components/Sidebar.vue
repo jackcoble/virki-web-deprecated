@@ -130,6 +130,7 @@
     <EditVaultModal v-if="showEditVaultModal"
         :vault-id="vaultContextMenu.vaultId"
         @cancel="showEditVaultModal = !showEditVaultModal"
+        @close="showEditVaultModal = !showEditVaultModal"
     />
 
     <!-- Vault context menu -->
