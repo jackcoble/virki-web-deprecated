@@ -35,7 +35,7 @@ import { computed, onMounted, ref } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useVaultStore } from '@/stores/vaultStore';
 import storageService  from '@/service/storage';
-import { sleep } from '@/common/utils/sleep';
+import userService from "@/service/api/userService"
 import type { GetVaultsResponseBody } from '@/service/api/types';
 
 const emit = defineEmits()
@@ -66,6 +66,7 @@ const handleDeletion = async () => {
     // Remove from the decrypted/encrypted store and API
     vaultStore.delete(props.vaultId);
     await storageService.DeleteVault(props.vaultId);
+    await userService.DeleteVault(props.vaultId);
     
     isDeleting.value = false;
 
