@@ -62,11 +62,11 @@ onMounted(() => {
 // Handle deleting the Vault from the decrypted store, encrypted DB and API
 const handleDeletion = async () => {
     isDeleting.value = true;
-    
-    // Remove from the decrypted/encrypted store and API
+
+    // Remove vault from API first, followed by local stores
+    await userService.DeleteVault(props.vaultId);
     vaultStore.delete(props.vaultId);
     await storageService.DeleteVault(props.vaultId);
-    await userService.DeleteVault(props.vaultId);
     
     isDeleting.value = false;
 
