@@ -87,3 +87,9 @@ export interface UpdateAccountRequestBody {
     email?: string;
     masterPassword?: string;
 }
+
+export interface UpdateVaultRequestBody {
+    name: string;
+    description?: string;
+    icon?: string;
+}
