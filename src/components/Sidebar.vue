@@ -126,6 +126,12 @@
         @close="showDeleteVaultModal = !showDeleteVaultModal"
     />
 
+    <!-- Edit vault modal -->
+    <EditVaultModal v-if="showEditVaultModal"
+        :vault-id="vaultContextMenu.vaultId"
+        @cancel="showEditVaultModal = !showEditVaultModal"
+    />
+
     <!-- Vault context menu -->
     <VaultContextMenu v-if="vaultContextMenu.show"
         :x="vaultContextMenu.x"
@@ -165,6 +171,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { PAGES } from '@/router/pages';
 import CreateVaultModal from './modals/CreateVaultModal.vue';
 import DeleteVaultModal from './modals/DeleteVaultModal.vue';
+import EditVaultModal from "./modals/EditVaultModal.vue";
 import VaultContextMenu from './VaultContextMenu.vue';
 import draggable from 'vuedraggable';
 import { useMouse } from '@vueuse/core';
@@ -191,6 +198,7 @@ export default defineComponent({
         CubeIcon,
         CreateVaultModal,
         DeleteVaultModal,
+        EditVaultModal,
         VaultContextMenu,
         draggable
     },
@@ -226,6 +234,7 @@ export default defineComponent({
         const showSidebarVaults = ref(true);
         const showCreateVaultModal = ref(false);
         const showDeleteVaultModal = ref(false);
+        const showEditVaultModal = ref(false);
 
         // Refs for online/offline modals
         const showOnlineModal = ref(false);
@@ -258,11 +267,10 @@ export default defineComponent({
         const handleContextMenuAction = (action: string) => {
             switch (action) {
                 case "edit-vault": {
-                    console.log("Need to edit vault...");
+                    showEditVaultModal.value = true;
                     break;
                 }
                 case "delete-vault": {
-                    console.log("Need to delete vault...");
                     showDeleteVaultModal.value = true;
                     break;
                 }
@@ -282,6 +290,7 @@ export default defineComponent({
             showSidebarVaults,
             showCreateVaultModal,
             showDeleteVaultModal,
+            showEditVaultModal,
 
             showOnlineModal,
             showOfflineModal,
