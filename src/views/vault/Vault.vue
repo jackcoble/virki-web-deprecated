@@ -1,8 +1,16 @@
 <template>
-  <div class="flex flex-col h-full p-4" v-if="!isFirstLoad">
-    <!-- Button to add entry to vault -->
-    <div class="flex justify-end p-2 pb-4" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
-      <div class="flex">
+  <div class="flex flex-col h-full" v-if="!isFirstLoad">
+    <!-- Vault description and button to add new tokens -->
+    <div class="flex items-center space-x-2 p-4 px-6 border-b-2 border-b-gray-300 bg-gray-200" v-if="vaults.length !== 0 && !showCreateVault && !showEditVault">
+      <div v-if="vaultInUrl && vaultInUrl.description" class="flex flex-grow text-gray-700">
+        <p>{{ vaultInUrl.description }}</p>
+      </div>
+      <div v-else class="flex w-full">
+        <p class="hidden"></p>
+      </div>
+
+      <!-- Add tokens -->
+      <div>
         <b-button class="w-36" @click="addTokensPage">
           <div class="flex flex-row justify-center items-center space-x-1">
             <PlusCircleIcon class="w-4" />
@@ -77,6 +85,7 @@ export default defineComponent({
     const isFirstLoad = ref(true);
     const vaults = computed(() => vaultStore.getAll);
     const vaultIdPresent = computed(() => !!route.query.vault);
+    const vaultInUrl = computed(() => vaultStore.getAll.find(v => v.id === route.params.id));
     const isOnline = computed(() => appStore.isOnline);
 
     onMounted(async () => {
@@ -192,6 +201,7 @@ export default defineComponent({
       vaults,
       isOnline,
       vaultIdPresent,
+      vaultInUrl,
 
       showCreateVault,
       showEditVault,
